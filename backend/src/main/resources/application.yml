@@ -13,3 +13,7 @@ spring:
     open-in-view: false
   flyway:
     enabled: false
+
+jwt:
+  secret: hrpilot-super-secret-key-that-is-at-least-256-bits-long-for-security
+  expiration: 86400000
