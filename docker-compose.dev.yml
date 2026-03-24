@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: hrpilot-postgres
+    ports: 
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: hrpilot
+      POSTGRES_USER: hrpilot
+      POSTGRES_PASSWORD: hrpilot123
+    volumes: 
+      - "postgres-data:/var/lib/postgresql/data"
+    restart: unless-stopped
+volumes:
+  postgres-data:
