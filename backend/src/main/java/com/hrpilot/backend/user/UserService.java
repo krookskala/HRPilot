@@ -2,6 +2,7 @@ package com.hrpilot.backend.user;
 
 import com.hrpilot.backend.user.dto.CreateUserRequest;
 import com.hrpilot.backend.user.dto.UserResponse;
+import com.hrpilot.backend.user.dto.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,26 @@ public class UserService {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("User Not Found"));
         return toResponse(user);
+    }
+
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User Not Found"));
+        
+        user.setRole(request.role());
+        user.setActive(request.isActive());
+        user.setPreferredLang(request.preferredLang());
+
+        User savedUser = userRepository.save(user);
+
+        return toResponse(savedUser);
+    }
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User Not Found");
+        }
+        userRepository.deleteById(id);
     }
 
     private UserResponse toResponse(User user) {
