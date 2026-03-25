@@ -1,6 +1,7 @@
 package com.hrpilot.backend.employee;
 
 import com.hrpilot.backend.user.User;
+import com.hrpilot.backend.department.Department;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -36,6 +37,10 @@ public class Employee {
 
     @Column(name = "hire_date", nullable = false)
     private LocalDate hireDate;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @Column(name = "photo_url")
     private String photoUrl;
