@@ -1,0 +1,42 @@
+package com.hrpilot.backend.employee;
+
+import com.hrpilot.backend.user.User;
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "employees")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(nullable = false)
+    private String position;
+
+    @Column(nullable = false)
+    private BigDecimal salary;
+
+    @Column(name = "hire_date", nullable = false)
+    private LocalDate hireDate;
+
+    @Column(name = "photo_url")
+    private String photoUrl;
+}
