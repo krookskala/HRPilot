@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/leave-requests/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter,
