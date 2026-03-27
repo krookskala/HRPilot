@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>Add Leave Request</h2>
+
+<mat-dialog-content class="flex flex-col gap-4 pt-2">
+
+  <mat-form-field appearance="outline">
+    <mat-label>Employee ID</mat-label>
+    <input matInput type="number" [(ngModel)]="request.employeeId" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Leave Type</mat-label>
+    <mat-select [(ngModel)]="request.type">
+      @for (t of leaveTypes; track t) {
+        <mat-option [value]="t">{{ t }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Start Date</mat-label>
+    <input matInput type="date" [(ngModel)]="request.startDate" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>End Date</mat-label>
+    <input matInput type="date" [(ngModel)]="request.endDate" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Reason</mat-label>
+    <input matInput [(ngModel)]="request.reason" />
+  </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</mat-dialog-actions>
