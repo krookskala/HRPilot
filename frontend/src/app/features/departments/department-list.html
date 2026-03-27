@@ -1,6 +1,9 @@
 <div class="p-4">
     <h2 class="text-xl font-bold mb-4">Departments</h2>
 
+    <button mat-raised-button color="primary" class="mb-4"
+    (click)="openDialog()">Add Department</button>
+
     <table mat-table [dataSource]="departments" class="w-full">
 
       <ng-container matColumnDef="id">
