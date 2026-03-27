@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Add Employee</h2>
+
+<mat-dialog-content class="flex flex-col gap-4 pt-2">
+
+  <mat-form-field appearance="outline">
+    <mat-label>User ID</mat-label>
+    <input matInput type="number" [(ngModel)]="request.userId" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>First Name</mat-label>
+    <input matInput [(ngModel)]="request.firstName" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Last Name</mat-label>
+    <input matInput [(ngModel)]="request.lastName" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Position</mat-label>
+    <input matInput [(ngModel)]="request.position" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Salary</mat-label>
+    <input matInput type="number" [(ngModel)]="request.salary" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Hire Date</mat-label>
+    <input matInput type="date" [(ngModel)]="request.hireDate" />
+  </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</mat-dialog-actions>
