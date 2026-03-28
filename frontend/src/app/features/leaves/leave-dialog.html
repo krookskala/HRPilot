@@ -1,36 +1,42 @@
 <h2 mat-dialog-title>Add Leave Request</h2>
 
 <mat-dialog-content class="flex flex-col gap-4 pt-2">
+  <form [formGroup]="form" class="flex flex-col gap-4">
 
-  <mat-form-field appearance="outline">
-    <mat-label>Employee ID</mat-label>
-    <input matInput type="number" [(ngModel)]="request.employeeId" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Employee ID</mat-label>
+      <input matInput type="number" formControlName="employeeId" />
+      <mat-error>Employee ID is required</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Leave Type</mat-label>
-    <mat-select [(ngModel)]="request.type">
-      @for (t of leaveTypes; track t) {
-        <mat-option [value]="t">{{ t }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Leave Type</mat-label>
+      <mat-select formControlName="type">
+        @for (t of leaveTypes; track t) {
+          <mat-option [value]="t">{{ t }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Leave type is required</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Start Date</mat-label>
-    <input matInput type="date" [(ngModel)]="request.startDate" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Start Date</mat-label>
+      <input matInput type="date" formControlName="startDate" />
+      <mat-error>Start date is required</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>End Date</mat-label>
-    <input matInput type="date" [(ngModel)]="request.endDate" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>End Date</mat-label>
+      <input matInput type="date" formControlName="endDate" />
+      <mat-error>End date is required</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Reason</mat-label>
-    <input matInput [(ngModel)]="request.reason" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Reason (optional)</mat-label>
+      <input matInput formControlName="reason" />
+    </mat-form-field>
 
+  </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
