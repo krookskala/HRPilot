@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -23,14 +26,15 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<EmployeeResponse> createEmployee(@Valid @RequestBody CreateEmployeeRequest request) {
         EmployeeResponse employeeResponse = employeeService.createEmployee(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeResponse>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployees());
+    public ResponseEntity<Page<EmployeeResponse>> getAllEmployees(Pageable pageable) {
+        return ResponseEntity.ok(employeeService.getAllEmployees(pageable));
     }
 
     @GetMapping("/{id}")
@@ -39,6 +43,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
