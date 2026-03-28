@@ -3,6 +3,7 @@ import { Login } from './features/auth/login';
 import { Layout } from './layout/layout';
 import { Dashboard } from './features/dashboard/dashboard';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 import { EmployeeList } from './features/employees/employee-list';
 import { DepartmentList } from './features/departments/department-list';
 import { LeaveList } from './features/leaves/leave-list';
@@ -20,7 +21,7 @@ export const routes: Routes = [
             { path: 'employees', component: EmployeeList},
             { path: 'departments', component: DepartmentList},
             { path: 'leaves', component: LeaveList},
-            { path: 'payrolls', component: PayrollList}
+            { path: 'payrolls', component: PayrollList, canActivate: [roleGuard('ADMIN', 'HR_MANAGER')]}
         ]
     }
 ];
