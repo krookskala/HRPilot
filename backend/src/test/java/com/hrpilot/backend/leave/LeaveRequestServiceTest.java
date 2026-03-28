@@ -4,6 +4,8 @@ import com.hrpilot.backend.employee.Employee;
 import com.hrpilot.backend.employee.EmployeeRepository;
 import com.hrpilot.backend.leave.dto.CreateLeaveRequest;
 import com.hrpilot.backend.leave.dto.LeaveRequestResponse;
+import com.hrpilot.backend.common.exception.ResourceNotFoundException;
+import com.hrpilot.backend.common.exception.BusinessRuleException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,7 +97,7 @@ class LeaveRequestServiceTest {
         when(employeeRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> leaveRequestService.createLeaveRequest(request));
+        assertThrows(ResourceNotFoundException.class, () -> leaveRequestService.createLeaveRequest(request));
     }
 
     @Test
@@ -98,14 +105,16 @@ class LeaveRequestServiceTest {
         // Arrange
         Employee employee = buildEmployee();
         LeaveRequest leave = buildLeaveRequest(employee, LeaveStatus.PENDING);
-        when(leaveRequestRepository.findAll()).thenReturn(List.of(leave));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<LeaveRequest> page = new PageImpl<>(List.of(leave), pageable, 1);
+        when(leaveRequestRepository.findAll(pageable)).thenReturn(page);
 
         // Act
-        List<LeaveRequestResponse> responses = leaveRequestService.getAllLeaveRequests();
+        Page<LeaveRequestResponse> responses = leaveRequestService.getAllLeaveRequests(pageable);
 
         // Assert
-        assertEquals(1, responses.size());
-        assertEquals(LeaveType.ANNUAL, responses.get(0).type());
+        assertEquals(1, responses.getTotalElements());
+        assertEquals(LeaveType.ANNUAL, responses.getContent().get(0).type());
     }
 
     @Test
@@ -145,7 +154,7 @@ class LeaveRequestServiceTest {
         when(leaveRequestRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> leaveRequestService.approveLeaveRequest(99L));
+        assertThrows(ResourceNotFoundException.class, () -> leaveRequestService.approveLeaveRequest(99L));
     }
 
     @Test
@@ -170,6 +179,45 @@ class LeaveRequestServiceTest {
         when(leaveRequestRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> leaveRequestService.rejectLeaveRequest(99L));
+        assertThrows(ResourceNotFoundException.class, () -> leaveRequestService.rejectLeaveRequest(99L));
+    }
+
+    @Test
+    void createLeaveRequest_startDateAfterEndDate_throwsException() {
+        // Arrange
+        Employee employee = buildEmployee();
+        CreateLeaveRequest request = new CreateLeaveRequest(
+                1L,
+                LeaveType.ANNUAL,
+                LocalDate.of(2026, 4, 10),
+                LocalDate.of(2026, 4, 5),
+                "Vacation"
+        );
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
+
+        // Act & Assert
+        assertThrows(BusinessRuleException.class, () -> leaveRequestService.createLeaveRequest(request));
+    }
+
+    @Test
+    void approveLeaveRequest_alreadyApproved_throwsException() {
+        // Arrange
+        Employee employee = buildEmployee();
+        LeaveRequest leave = buildLeaveRequest(employee, LeaveStatus.APPROVED);
+        when(leaveRequestRepository.findById(1L)).thenReturn(Optional.of(leave));
+
+        // Act & Assert
+        assertThrows(BusinessRuleException.class, () -> leaveRequestService.approveLeaveRequest(1L));
+    }
+
+    @Test
+    void rejectLeaveRequest_alreadyRejected_throwsException() {
+        // Arrange
+        Employee employee = buildEmployee();
+        LeaveRequest leave = buildLeaveRequest(employee, LeaveStatus.REJECTED);
+        when(leaveRequestRepository.findById(1L)).thenReturn(Optional.of(leave));
+
+        // Act & Assert
+        assertThrows(BusinessRuleException.class, () -> leaveRequestService.rejectLeaveRequest(1L));
     }
 }
