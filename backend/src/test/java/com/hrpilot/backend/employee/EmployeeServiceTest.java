@@ -5,6 +5,7 @@ import com.hrpilot.backend.employee.dto.EmployeeResponse;
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.UserRepository;
 import com.hrpilot.backend.user.Role;
+import com.hrpilot.backend.common.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +16,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,7 +88,7 @@ class EmployeeServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> employeeService.createEmployee(request));
+        assertThrows(ResourceNotFoundException.class, () -> employeeService.createEmployee(request));
     }
 
     @Test
@@ -90,14 +96,16 @@ class EmployeeServiceTest {
         // Arrange
         User user = buildUser();
         Employee employee = buildEmployee(user);
-        when(employeeRepository.findAll()).thenReturn(List.of(employee));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Employee> page = new PageImpl<>(List.of(employee), pageable, 1);
+        when(employeeRepository.findAll(pageable)).thenReturn(page);
 
         // Act
-        List<EmployeeResponse> responses = employeeService.getAllEmployees();
+        Page<EmployeeResponse> responses = employeeService.getAllEmployees(pageable);
 
         // Assert
-        assertEquals(1, responses.size());
-        assertEquals("John", responses.get(0).firstName());
+        assertEquals(1, responses.getTotalElements());
+        assertEquals("John", responses.getContent().get(0).firstName());
     }
 
     @Test
@@ -122,7 +130,7 @@ class EmployeeServiceTest {
         when(employeeRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> employeeService.getEmployeeById(99L));
+        assertThrows(ResourceNotFoundException.class, () -> employeeService.getEmployeeById(99L));
     }
 
     @Test
@@ -143,6 +151,6 @@ class EmployeeServiceTest {
         when(employeeRepository.existsById(99L)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> employeeService.deleteEmployee(99L));
+        assertThrows(ResourceNotFoundException.class, () -> employeeService.deleteEmployee(99L));
     }
 }
