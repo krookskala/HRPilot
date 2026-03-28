@@ -21,15 +21,15 @@ export class Dashboard implements OnInit {
 
     ngOnInit(): void {
         this.employeeService.getAll().subscribe({
-            next: (data) => { 
-                this.employeeCount = data.length;
+            next: (page) => {
+                this.employeeCount = page.totalElements;
                 this.cdr.detectChanges();
             }
         });
         this.departmentService.getAll().subscribe({
-            next: (data) => {
-                this.departmentCount = data.length;
-                this.cdr.detectChanges();    
+            next: (page) => {
+                this.departmentCount = page.totalElements;
+                this.cdr.detectChanges();
             }
         });
     }
