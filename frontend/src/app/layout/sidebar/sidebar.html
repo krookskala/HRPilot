@@ -11,7 +11,10 @@
     <a mat-list-item routerLink="/leaves" routerLinkActive="active">
       Leave Requests
     </a>
-    <a mat-list-item routerLink="/payrolls" routerLinkActive="active">
+    <a mat-list-item routerLink="/payrolls" routerLinkActive="active" *ngIf="isAdminOrHR">
       Payrolls
+    </a>
+    <a mat-list-item (click)="logout()" style="cursor: pointer; margin-top: auto;">
+      Logout
     </a>
 </mat-nav-list>
