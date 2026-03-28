@@ -5,6 +5,8 @@ import com.hrpilot.backend.department.dto.DepartmentResponse;
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.UserRepository;
 import com.hrpilot.backend.user.Role;
+import com.hrpilot.backend.common.exception.ResourceNotFoundException;
+import com.hrpilot.backend.common.exception.DuplicateResourceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +67,7 @@ class DepartmentServiceTest {
         when(departmentRepository.existsByName("Engineering")).thenReturn(true);
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> departmentService.createDepartment(request));
+        assertThrows(DuplicateResourceException.class, () -> departmentService.createDepartment(request));
     }
 
     @Test
@@ -89,7 +96,7 @@ class DepartmentServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> departmentService.createDepartment(request));
+        assertThrows(ResourceNotFoundException.class, () -> departmentService.createDepartment(request));
     }
 
     @Test
@@ -118,21 +125,23 @@ class DepartmentServiceTest {
         when(departmentRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> departmentService.createDepartment(request));
+        assertThrows(ResourceNotFoundException.class, () -> departmentService.createDepartment(request));
     }
 
     @Test
     void getAllDepartments_returnsAllDepartments() {
         // Arrange
         Department dept = buildDepartment();
-        when(departmentRepository.findAll()).thenReturn(List.of(dept));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Department> page = new PageImpl<>(List.of(dept), pageable, 1);
+        when(departmentRepository.findAll(pageable)).thenReturn(page);
 
         // Act
-        List<DepartmentResponse> responses = departmentService.getAllDepartments();
+        Page<DepartmentResponse> responses = departmentService.getAllDepartments(pageable);
 
         // Assert
-        assertEquals(1, responses.size());
-        assertEquals("Engineering", responses.get(0).name());
+        assertEquals(1, responses.getTotalElements());
+        assertEquals("Engineering", responses.getContent().get(0).name());
     }
 
     @Test
@@ -156,7 +165,7 @@ class DepartmentServiceTest {
         when(departmentRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> departmentService.getDepartmentById(99L));
+        assertThrows(ResourceNotFoundException.class, () -> departmentService.getDepartmentById(99L));
     }
 
     @Test
@@ -177,6 +186,6 @@ class DepartmentServiceTest {
         when(departmentRepository.existsById(99L)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> departmentService.deleteDepartment(99L));
+        assertThrows(ResourceNotFoundException.class, () -> departmentService.deleteDepartment(99L));
     }
 }
