@@ -1,5 +1,6 @@
 package com.hrpilot.backend.employee;
 
+import com.hrpilot.backend.common.BaseEntity;
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.department.Department;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Employee {
+public class Employee extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
