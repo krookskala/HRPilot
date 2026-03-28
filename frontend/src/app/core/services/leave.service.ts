@@ -3,14 +3,15 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
 import { CreateLeaveRequest, LeaveRequest } from "../../shared/models/leave.model";
+import { Page } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class LeaveService {
     private apiUrl = environment.apiUrl;
     constructor(private http: HttpClient) {}
 
-    getAll(): Observable<LeaveRequest[]> {
-        return this.http.get<LeaveRequest[]>(`${this.apiUrl}/leave-requests`);
+    getAll(page = 0, size = 20): Observable<Page<LeaveRequest>> {
+        return this.http.get<Page<LeaveRequest>>(`${this.apiUrl}/leave-requests?page=${page}&size=${size}`);
     }
 
     getByEmployee(employeeId: number): Observable<LeaveRequest[]> {
