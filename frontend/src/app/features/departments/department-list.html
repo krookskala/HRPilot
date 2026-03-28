@@ -4,7 +4,13 @@
     <button mat-raised-button color="primary" class="mb-4"
     (click)="openDialog()" *ngIf="isAdmin">Add Department</button>
 
-    <table mat-table [dataSource]="departments" class="w-full">
+    <div *ngIf="loading" class="flex justify-center p-8">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="error" class="text-red-500 p-4">{{ error }}</div>
+
+    <table mat-table [dataSource]="departments" class="w-full" *ngIf="!loading && !error">
 
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>ID</th>
@@ -39,7 +45,7 @@
 
     </table>
 
-    <mat-paginator
+    <mat-paginator *ngIf="!loading && !error"
       [length]="totalElements"
       [pageSize]="pageSize"
       [pageIndex]="pageIndex"
