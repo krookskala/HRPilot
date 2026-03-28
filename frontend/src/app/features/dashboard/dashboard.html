@@ -1,18 +1,22 @@
 <div class="p-6">
     <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
 
-    <div class="flex gap-6">
+    <div *ngIf="loading" class="flex justify-center p-8">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div class="flex gap-6" *ngIf="!loading">
 
       <mat-card class="flex-1 text-center p-4">
         <mat-card-content>
-          <div class="text-5xl font-bold text-cyan-600">{{ employeeCount}}</div>
+          <div class="text-5xl font-bold text-cyan-600">{{ employeeCount }}</div>
           <div class="text-gray-500 mt-2">Total Employees</div>
         </mat-card-content>
       </mat-card>
 
       <mat-card class="flex-1 text-center p-4">
         <mat-card-content>
-          <div class="text-5xl font-bold text-cyan-600">{{ departmentCount}}</div>
+          <div class="text-5xl font-bold text-cyan-600">{{ departmentCount }}</div>
           <div class="text-gray-500 mt-2">Total Departments</div>
         </mat-card-content>
       </mat-card>
