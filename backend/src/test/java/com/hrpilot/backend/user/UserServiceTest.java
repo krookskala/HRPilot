@@ -3,6 +3,8 @@ package com.hrpilot.backend.user;
 import com.hrpilot.backend.user.dto.CreateUserRequest;
 import com.hrpilot.backend.user.dto.UpdateUserRequest;
 import com.hrpilot.backend.user.dto.UserResponse;
+import com.hrpilot.backend.common.exception.ResourceNotFoundException;
+import com.hrpilot.backend.common.exception.DuplicateResourceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,7 +66,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail("exists@test.com")).thenReturn(true);
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> userService.createUser(request));
+        assertThrows(DuplicateResourceException.class, () -> userService.createUser(request));
     }
 
     @Test
@@ -88,7 +95,7 @@ class UserServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> userService.getUserById(99L));
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(99L));
     }
 
     @Test
@@ -96,15 +103,17 @@ class UserServiceTest {
         // Arrange
         User user1 = User.builder().id(1L).email("a@test.com").role(Role.EMPLOYEE).build();
         User user2 = User.builder().id(2L).email("b@test.com").role(Role.ADMIN).build();
-        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<User> page = new PageImpl<>(List.of(user1, user2), pageable, 2);
+        when(userRepository.findAll(pageable)).thenReturn(page);
 
         // Act
-        List<UserResponse> responses = userService.getAllUsers();
+        Page<UserResponse> responses = userService.getAllUsers(pageable);
 
         // Assert
-        assertEquals(2, responses.size());
-        assertEquals("a@test.com", responses.get(0).email());
-        assertEquals("b@test.com", responses.get(1).email());
+        assertEquals(2, responses.getTotalElements());
+        assertEquals("a@test.com", responses.getContent().get(0).email());
+        assertEquals("b@test.com", responses.getContent().get(1).email());
     }
 
     @Test
@@ -135,7 +144,7 @@ class UserServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> userService.updateUser(99L, request));
+        assertThrows(ResourceNotFoundException.class, () -> userService.updateUser(99L, request));
     }
 
     @Test
@@ -156,6 +165,6 @@ class UserServiceTest {
         when(userRepository.existsById(99L)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> userService.deleteUser(99L));
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(99L));
     }
 }
