@@ -1,5 +1,6 @@
 package com.hrpilot.backend.leave;
 
+import com.hrpilot.backend.common.BaseEntity;
 import com.hrpilot.backend.employee.Employee;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LeaveRequest {
+public class LeaveRequest extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
