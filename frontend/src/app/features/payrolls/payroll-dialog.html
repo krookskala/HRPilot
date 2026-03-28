@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Add Payroll</h2>
+
+<mat-dialog-content class="flex flex-col gap-4 pt-2">
+
+  <mat-form-field appearance="outline">
+    <mat-label>Employee ID</mat-label>
+    <input matInput type="number" [(ngModel)]="request.employeeId" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Year</mat-label>
+    <input matInput type="number" [(ngModel)]="request.year" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Month</mat-label>
+    <input matInput type="number" [(ngModel)]="request.month" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Base Salary</mat-label>
+    <input matInput type="number" [(ngModel)]="request.baseSalary" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Bonus</mat-label>
+    <input matInput type="number" [(ngModel)]="request.bonus" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Deductions</mat-label>
+    <input matInput type="number" [(ngModel)]="request.deductions" />
+  </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</mat-dialog-actions>
