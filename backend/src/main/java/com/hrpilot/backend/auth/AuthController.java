@@ -2,12 +2,15 @@ package com.hrpilot.backend.auth;
 
 import com.hrpilot.backend.config.JwtService;
 import com.hrpilot.backend.user.User;
+import com.hrpilot.backend.user.Role;
 import com.hrpilot.backend.user.UserRepository;
 import com.hrpilot.backend.user.dto.CreateUserRequest;
 import com.hrpilot.backend.user.dto.UserResponse;
 import com.hrpilot.backend.user.UserService;
+import com.hrpilot.backend.common.exception.AuthenticationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -26,24 +30,39 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody CreateUserRequest request) {
-        UserResponse response = userService.createUser(request);
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
+        log.info("Register request for email: {}", request.email());
+        CreateUserRequest userRequest = new CreateUserRequest(
+            request.email(),
+            request.password(),
+            Role.EMPLOYEE
+        );
+        UserResponse response = userService.createUser(userRequest);
+        log.info("User registered successfully with id: {}", response.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
+        log.info("Login attempt for email: {}", request.email());
         User user = userRepository.findByEmail(request.email())
-            .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+            .orElseThrow(() -> {
+                log.warn("Login failed - email not found: {}", request.email());
+                return new AuthenticationException("Invalid email or password");
+            });
 
-        if (!passwordEncoder.matches(request.password(), user.getPasswordHash()))
-        {
-            throw new RuntimeException("Invalid email or password");
+        if (!user.isActive()) {
+            log.warn("Login failed - account deactivated: {}", request.email());
+            throw new AuthenticationException("Account is deactivated");
         }
 
-        String token = jwtService.generateToken(user.getEmail(),
-        user.getRole().name());
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            log.warn("Login failed - wrong password for email: {}", request.email());
+            throw new AuthenticationException("Invalid email or password");
+        }
 
+        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
+        log.info("Login successful for email: {}", request.email());
         return ResponseEntity.ok(new AuthResponse(token));
     }
 }
