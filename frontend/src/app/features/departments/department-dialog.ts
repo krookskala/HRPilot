@@ -1,15 +1,14 @@
 import { Component, inject } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
-import { FormsModule } from "@angular/forms";
+import { MatDialogRef, MatDialogModule } from "@angular/material/dialog";
+import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatButtonModule } from "@angular/material/button";
-import { CreateDepartmentRequest } from "../../shared/models/department.model";
 import { MatInputModule } from "@angular/material/input";
 
 @Component({
     selector: 'app-department-dialog',
     standalone: true,
-    imports: [MatDialogModule, FormsModule, MatFormFieldModule,
+    imports: [MatDialogModule, ReactiveFormsModule, MatFormFieldModule,
     MatInputModule, MatButtonModule],
     templateUrl: './department-dialog.html',
     styleUrl: './department-dialog.scss'
@@ -17,14 +16,20 @@ import { MatInputModule } from "@angular/material/input";
 
 export class DepartmentDialog {
     private dialogRef = inject(MatDialogRef<DepartmentDialog>);
-    request: CreateDepartmentRequest = {
-        name: '',
-        managerId: null,
-        parentDepartmentId: null
-    };
+    private fb = inject(FormBuilder);
+
+    form = this.fb.group({
+        name: ['', [Validators.required, Validators.minLength(2)]],
+        managerId: [null as number | null],
+        parentDepartmentId: [null as number | null]
+    });
 
     save() {
-        this.dialogRef.close(this.request);
+        if (this.form.valid) {
+            this.dialogRef.close(this.form.value);
+        } else {
+            this.form.markAllAsTouched();
+        }
     }
 
     cancel() {
