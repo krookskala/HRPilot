@@ -3,14 +3,15 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
 import { CreatePayrollRequest, PayrollRecord } from "../../shared/models/payroll.model";
+import { Page } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class PayrollService {
     private apiUrl = environment.apiUrl;
     constructor(private http: HttpClient) {}
 
-    getAllPayrolls(): Observable<PayrollRecord[]> {
-        return this.http.get<PayrollRecord[]>(`${this.apiUrl}/payrolls`);
+    getAllPayrolls(page = 0, size = 20): Observable<Page<PayrollRecord>> {
+        return this.http.get<Page<PayrollRecord>>(`${this.apiUrl}/payrolls?page=${page}&size=${size}`);
     }
 
     getByEmployee(employeeId: number): Observable<PayrollRecord[]> {
