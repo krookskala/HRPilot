@@ -1,5 +1,6 @@
 package com.hrpilot.backend.payroll;
 
+import com.hrpilot.backend.common.BaseEntity;
 import com.hrpilot.backend.employee.Employee;
 import java.math.BigDecimal;
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PayrollRecord {
+public class PayrollRecord extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
