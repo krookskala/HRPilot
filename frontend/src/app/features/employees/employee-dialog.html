@@ -1,37 +1,45 @@
 <h2 mat-dialog-title>Add Employee</h2>
 
 <mat-dialog-content class="flex flex-col gap-4 pt-2">
+  <form [formGroup]="form" class="flex flex-col gap-4">
 
-  <mat-form-field appearance="outline">
-    <mat-label>User ID</mat-label>
-    <input matInput type="number" [(ngModel)]="request.userId" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>User ID</mat-label>
+      <input matInput type="number" formControlName="userId" />
+      <mat-error>User ID is required and must be greater than 0</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>First Name</mat-label>
-    <input matInput [(ngModel)]="request.firstName" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="firstName" />
+      <mat-error>First name is required (min 2 characters)</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Last Name</mat-label>
-    <input matInput [(ngModel)]="request.lastName" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="lastName" />
+      <mat-error>Last name is required (min 2 characters)</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Position</mat-label>
-    <input matInput [(ngModel)]="request.position" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Position</mat-label>
+      <input matInput formControlName="position" />
+      <mat-error>Position is required</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Salary</mat-label>
-    <input matInput type="number" [(ngModel)]="request.salary" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Salary</mat-label>
+      <input matInput type="number" formControlName="salary" />
+      <mat-error>Salary is required and must be greater than 0</mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Hire Date</mat-label>
-    <input matInput type="date" [(ngModel)]="request.hireDate" />
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Hire Date</mat-label>
+      <input matInput type="date" formControlName="hireDate" />
+      <mat-error>Hire date is required</mat-error>
+    </mat-form-field>
 
+  </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
