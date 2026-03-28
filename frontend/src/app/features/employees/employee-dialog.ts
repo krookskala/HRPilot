@@ -1,15 +1,14 @@
 import { Component, inject } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
-import { FormsModule } from "@angular/forms";
+import { MatDialogRef, MatDialogModule } from "@angular/material/dialog";
+import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatButtonModule } from "@angular/material/button";
-import { CreateEmployeeRequest } from "../../shared/models/employee.model";
 import { MatInputModule } from "@angular/material/input";
 
 @Component({
     selector: 'app-employee-dialog',
     standalone: true,
-    imports: [MatDialogModule, FormsModule, MatFormFieldModule,
+    imports: [MatDialogModule, ReactiveFormsModule, MatFormFieldModule,
     MatInputModule, MatButtonModule],
     templateUrl: './employee-dialog.html',
     styleUrl: './employee-dialog.scss'
@@ -17,19 +16,23 @@ import { MatInputModule } from "@angular/material/input";
 
 export class EmployeeDialog {
     private dialogRef = inject(MatDialogRef<EmployeeDialog>);
-    request: CreateEmployeeRequest = {
-        userId: 0,
-        firstName: '',
-        lastName: '',
-        position: '',
-        salary: 0,
-        hireDate: '',
-        departmentId: 0,
-        photoUrl: ''
-    };
+    private fb = inject(FormBuilder);
+
+    form = this.fb.group({
+        userId: [0, [Validators.required, Validators.min(1)]],
+        firstName: ['', [Validators.required, Validators.minLength(2)]],
+        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        position: ['', [Validators.required]],
+        salary: [0, [Validators.required, Validators.min(1)]],
+        hireDate: ['', [Validators.required]]
+    });
 
     save() {
-        this.dialogRef.close(this.request);
+        if (this.form.valid) {
+            this.dialogRef.close(this.form.value);
+        } else {
+            this.form.markAllAsTouched();
+        }
     }
 
     cancel() {
