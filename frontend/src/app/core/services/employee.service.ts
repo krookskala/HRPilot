@@ -3,14 +3,15 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
 import { CreateEmployeeRequest, Employee } from "../../shared/models/employee.model";
+import { Page } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
     private apiUrl = environment.apiUrl;
     constructor(private http: HttpClient) {}
 
-    getAll(): Observable<Employee[]> {
-        return this.http.get<Employee[]>(`${this.apiUrl}/employees`);
+    getAll(page = 0, size = 20): Observable<Page<Employee>> {
+        return this.http.get<Page<Employee>>(`${this.apiUrl}/employees?page=${page}&size=${size}`);
     }
 
     deleteEmployee(id: number): Observable<void> {
