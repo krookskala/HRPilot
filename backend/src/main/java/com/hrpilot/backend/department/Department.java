@@ -1,5 +1,6 @@
 package com.hrpilot.backend.department;
 
+import com.hrpilot.backend.common.BaseEntity;
 import com.hrpilot.backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Department {
+public class Department extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
