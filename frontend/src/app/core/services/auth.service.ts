@@ -16,4 +16,32 @@ export class AuthService {
     register(request: AuthRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request);
     }
+
+    getToken(): string | null {
+        return localStorage.getItem('token');
+    }
+
+    getRole(): string | null {
+        const token = this.getToken();
+        if (!token) return null;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.role || null;
+        } catch {
+            return null;
+        }
+    }
+
+    hasRole(...roles: string[]): boolean {
+        const userRole = this.getRole();
+        return userRole !== null && roles.includes(userRole);
+    }
+
+    isLoggedIn(): boolean {
+        return this.getToken() !== null;
+    }
+
+    logout(): void {
+        localStorage.removeItem('token');
+    }
 }
