@@ -2,7 +2,7 @@
     <h2 class="text-xl font-bold mb-4">Departments</h2>
 
     <button mat-raised-button color="primary" class="mb-4"
-    (click)="openDialog()">Add Department</button>
+    (click)="openDialog()" *ngIf="isAdmin">Add Department</button>
 
     <table mat-table [dataSource]="departments" class="w-full">
 
@@ -30,7 +30,7 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let dept">
           <button mat-button color="warn"
-  (click)="delete(dept.id)">Delete</button>
+  (click)="delete(dept.id)" *ngIf="isAdmin">Delete</button>
         </td>
       </ng-container>
 
@@ -38,4 +38,13 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
     </table>
+
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
