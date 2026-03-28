@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/leave-requests")
@@ -21,9 +24,8 @@ CreateLeaveRequest request) {
     }
 
     @GetMapping
-    public ResponseEntity<List<LeaveRequestResponse>> getAll() {
-        return
-ResponseEntity.ok(leaveRequestService.getAllLeaveRequests());
+    public ResponseEntity<Page<LeaveRequestResponse>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(leaveRequestService.getAllLeaveRequests(pageable));
     }
 
     @GetMapping("/employee/{employeeId}")
@@ -33,12 +35,14 @@ getByEmployee(@PathVariable Long employeeId) {
     }
 
     @PutMapping("/{id}/approve")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'DEPARTMENT_MANAGER')")
     public ResponseEntity<LeaveRequestResponse> approve(@PathVariable Long id) {
         return
 ResponseEntity.ok(leaveRequestService.approveLeaveRequest(id));
     }
 
     @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'DEPARTMENT_MANAGER')")
     public ResponseEntity<LeaveRequestResponse> reject(@PathVariable Long id) {
         return
 ResponseEntity.ok(leaveRequestService.rejectLeaveRequest(id));
