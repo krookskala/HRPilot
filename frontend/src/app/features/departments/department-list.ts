@@ -6,13 +6,15 @@ import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NgIf } from "@angular/common";
 import { DepartmentDialog } from "./department-dialog";
+import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
     selector: 'app-department-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, NgIf],
+    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, NgIf],
     templateUrl: './department-list.html',
     styleUrl: './department-list.scss'
 })
@@ -29,16 +31,26 @@ export class DepartmentList implements OnInit {
     totalElements = 0;
     pageSize = 10;
     pageIndex = 0;
+    loading = false;
+    error = '';
 
     ngOnInit(): void {
         this.loadDepartments();
     }
 
     loadDepartments() {
+        this.loading = true;
+        this.error = '';
         this.departmentService.getAll(this.pageIndex, this.pageSize).subscribe({
             next: (page) => {
                 this.departments = page.content;
                 this.totalElements = page.totalElements;
+                this.loading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.error = 'Failed to load departments';
+                this.loading = false;
                 this.cdr.detectChanges();
             }
         });
@@ -51,8 +63,16 @@ export class DepartmentList implements OnInit {
     }
 
     delete(id: number) {
-        this.departmentService.deleteDepartment(id).subscribe({
-            next: () => { this.loadDepartments(); }
+        const ref = this.dialog.open(ConfirmDialog, {
+            width: '350px',
+            data: { title: 'Delete Department', message: 'Are you sure you want to delete this department?' }
+        });
+        ref.afterClosed().subscribe(confirmed => {
+            if (confirmed) {
+                this.departmentService.deleteDepartment(id).subscribe({
+                    next: () => { this.loadDepartments(); }
+                });
+            }
         });
     }
 
