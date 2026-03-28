@@ -2,7 +2,7 @@
     <h2 class="text-xl font-bold mb-4">Payrolls</h2>
 
     <button mat-raised-button color="primary" class="mb-4"
-    (click)="openDialog()">Add Payroll</button>
+    (click)="openDialog()" *ngIf="canManage">Add Payroll</button>
 
     <table mat-table [dataSource]="payrolls" class="w-full">
 
@@ -50,7 +50,7 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let payroll">
           <button mat-button color="primary"
-            (click)="markAsPaid(payroll.id)">Mark as Paid</button>
+            (click)="markAsPaid(payroll.id)" *ngIf="canManage">Mark as Paid</button>
         </td>
       </ng-container>
 
@@ -58,4 +58,13 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
     </table>
+
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
