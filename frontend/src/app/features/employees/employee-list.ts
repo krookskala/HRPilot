@@ -6,13 +6,15 @@ import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NgIf } from "@angular/common";
 import { EmployeeDialog } from "./employee-dialog";
+import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
     selector: 'app-employee-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, NgIf],
+    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, NgIf],
     templateUrl: './employee-list.html',
     styleUrl: './employee-list.scss'
 })
@@ -29,16 +31,26 @@ export class EmployeeList implements OnInit {
     totalElements = 0;
     pageSize = 10;
     pageIndex = 0;
+    loading = false;
+    error = '';
 
     ngOnInit(): void {
         this.loadEmployees();
     }
 
     loadEmployees() {
+        this.loading = true;
+        this.error = '';
         this.employeeService.getAll(this.pageIndex, this.pageSize).subscribe({
             next: (page) => {
                 this.employees = page.content;
                 this.totalElements = page.totalElements;
+                this.loading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.error = 'Failed to load employees';
+                this.loading = false;
                 this.cdr.detectChanges();
             }
         });
@@ -51,8 +63,16 @@ export class EmployeeList implements OnInit {
     }
 
     delete(id: number) {
-        this.employeeService.deleteEmployee(id).subscribe({
-            next: () => { this.loadEmployees(); }
+        const ref = this.dialog.open(ConfirmDialog, {
+            width: '350px',
+            data: { title: 'Delete Employee', message: 'Are you sure you want to delete this employee?' }
+        });
+        ref.afterClosed().subscribe(confirmed => {
+            if (confirmed) {
+                this.employeeService.deleteEmployee(id).subscribe({
+                    next: () => { this.loadEmployees(); }
+                });
+            }
         });
     }
 
