@@ -6,13 +6,14 @@ import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NgIf } from "@angular/common";
 import { LeaveDialog } from "./leave-dialog";
 
 @Component({
     selector: 'app-leave-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, NgIf],
+    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, NgIf],
     templateUrl: './leave-list.html',
     styleUrl: './leave-list.scss'
 })
@@ -30,16 +31,26 @@ export class LeaveList implements OnInit {
     totalElements = 0;
     pageSize = 10;
     pageIndex = 0;
+    loading = false;
+    error = '';
 
     ngOnInit(): void {
         this.loadLeaves();
     }
 
     loadLeaves() {
+        this.loading = true;
+        this.error = '';
         this.leaveService.getAll(this.pageIndex, this.pageSize).subscribe({
             next: (page) => {
                 this.leaves = page.content;
                 this.totalElements = page.totalElements;
+                this.loading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.error = 'Failed to load leave requests';
+                this.loading = false;
                 this.cdr.detectChanges();
             }
         });
