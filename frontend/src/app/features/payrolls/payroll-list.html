@@ -1,0 +1,61 @@
+<div class="p-4">
+    <h2 class="text-xl font-bold mb-4">Payrolls</h2>
+
+    <button mat-raised-button color="primary" class="mb-4"
+    (click)="openDialog()">Add Payroll</button>
+
+    <table mat-table [dataSource]="payrolls" class="w-full">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="employeeFullName">
+        <th mat-header-cell *matHeaderCellDef>Full Name</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.employeeFullName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="year">
+        <th mat-header-cell *matHeaderCellDef>Year</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.year }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="month">
+        <th mat-header-cell *matHeaderCellDef>Month</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.month }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="baseSalary">
+        <th mat-header-cell *matHeaderCellDef>Base Salary</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.baseSalary }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="bonus">
+        <th mat-header-cell *matHeaderCellDef>Bonus</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.bonus }}</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="deductions">
+        <th mat-header-cell *matHeaderCellDef>Deductions</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.deductions }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="netSalary">
+        <th mat-header-cell *matHeaderCellDef>Net Salary</th>
+        <td mat-cell *matCellDef="let payroll">{{ payroll.netSalary }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let payroll">
+          <button mat-button color="primary"
+            (click)="markAsPaid(payroll.id)">Mark as Paid</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+  </div>
