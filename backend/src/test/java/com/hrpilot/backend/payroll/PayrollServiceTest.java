@@ -4,6 +4,8 @@ import com.hrpilot.backend.employee.Employee;
 import com.hrpilot.backend.employee.EmployeeRepository;
 import com.hrpilot.backend.payroll.dto.CreatePayrollRequest;
 import com.hrpilot.backend.payroll.dto.PayrollResponse;
+import com.hrpilot.backend.common.exception.ResourceNotFoundException;
+import com.hrpilot.backend.common.exception.BusinessRuleException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,7 +100,7 @@ class PayrollServiceTest {
         when(employeeRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> payrollService.createPayroll(request));
+        assertThrows(ResourceNotFoundException.class, () -> payrollService.createPayroll(request));
     }
 
     @Test
@@ -101,15 +108,17 @@ class PayrollServiceTest {
         // Arrange
         Employee employee = buildEmployee();
         PayrollRecord record = buildPayrollRecord(employee, PayrollStatus.DRAFT);
-        when(payrollRepository.findAll()).thenReturn(List.of(record));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<PayrollRecord> page = new PageImpl<>(List.of(record), pageable, 1);
+        when(payrollRepository.findAll(pageable)).thenReturn(page);
 
         // Act
-        List<PayrollResponse> responses = payrollService.getAllPayrolls();
+        Page<PayrollResponse> responses = payrollService.getAllPayrolls(pageable);
 
         // Assert
-        assertEquals(1, responses.size());
-        assertEquals(2026, responses.get(0).year());
-        assertEquals(3, responses.get(0).month());
+        assertEquals(1, responses.getTotalElements());
+        assertEquals(2026, responses.getContent().get(0).year());
+        assertEquals(3, responses.getContent().get(0).month());
     }
 
     @Test
@@ -150,6 +159,33 @@ class PayrollServiceTest {
         when(payrollRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> payrollService.markAsPaid(99L));
+        assertThrows(ResourceNotFoundException.class, () -> payrollService.markAsPaid(99L));
+    }
+
+    @Test
+    void createPayroll_invalidMonth_throwsException() {
+        // Arrange
+        Employee employee = buildEmployee();
+        CreatePayrollRequest request = new CreatePayrollRequest(
+                1L, 2026, 13,
+                new BigDecimal("5000"),
+                new BigDecimal("500"),
+                new BigDecimal("300")
+        );
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
+
+        // Act & Assert
+        assertThrows(BusinessRuleException.class, () -> payrollService.createPayroll(request));
+    }
+
+    @Test
+    void markAsPaid_alreadyPaid_throwsException() {
+        // Arrange
+        Employee employee = buildEmployee();
+        PayrollRecord record = buildPayrollRecord(employee, PayrollStatus.PAID);
+        when(payrollRepository.findById(1L)).thenReturn(Optional.of(record));
+
+        // Act & Assert
+        assertThrows(BusinessRuleException.class, () -> payrollService.markAsPaid(1L));
     }
 }
