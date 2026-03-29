@@ -1,10 +1,15 @@
 import { HttpInterceptorFn } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Router } from "@angular/router";
-import { catchError, throwError } from "rxjs";
+import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from "rxjs";
+import { AuthService } from "../services/auth.service";
+
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router);
+    const authService = inject(AuthService);
     const token = localStorage.getItem('token');
 
     if (token) {
@@ -15,9 +20,39 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     return next(req).pipe(
         catchError((error) => {
-            if (error.status === 401) {
-                localStorage.removeItem('token');
-                router.navigate(['/login']);
+            if (error.status === 401 && !req.url.includes('/auth/')) {
+                if (!isRefreshing) {
+                    isRefreshing = true;
+                    refreshTokenSubject.next(null);
+
+                    return authService.refreshToken().pipe(
+                        switchMap((response) => {
+                            isRefreshing = false;
+                            refreshTokenSubject.next(response.accessToken);
+                            const clonedReq = req.clone({
+                                setHeaders: { Authorization: `Bearer ${response.accessToken}` }
+                            });
+                            return next(clonedReq);
+                        }),
+                        catchError((refreshError) => {
+                            isRefreshing = false;
+                            authService.logout();
+                            router.navigate(['/login']);
+                            return throwError(() => refreshError);
+                        })
+                    );
+                }
+
+                return refreshTokenSubject.pipe(
+                    filter(token => token !== null),
+                    take(1),
+                    switchMap((newToken) => {
+                        const clonedReq = req.clone({
+                            setHeaders: { Authorization: `Bearer ${newToken}` }
+                        });
+                        return next(clonedReq);
+                    })
+                );
             }
             if (error.status === 403) {
                 alert('You do not have permission to perform this action');
