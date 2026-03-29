@@ -1,76 +1,100 @@
-<div class="p-4">
-    <h2 class="text-xl font-bold mb-4">Payrolls</h2>
-
-    <button mat-raised-button color="primary" class="mb-4"
-    (click)="openDialog()" *ngIf="canManage">Add Payroll</button>
-
-    <div *ngIf="loading" class="flex justify-center p-8">
-      <mat-spinner diameter="40"></mat-spinner>
+<div class="list-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Payrolls</h1>
+            <p class="page-subtitle">Salary records and payment tracking</p>
+        </div>
+        <button mat-flat-button color="primary" (click)="openDialog()" *ngIf="canManage">
+            <mat-icon>add</mat-icon>
+            Add Payroll
+        </button>
     </div>
 
-    <div *ngIf="error" class="text-red-500 p-4">{{ error }}</div>
+    <div *ngIf="loading" class="spinner-center">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
 
-    <table mat-table [dataSource]="payrolls" class="w-full" *ngIf="!loading && !error">
+    <div *ngIf="error" class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        {{ error }}
+    </div>
 
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.id }}</td>
-      </ng-container>
+    <div class="table-panel" *ngIf="!loading && !error">
+        <table mat-table [dataSource]="payrolls">
 
-      <ng-container matColumnDef="employeeFullName">
-        <th mat-header-cell *matHeaderCellDef>Full Name</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.employeeFullName }}</td>
-      </ng-container>
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.id }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="year">
-        <th mat-header-cell *matHeaderCellDef>Year</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.year }}</td>
-      </ng-container>
+            <ng-container matColumnDef="employeeFullName">
+                <th mat-header-cell *matHeaderCellDef>Employee</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.employeeFullName }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="month">
-        <th mat-header-cell *matHeaderCellDef>Month</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.month }}</td>
-      </ng-container>
+            <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef>Year</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.year }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="baseSalary">
-        <th mat-header-cell *matHeaderCellDef>Base Salary</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.baseSalary }}</td>
-      </ng-container>
+            <ng-container matColumnDef="month">
+                <th mat-header-cell *matHeaderCellDef>Month</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.month }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="bonus">
-        <th mat-header-cell *matHeaderCellDef>Bonus</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.bonus }}</td>
-      </ng-container>
+            <ng-container matColumnDef="baseSalary">
+                <th mat-header-cell *matHeaderCellDef>Base Salary</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.baseSalary | number:'1.2-2' }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="deductions">
-        <th mat-header-cell *matHeaderCellDef>Deductions</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.deductions }}</td>
-      </ng-container>
+            <ng-container matColumnDef="bonus">
+                <th mat-header-cell *matHeaderCellDef>Bonus</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.bonus | number:'1.2-2' }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="netSalary">
-        <th mat-header-cell *matHeaderCellDef>Net Salary</th>
-        <td mat-cell *matCellDef="let payroll">{{ payroll.netSalary }}</td>
-      </ng-container>
+            <ng-container matColumnDef="deductions">
+                <th mat-header-cell *matHeaderCellDef>Deductions</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.deductions | number:'1.2-2' }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let payroll">
-          <button mat-button color="primary"
-            (click)="markAsPaid(payroll.id)" *ngIf="canManage">Mark as Paid</button>
-        </td>
-      </ng-container>
+            <ng-container matColumnDef="netSalary">
+                <th mat-header-cell *matHeaderCellDef>Net Salary</th>
+                <td mat-cell *matCellDef="let payroll">{{ payroll.netSalary | number:'1.2-2' }}</td>
+            </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let payroll">
+                    <span class="status-badge"
+                          [class.status-draft]="payroll.status === 'DRAFT'"
+                          [class.status-paid]="payroll.status === 'PAID'">
+                        {{ payroll.status }}
+                    </span>
+                </td>
+            </ng-container>
 
-    </table>
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let payroll">
+                    <button mat-icon-button color="primary" matTooltip="Mark as Paid"
+                            (click)="markAsPaid(payroll.id)"
+                            *ngIf="canManage && payroll.status === 'DRAFT'">
+                        <mat-icon>paid</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
 
-    <mat-paginator *ngIf="!loading && !error"
-      [length]="totalElements"
-      [pageSize]="pageSize"
-      [pageIndex]="pageIndex"
-      [pageSizeOptions]="[5, 10, 20, 50]"
-      (page)="onPageChange($event)"
-      showFirstLastButtons>
-    </mat-paginator>
-  </div>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator
+            [length]="totalElements"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="[5, 10, 20, 50]"
+            (page)="onPageChange($event)"
+            showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>
