@@ -7,13 +7,16 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
 import { NgIf } from "@angular/common";
+import { DecimalPipe } from "@angular/common";
 import { PayrollDialog } from "./payroll-dialog";
 
 @Component({
     selector: 'app-payroll-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, NgIf],
+    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, NgIf, DecimalPipe],
     templateUrl: './payroll-list.html',
     styleUrl: './payroll-list.scss'
 })
@@ -27,7 +30,7 @@ export class PayrollList implements OnInit {
     canManage = this.authService.hasRole('ADMIN', 'HR_MANAGER');
     payrolls: PayrollRecord[] = [];
     displayedColumns = ['id', 'employeeFullName', 'year', 'month',
-'baseSalary', 'bonus', 'deductions', 'netSalary', 'actions'];
+'baseSalary', 'bonus', 'deductions', 'netSalary', 'status', 'actions'];
     totalElements = 0;
     pageSize = 10;
     pageIndex = 0;
