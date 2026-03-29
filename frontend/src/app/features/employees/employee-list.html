@@ -4,11 +4,52 @@
             <h1 class="page-title">Employees</h1>
             <p class="page-subtitle">Manage your organization's workforce</p>
         </div>
-        <button mat-flat-button color="primary" (click)="openDialog()" *ngIf="canManage">
-            <mat-icon>add</mat-icon>
-            Add Employee
-        </button>
+        <div class="header-actions">
+            <button mat-stroked-button (click)="exportCsv()" *ngIf="canManage">
+                <mat-icon>download</mat-icon>
+                Export CSV
+            </button>
+            <button mat-flat-button color="primary" (click)="openDialog()" *ngIf="canManage">
+                <mat-icon>add</mat-icon>
+                Add Employee
+            </button>
+        </div>
     </div>
+
+    <!-- Filter Panel -->
+    <mat-card class="filter-panel">
+        <mat-card-content>
+            <div class="filter-row">
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>Search by name</mat-label>
+                    <input matInput [formControl]="searchControl" placeholder="First or last name...">
+                    <mat-icon matPrefix>search</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>Department</mat-label>
+                    <mat-select [formControl]="departmentControl">
+                        <mat-option [value]="null">All Departments</mat-option>
+                        <mat-option *ngFor="let dept of departments" [value]="dept.id">
+                            {{ dept.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>Position</mat-label>
+                    <input matInput [formControl]="positionControl" placeholder="e.g. Developer">
+                    <mat-icon matPrefix>work</mat-icon>
+                </mat-form-field>
+
+                <button mat-stroked-button class="clear-btn" (click)="clearFilters()"
+                        *ngIf="hasActiveFilters()">
+                    <mat-icon>clear</mat-icon>
+                    Clear
+                </button>
+            </div>
+        </mat-card-content>
+    </mat-card>
 
     <div *ngIf="loading" class="spinner-center">
         <mat-spinner diameter="40"></mat-spinner>
@@ -37,6 +78,11 @@
                 <td mat-cell *matCellDef="let emp">{{ emp.lastName }}</td>
             </ng-container>
 
+            <ng-container matColumnDef="department">
+                <th mat-header-cell *matHeaderCellDef>Department</th>
+                <td mat-cell *matCellDef="let emp">{{ emp.departmentName || '—' }}</td>
+            </ng-container>
+
             <ng-container matColumnDef="position">
                 <th mat-header-cell *matHeaderCellDef>Position</th>
                 <td mat-cell *matCellDef="let emp">{{ emp.position }}</td>
@@ -44,7 +90,7 @@
 
             <ng-container matColumnDef="salary">
                 <th mat-header-cell *matHeaderCellDef>Salary</th>
-                <td mat-cell *matCellDef="let emp">{{ emp.salary | number:'1.2-2' }}</td>
+                <td mat-cell *matCellDef="let emp">{{ emp.salary | number:'1.2-2' }} €</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
