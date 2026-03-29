@@ -12,15 +12,17 @@
         <mat-spinner diameter="40"></mat-spinner>
     </div>
 
+    <div *ngIf="error" class="error-banner">{{ error }}</div>
+
     <!-- Stats Grid - 4 cards -->
-    <div class="stats-grid" *ngIf="!loading">
+    <div class="stats-grid" *ngIf="data">
         <mat-card class="stat-card">
             <mat-card-content>
                 <div class="stat-icon cyan">
                     <mat-icon>people</mat-icon>
                 </div>
                 <div class="stat-info">
-                    <div class="stat-value">{{ employeeCount }}</div>
+                    <div class="stat-value">{{ data.counts.employees }}</div>
                     <div class="stat-label">Total Employees</div>
                 </div>
             </mat-card-content>
@@ -32,7 +34,7 @@
                     <mat-icon>apartment</mat-icon>
                 </div>
                 <div class="stat-info">
-                    <div class="stat-value">{{ departmentCount }}</div>
+                    <div class="stat-value">{{ data.counts.departments }}</div>
                     <div class="stat-label">Total Departments</div>
                 </div>
             </mat-card-content>
@@ -44,7 +46,7 @@
                     <mat-icon>event_available</mat-icon>
                 </div>
                 <div class="stat-info">
-                    <div class="stat-value">{{ leaveCount }}</div>
+                    <div class="stat-value">{{ data.counts.leaveRequests }}</div>
                     <div class="stat-label">Leave Requests</div>
                 </div>
             </mat-card-content>
@@ -56,15 +58,91 @@
                     <mat-icon>payments</mat-icon>
                 </div>
                 <div class="stat-info">
-                    <div class="stat-value">{{ payrollCount }}</div>
+                    <div class="stat-value">{{ data.counts.payrollRecords }}</div>
                     <div class="stat-label">Payroll Records</div>
                 </div>
             </mat-card-content>
         </mat-card>
     </div>
 
+    <!-- Overview Section -->
+    <div class="overview-section" *ngIf="data">
+        <div class="overview-grid">
+            <!-- Leave Overview -->
+            <mat-card class="overview-card">
+                <mat-card-header>
+                    <mat-icon mat-card-avatar class="overview-header-icon green">event_available</mat-icon>
+                    <mat-card-title>Leave Overview</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="overview-stats">
+                        <div class="overview-stat">
+                            <span class="overview-stat-value pending">{{ data.leaveOverview.pending }}</span>
+                            <span class="overview-stat-label">Pending</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="overview-stat-value approved">{{ data.leaveOverview.approved }}</span>
+                            <span class="overview-stat-label">Approved</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="overview-stat-value rejected">{{ data.leaveOverview.rejected }}</span>
+                            <span class="overview-stat-label">Rejected</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Payroll Overview -->
+            <mat-card class="overview-card">
+                <mat-card-header>
+                    <mat-icon mat-card-avatar class="overview-header-icon purple">payments</mat-icon>
+                    <mat-card-title>Payroll Overview</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="overview-stats">
+                        <div class="overview-stat">
+                            <span class="overview-stat-value draft">{{ data.payrollOverview.draft }}</span>
+                            <span class="overview-stat-label">Draft</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="overview-stat-value paid">{{ data.payrollOverview.paid }}</span>
+                            <span class="overview-stat-label">Paid</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="overview-stat-value total">{{ data.payrollOverview.totalNetSalary | number:'1.2-2' }} €</span>
+                            <span class="overview-stat-label">Total Paid</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-section" *ngIf="data && data.recentActivities.length > 0">
+        <mat-card class="activity-card">
+            <mat-card-header>
+                <mat-icon mat-card-avatar class="overview-header-icon cyan">history</mat-icon>
+                <mat-card-title>Recent Activity</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="activity-list">
+                    <div class="activity-item" *ngFor="let activity of data.recentActivities">
+                        <mat-icon class="activity-type-icon" [class]="activity.type === 'EMPLOYEE' ? 'cyan' : 'green'">
+                            {{ activity.type === 'EMPLOYEE' ? 'person' : 'event' }}
+                        </mat-icon>
+                        <div class="activity-text">
+                            <span class="activity-description">{{ activity.description }}</span>
+                            <span class="activity-time">{{ activity.timestamp | date:'short' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
     <!-- Quick Actions -->
-    <div class="quick-section" *ngIf="!loading">
+    <div class="quick-section" *ngIf="data">
         <h2 class="section-title">Quick Actions</h2>
         <div class="quick-grid">
             <a routerLink="/employees" class="quick-card">
