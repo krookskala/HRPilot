@@ -11,5 +11,7 @@ public record EmployeeResponse(
     String position,
     BigDecimal salary,
     LocalDate hireDate,
-    String photoUrl
+    String photoUrl,
+    Long departmentId,
+    String departmentName
 ) {}
