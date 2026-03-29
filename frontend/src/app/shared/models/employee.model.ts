@@ -7,6 +7,8 @@ export interface Employee {
     salary: number;
     hireDate: string;
     photoUrl: string;
+    departmentId: number;
+    departmentName: string;
 }
 
 export interface CreateEmployeeRequest {
