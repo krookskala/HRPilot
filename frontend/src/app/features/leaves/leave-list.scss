@@ -2,6 +2,96 @@
   max-width: 1200px;
 }
 
+// Balance Cards
+.balance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.balance-card {
+  .mat-mdc-card-content {
+    padding: 20px !important;
+  }
+}
+
+.balance-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.balance-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+
+  &.annual { color: #00acc1; }
+  &.sick { color: #ef4444; }
+  &.unpaid { color: #f59e0b; }
+}
+
+.balance-type {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--hr-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.balance-numbers {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.balance-remaining {
+  display: flex;
+  flex-direction: column;
+}
+
+.balance-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.balance-label {
+  font-size: 0.75rem;
+  color: var(--hr-text-secondary);
+  margin-top: 2px;
+}
+
+.balance-detail {
+  font-size: 0.8125rem;
+  color: var(--hr-text-secondary);
+}
+
+.balance-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.balance-bar-fill {
+  height: 100%;
+  background: #00acc1;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+
+  &.bar-warning { background: #f59e0b; }
+  &.bar-danger { background: #ef4444; }
+}
+
 .error-banner {
   display: flex;
   align-items: center;
