@@ -43,8 +43,7 @@ export class Login {
             email: this.form.value.email!,
             password: this.form.value.password!
         }).subscribe({
-            next: (response) => {
-                localStorage.setItem('token', response.token);
+            next: () => {
                 this.router.navigate(['/dashboard']);
             },
             error: (err) => {
