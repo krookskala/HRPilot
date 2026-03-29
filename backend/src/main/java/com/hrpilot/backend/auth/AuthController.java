@@ -1,6 +1,9 @@
 package com.hrpilot.backend.auth;
 
-import com.hrpilot.backend.config.JwtService;
+import com.hrpilot.backend.auth.dto.AuthRequest;
+import com.hrpilot.backend.auth.dto.AuthResponse;
+import com.hrpilot.backend.auth.dto.RegisterRequest;
+import com.hrpilot.backend.security.JwtService;
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.Role;
 import com.hrpilot.backend.user.UserRepository;
