@@ -5,13 +5,14 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
+import { MatIconModule } from "@angular/material/icon";
 import { LeaveType } from "../../shared/models/leave.model";
 
 @Component({
     selector: 'app-leave-dialog',
     standalone: true,
     imports: [MatDialogModule, ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatSelectModule],
+    MatInputModule, MatButtonModule, MatSelectModule, MatIconModule],
     templateUrl: './leave-dialog.html',
     styleUrl: './leave-dialog.scss'
 })
