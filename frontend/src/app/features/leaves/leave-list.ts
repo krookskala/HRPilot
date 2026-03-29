@@ -7,13 +7,15 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
 import { NgIf } from "@angular/common";
 import { LeaveDialog } from "./leave-dialog";
 
 @Component({
     selector: 'app-leave-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, NgIf],
+    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, NgIf],
     templateUrl: './leave-list.html',
     styleUrl: './leave-list.scss'
 })
