@@ -34,6 +34,9 @@ class LeaveRequestServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private LeaveBalanceService leaveBalanceService;
+
     @InjectMocks
     private LeaveRequestService leaveRequestService;
 
