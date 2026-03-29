@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@use "tailwindcss";
 // Include theming for Angular Material with `mat.theme()`.
 // This Sass mixin will define CSS variables that are used for styling Angular Material
 // components according to the Material 3 design spec.
@@ -38,4 +37,160 @@ body {
   margin: 0;
   height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */
+/* ===== Design Tokens ===== */
+:root {
+  --hr-radius: 12px;
+  --hr-radius-sm: 8px;
+  --hr-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --hr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --hr-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --hr-transition: 0.2s ease;
+  --hr-bg-page: #f5f7fa;
+  --hr-bg-card: #ffffff;
+  --hr-border: rgba(0, 0, 0, 0.08);
+  --hr-primary: #00acc1;
+  --hr-primary-light: rgba(0, 188, 212, 0.08);
+  --hr-primary-dark: #00838f;
+  --hr-text-secondary: #64748b;
+}
+
+/* ===== Mat Card ===== */
+mat-card, .mat-mdc-card {
+  background-color: #ffffff !important;
+  border-radius: var(--hr-radius) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: box-shadow var(--hr-transition), transform var(--hr-transition);
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+/* ===== Mat Table ===== */
+.mat-mdc-header-row {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--hr-text-secondary) !important;
+  padding: 14px 16px !important;
+}
+
+.mat-mdc-row {
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #f1f5f9 !important;
+
+  &:hover {
+    background-color: #f8fafc;
+  }
+}
+
+.mat-mdc-cell {
+  font-size: 0.875rem;
+  padding: 12px 16px !important;
+  color: #334155;
+}
+
+/* ===== Mat Buttons ===== */
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button {
+  border-radius: var(--hr-radius-sm) !important;
+}
+
+/* ===== Status Badges ===== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-approved, .status-paid {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-draft {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+/* ===== Page Header ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--hr-text-secondary);
+  margin-top: 4px;
+}
+
+/* ===== Table Panel ===== */
+.table-panel {
+  background: #ffffff;
+  border-radius: var(--hr-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.table-panel table {
+  width: 100%;
+}
+
+.table-panel .mat-mdc-paginator {
+  border-top: 1px solid #e2e8f0;
+  background: #fafbfc;
+}
+
+/* ===== Mat Paginator ===== */
+.mat-mdc-paginator {
+  font-size: 0.8125rem;
+}
+
+/* ===== Spinner Center ===== */
+.spinner-center {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+/* ===== Dialog Global ===== */
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: var(--hr-radius) !important;
+}
+
+/* ===== Empty state helper ===== */
+.stat-info {
+  min-width: 0;
+}
