@@ -1,9 +1,9 @@
-<div class="flex flex-col h-screen">
+<div class="app-container">
     <app-header></app-header>
-    <div class="flex flex-1 overflow-hidden">
-      <app-sidebar class="w-56 border-r"></app-sidebar>
-      <main class="flex-1 overflow-auto p-6">
-        <router-outlet></router-outlet>
-      </main>
+    <div class="app-body">
+        <app-sidebar class="app-sidebar"></app-sidebar>
+        <main class="app-main">
+            <router-outlet></router-outlet>
+        </main>
     </div>
 </div>
