@@ -6,6 +6,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatIconModule } from "@angular/material/icon";
 import { NgIf } from "@angular/common";
 import { Router } from "@angular/router";
 
@@ -13,7 +14,7 @@ import { Router } from "@angular/router";
     selector: 'app-login',
     standalone: true,
     imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatProgressSpinnerModule, NgIf],
+    MatInputModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, NgIf],
     templateUrl: './login.html',
     styleUrl: './login.scss'
 })
