@@ -1,25 +1,100 @@
-<div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
-
-    <div *ngIf="loading" class="flex justify-center p-8">
-      <mat-spinner diameter="40"></mat-spinner>
+<div class="dashboard">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-content">
+            <h1 class="welcome-title">Welcome to HRPilot</h1>
+            <p class="welcome-text">Manage your organization's HR operations from one central dashboard.</p>
+        </div>
+        <mat-icon class="welcome-icon">analytics</mat-icon>
     </div>
 
-    <div class="flex gap-6" *ngIf="!loading">
-
-      <mat-card class="flex-1 text-center p-4">
-        <mat-card-content>
-          <div class="text-5xl font-bold text-cyan-600">{{ employeeCount }}</div>
-          <div class="text-gray-500 mt-2">Total Employees</div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="flex-1 text-center p-4">
-        <mat-card-content>
-          <div class="text-5xl font-bold text-cyan-600">{{ departmentCount }}</div>
-          <div class="text-gray-500 mt-2">Total Departments</div>
-        </mat-card-content>
-      </mat-card>
-
+    <div *ngIf="loading" class="spinner-center">
+        <mat-spinner diameter="40"></mat-spinner>
     </div>
-  </div>
+
+    <!-- Stats Grid - 4 cards -->
+    <div class="stats-grid" *ngIf="!loading">
+        <mat-card class="stat-card">
+            <mat-card-content>
+                <div class="stat-icon cyan">
+                    <mat-icon>people</mat-icon>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ employeeCount }}</div>
+                    <div class="stat-label">Total Employees</div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+            <mat-card-content>
+                <div class="stat-icon orange">
+                    <mat-icon>apartment</mat-icon>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ departmentCount }}</div>
+                    <div class="stat-label">Total Departments</div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+            <mat-card-content>
+                <div class="stat-icon green">
+                    <mat-icon>event_available</mat-icon>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ leaveCount }}</div>
+                    <div class="stat-label">Leave Requests</div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+            <mat-card-content>
+                <div class="stat-icon purple">
+                    <mat-icon>payments</mat-icon>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ payrollCount }}</div>
+                    <div class="stat-label">Payroll Records</div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-section" *ngIf="!loading">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="quick-grid">
+            <a routerLink="/employees" class="quick-card">
+                <div class="quick-icon cyan-bg">
+                    <mat-icon>person_add</mat-icon>
+                </div>
+                <div class="quick-label">Manage Employees</div>
+                <mat-icon class="quick-arrow">arrow_forward</mat-icon>
+            </a>
+            <a routerLink="/departments" class="quick-card">
+                <div class="quick-icon orange-bg">
+                    <mat-icon>domain_add</mat-icon>
+                </div>
+                <div class="quick-label">Manage Departments</div>
+                <mat-icon class="quick-arrow">arrow_forward</mat-icon>
+            </a>
+            <a routerLink="/leaves" class="quick-card">
+                <div class="quick-icon green-bg">
+                    <mat-icon>pending_actions</mat-icon>
+                </div>
+                <div class="quick-label">Review Leave Requests</div>
+                <mat-icon class="quick-arrow">arrow_forward</mat-icon>
+            </a>
+            <a routerLink="/payrolls" class="quick-card">
+                <div class="quick-icon purple-bg">
+                    <mat-icon>receipt_long</mat-icon>
+                </div>
+                <div class="quick-label">Process Payrolls</div>
+                <mat-icon class="quick-arrow">arrow_forward</mat-icon>
+            </a>
+        </div>
+    </div>
+</div>
