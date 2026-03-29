@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
 import { CreateEmployeeRequest, Employee } from "../../shared/models/employee.model";
@@ -14,11 +14,36 @@ export class EmployeeService {
         return this.http.get<Page<Employee>>(`${this.apiUrl}/employees?page=${page}&size=${size}`);
     }
 
+    search(filters: { search?: string; departmentId?: number; position?: string },
+           page = 0, size = 20): Observable<Page<Employee>> {
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString());
+
+        if (filters.search) params = params.set('search', filters.search);
+        if (filters.departmentId) params = params.set('departmentId', filters.departmentId.toString());
+        if (filters.position) params = params.set('position', filters.position);
+
+        return this.http.get<Page<Employee>>(`${this.apiUrl}/employees`, { params });
+    }
+
     deleteEmployee(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/employees/${id}`);
     }
 
     createEmployee(request: CreateEmployeeRequest): Observable<Employee> {
         return this.http.post<Employee>(`${this.apiUrl}/employees`, request);
+    }
+
+    exportCsv(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/employees/export/csv`, {
+            responseType: 'blob'
+        });
+    }
+
+    uploadPhoto(employeeId: number, file: File): Observable<Employee> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<Employee>(`${this.apiUrl}/employees/${employeeId}/photo`, formData);
     }
 }
