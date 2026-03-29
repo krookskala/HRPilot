@@ -10,6 +10,36 @@
         </button>
     </div>
 
+    <!-- Leave Balance Cards -->
+    <div class="balance-grid" *ngIf="balances.length > 0">
+        <mat-card class="balance-card" *ngFor="let balance of balances">
+            <mat-card-content>
+                <div class="balance-header">
+                    <mat-icon [class]="'balance-icon ' + balance.leaveType.toLowerCase()">
+                        {{ balance.leaveType === 'ANNUAL' ? 'beach_access' : balance.leaveType === 'SICK' ? 'local_hospital' : 'money_off' }}
+                    </mat-icon>
+                    <span class="balance-type">{{ balance.leaveType }}</span>
+                </div>
+                <div class="balance-numbers">
+                    <div class="balance-remaining">
+                        <span class="balance-value">{{ balance.remainingDays }}</span>
+                        <span class="balance-label">Remaining</span>
+                    </div>
+                    <div class="balance-detail">
+                        <span>{{ balance.usedDays }} / {{ balance.totalDays }} used</span>
+                    </div>
+                </div>
+                <div class="balance-bar">
+                    <div class="balance-bar-fill"
+                         [style.width.%]="(balance.usedDays / balance.totalDays) * 100"
+                         [class.bar-warning]="balance.remainingDays <= 5"
+                         [class.bar-danger]="balance.remainingDays <= 2">
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
     <div *ngIf="loading" class="spinner-center">
         <mat-spinner diameter="40"></mat-spinner>
     </div>
