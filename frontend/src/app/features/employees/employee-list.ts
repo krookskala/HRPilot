@@ -7,14 +7,17 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
 import { NgIf } from "@angular/common";
+import { DecimalPipe } from "@angular/common";
 import { EmployeeDialog } from "./employee-dialog";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
     selector: 'app-employee-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, NgIf],
+    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, NgIf, DecimalPipe],
     templateUrl: './employee-list.html',
     styleUrl: './employee-list.scss'
 })
