@@ -33,7 +33,6 @@ public class LeaveBalanceService {
 
         List<LeaveBalance> balances = leaveBalanceRepository.findByEmployeeIdAndYear(employeeId, year);
 
-        // Auto-initialize balances if not set for this year
         if (balances.isEmpty()) {
             balances = initializeBalances(employeeId, year);
         }
