@@ -1,20 +1,32 @@
-<mat-nav-list>
-    <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
-      Dashboard
-    </a>
-    <a mat-list-item routerLink="/employees" routerLinkActive="active">
-      Employees
-    </a>
-    <a mat-list-item routerLink="/departments" routerLinkActive="active">
-      Departments
-    </a>
-    <a mat-list-item routerLink="/leaves" routerLinkActive="active">
-      Leave Requests
-    </a>
-    <a mat-list-item routerLink="/payrolls" routerLinkActive="active" *ngIf="isAdminOrHR">
-      Payrolls
-    </a>
-    <a mat-list-item (click)="logout()" style="cursor: pointer; margin-top: auto;">
-      Logout
-    </a>
-</mat-nav-list>
+<nav class="sidebar-nav">
+    <div class="nav-items">
+        <a mat-list-item routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <mat-icon>dashboard</mat-icon>
+            <span>Dashboard</span>
+        </a>
+        <a mat-list-item routerLink="/employees" routerLinkActive="active" class="nav-item">
+            <mat-icon>people</mat-icon>
+            <span>Employees</span>
+        </a>
+        <a mat-list-item routerLink="/departments" routerLinkActive="active" class="nav-item">
+            <mat-icon>apartment</mat-icon>
+            <span>Departments</span>
+        </a>
+        <a mat-list-item routerLink="/leaves" routerLinkActive="active" class="nav-item">
+            <mat-icon>event_available</mat-icon>
+            <span>Leave Requests</span>
+        </a>
+        <a mat-list-item routerLink="/payrolls" routerLinkActive="active" class="nav-item" *ngIf="isAdminOrHR">
+            <mat-icon>payments</mat-icon>
+            <span>Payrolls</span>
+        </a>
+    </div>
+
+    <div class="nav-bottom">
+        <mat-divider></mat-divider>
+        <a mat-list-item (click)="logout()" class="nav-item logout-item">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+        </a>
+    </div>
+</nav>
