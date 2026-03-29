@@ -1,11 +1,13 @@
 package com.hrpilot.backend.leave;
 
 import com.hrpilot.backend.leave.dto.CreateLeaveRequest;
+import com.hrpilot.backend.leave.dto.LeaveBalanceResponse;
 import com.hrpilot.backend.leave.dto.LeaveRequestResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RequiredArgsConstructor
 public class LeaveRequestController {
     private final LeaveRequestService leaveRequestService;
+    private final LeaveBalanceService leaveBalanceService;
 
     @PostMapping
     public ResponseEntity<LeaveRequestResponse> create(@Valid @RequestBody
@@ -32,6 +35,14 @@ CreateLeaveRequest request) {
     public ResponseEntity<List<LeaveRequestResponse>>
 getByEmployee(@PathVariable Long employeeId) {
         return ResponseEntity.ok(leaveRequestService.getLeaveRequestsByEmployee(employeeId));
+    }
+
+    @GetMapping("/balances/{employeeId}")
+    public ResponseEntity<List<LeaveBalanceResponse>> getBalances(
+            @PathVariable Long employeeId,
+            @RequestParam(required = false) Integer year) {
+        int targetYear = year != null ? year : LocalDate.now().getYear();
+        return ResponseEntity.ok(leaveBalanceService.getBalances(employeeId, targetYear));
     }
 
     @PutMapping("/{id}/approve")
