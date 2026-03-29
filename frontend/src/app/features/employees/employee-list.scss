@@ -2,6 +2,38 @@
   max-width: 1200px;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+// Filter Panel
+.filter-panel {
+  margin-bottom: 20px;
+
+  .mat-mdc-card-content {
+    padding: 16px 20px 0 !important;
+  }
+}
+
+.filter-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  flex: 1;
+  min-width: 180px;
+}
+
+.clear-btn {
+  margin-top: 4px;
+  height: 40px;
+}
+
 .error-banner {
   display: flex;
   align-items: center;
