@@ -3,6 +3,8 @@ package com.hrpilot.backend.auth;
 import com.hrpilot.backend.auth.dto.AuthRequest;
 import com.hrpilot.backend.auth.dto.AuthResponse;
 import com.hrpilot.backend.auth.dto.RegisterRequest;
+import com.hrpilot.backend.auth.dto.TokenRefreshRequest;
+import com.hrpilot.backend.auth.dto.TokenRefreshResponse;
 import com.hrpilot.backend.security.JwtService;
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.Role;
@@ -31,6 +33,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -64,8 +67,22 @@ public class AuthController {
             throw new AuthenticationException("Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
+        String accessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
         log.info("Login successful for email: {}", request.email());
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken.getToken()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenRefreshResponse> refreshToken(
+            @Valid @RequestBody TokenRefreshRequest request) {
+        RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(request.refreshToken());
+        User user = refreshToken.getUser();
+
+        String newAccessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
+        log.info("Token refreshed for email: {}", user.getEmail());
+
+        return ResponseEntity.ok(new TokenRefreshResponse(newAccessToken, refreshToken.getToken()));
     }
 }
