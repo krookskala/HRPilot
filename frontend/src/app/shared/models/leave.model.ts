@@ -21,6 +21,16 @@ export interface LeaveRequest {
     reason: string;
 }
 
+export interface LeaveBalance {
+    id: number;
+    employeeId: number;
+    leaveType: LeaveType;
+    year: number;
+    totalDays: number;
+    usedDays: number;
+    remainingDays: number;
+}
+
 export interface CreateLeaveRequest {
     employeeId: number;
     type: LeaveType;
