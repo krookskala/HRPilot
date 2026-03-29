@@ -50,6 +50,9 @@ class LeaveRequestControllerTest {
     @MockitoBean
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @MockitoBean
+    private LeaveBalanceService leaveBalanceService;
+
     @BeforeEach
     void setUp() throws Exception {
         doAnswer(invocation -> {
