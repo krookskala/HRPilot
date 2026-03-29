@@ -1,56 +1,68 @@
-<div class="p-4">
-    <h2 class="text-xl font-bold mb-4">Departments</h2>
-
-    <button mat-raised-button color="primary" class="mb-4"
-    (click)="openDialog()" *ngIf="isAdmin">Add Department</button>
-
-    <div *ngIf="loading" class="flex justify-center p-8">
-      <mat-spinner diameter="40"></mat-spinner>
+<div class="list-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Departments</h1>
+            <p class="page-subtitle">Organizational structure and department management</p>
+        </div>
+        <button mat-flat-button color="primary" (click)="openDialog()" *ngIf="isAdmin">
+            <mat-icon>add</mat-icon>
+            Add Department
+        </button>
     </div>
 
-    <div *ngIf="error" class="text-red-500 p-4">{{ error }}</div>
+    <div *ngIf="loading" class="spinner-center">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
 
-    <table mat-table [dataSource]="departments" class="w-full" *ngIf="!loading && !error">
+    <div *ngIf="error" class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        {{ error }}
+    </div>
 
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let dept">{{ dept.id }}</td>
-      </ng-container>
+    <div class="table-panel" *ngIf="!loading && !error">
+        <table mat-table [dataSource]="departments">
 
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let dept">{{ dept.name }}</td>
-      </ng-container>
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let dept">{{ dept.id }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="managerEmail">
-        <th mat-header-cell *matHeaderCellDef>Manager</th>
-        <td mat-cell *matCellDef="let dept">{{ dept.managerEmail }}</td>
-      </ng-container>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let dept">{{ dept.name }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="parentDepartmentName">
-        <th mat-header-cell *matHeaderCellDef>Parent Department</th>
-        <td mat-cell *matCellDef="let dept">{{ dept.parentDepartmentName }}</td>
-      </ng-container>
+            <ng-container matColumnDef="managerEmail">
+                <th mat-header-cell *matHeaderCellDef>Manager</th>
+                <td mat-cell *matCellDef="let dept">{{ dept.managerEmail }}</td>
+            </ng-container>
 
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let dept">
-          <button mat-button color="warn"
-  (click)="delete(dept.id)" *ngIf="isAdmin">Delete</button>
-        </td>
-      </ng-container>
+            <ng-container matColumnDef="parentDepartmentName">
+                <th mat-header-cell *matHeaderCellDef>Parent Department</th>
+                <td mat-cell *matCellDef="let dept">{{ dept.parentDepartmentName || '—' }}</td>
+            </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let dept">
+                    <button mat-icon-button color="warn" matTooltip="Delete"
+                            (click)="delete(dept.id)" *ngIf="isAdmin">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
 
-    </table>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
 
-    <mat-paginator *ngIf="!loading && !error"
-      [length]="totalElements"
-      [pageSize]="pageSize"
-      [pageIndex]="pageIndex"
-      [pageSizeOptions]="[5, 10, 20, 50]"
-      (page)="onPageChange($event)"
-      showFirstLastButtons>
-    </mat-paginator>
-  </div>
+        <mat-paginator
+            [length]="totalElements"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="[5, 10, 20, 50]"
+            (page)="onPageChange($event)"
+            showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>
