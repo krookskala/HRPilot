@@ -9,9 +9,11 @@ import com.hrpilot.backend.common.exception.BusinessRuleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -19,12 +21,12 @@ import org.springframework.data.domain.Pageable;
 public class LeaveRequestService {
     private final LeaveRequestRepository leaveRequestRepository;
     private final EmployeeRepository employeeRepository;
+    private final LeaveBalanceService leaveBalanceService;
 
     public LeaveRequestResponse createLeaveRequest(CreateLeaveRequest request) {
         log.info("Creating leave request for employee id: {}", request.employeeId());
-        Employee employee =
-    employeeRepository.findById(request.employeeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", request.employeeId()));
+        Employee employee = employeeRepository.findById(request.employeeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", request.employeeId()));
 
         if (request.startDate().isAfter(request.endDate())) {
             throw new BusinessRuleException("Start date cannot be after end date");
@@ -48,14 +50,13 @@ public class LeaveRequestService {
                 .map(this::toResponse);
     }
 
-    public List<LeaveRequestResponse> getLeaveRequestsByEmployee(Long
-    employeeId) {
-        return
-    leaveRequestRepository.findByEmployeeId(employeeId).stream()
-                    .map(this::toResponse)
-                    .toList();
+    public List<LeaveRequestResponse> getLeaveRequestsByEmployee(Long employeeId) {
+        return leaveRequestRepository.findByEmployeeId(employeeId).stream()
+                .map(this::toResponse)
+                .toList();
     }
 
+    @Transactional
     public LeaveRequestResponse approveLeaveRequest(Long id) {
         log.info("Approving leave request with id: {}", id);
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
@@ -63,10 +64,19 @@ public class LeaveRequestService {
         if (leaveRequest.getStatus() != LeaveStatus.PENDING) {
             throw new BusinessRuleException("Only PENDING leave requests can be approved");
         }
+
+        leaveBalanceService.deductBalance(
+            leaveRequest.getEmployee().getId(),
+            leaveRequest.getType(),
+            leaveRequest.getStartDate(),
+            leaveRequest.getEndDate()
+        );
+
         leaveRequest.setStatus(LeaveStatus.APPROVED);
         return toResponse(leaveRequestRepository.save(leaveRequest));
     }
 
+    @Transactional
     public LeaveRequestResponse rejectLeaveRequest(Long id) {
         log.info("Rejecting leave request with id: {}", id);
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
