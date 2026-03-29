@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+
+mat-toolbar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--hr-border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  height: 64px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  mat-icon {
+    color: var(--hr-primary);
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.02em;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-icon {
+  color: var(--hr-text-secondary);
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.user-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--hr-border);
+}
+
+button[mat-icon-button] {
+  color: var(--hr-text-secondary);
+  transition: color var(--hr-transition), background-color var(--hr-transition);
+
+  &:hover {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.08);
+  }
+}
