@@ -1,13 +1,15 @@
 import { Component, inject } from "@angular/core";
 import { RouterLink, RouterLinkActive, Router } from "@angular/router";
 import { MatListModule } from "@angular/material/list";
+import { MatIconModule } from "@angular/material/icon";
+import { MatDividerModule } from "@angular/material/divider";
 import { AuthService } from "../../core/services/auth.service";
 import { NgIf } from "@angular/common";
 
 @Component({
     selector: 'app-sidebar',
     standalone: true,
-    imports: [RouterLink, RouterLinkActive, MatListModule, NgIf],
+    imports: [RouterLink, RouterLinkActive, MatListModule, MatIconModule, MatDividerModule, NgIf],
     templateUrl: './sidebar.html',
     styleUrl: './sidebar.scss'
 })
