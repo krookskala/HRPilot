@@ -12,7 +12,9 @@ spring:
         default-page-size: 20
         max-page-size: 100
   flyway:
-    enabled: false
+    enabled: true
+    baseline-on-migrate: true
 
 jwt:
-  expiration: 86400000
+  expiration: 3600000
+  refresh-expiration: 604800000
