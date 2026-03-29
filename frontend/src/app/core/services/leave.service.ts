@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
-import { CreateLeaveRequest, LeaveRequest } from "../../shared/models/leave.model";
+import { CreateLeaveRequest, LeaveBalance, LeaveRequest } from "../../shared/models/leave.model";
 import { Page } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
@@ -28,5 +28,10 @@ export class LeaveService {
 
     reject(id: number): Observable<LeaveRequest> {
         return this.http.put<LeaveRequest>(`${this.apiUrl}/leave-requests/${id}/reject`, {});
+    }
+
+    getBalances(employeeId: number, year?: number): Observable<LeaveBalance[]> {
+        const yearParam = year ? `?year=${year}` : '';
+        return this.http.get<LeaveBalance[]>(`${this.apiUrl}/leave-requests/balances/${employeeId}${yearParam}`);
     }
 }
