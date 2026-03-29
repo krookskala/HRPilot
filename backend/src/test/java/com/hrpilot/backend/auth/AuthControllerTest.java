@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,6 +56,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @MockitoBean
+    private RefreshTokenService refreshTokenService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -98,15 +102,19 @@ class AuthControllerTest {
                 .id(1L).email("test@test.com")
                 .passwordHash("hashed").role(Role.EMPLOYEE)
                 .isActive(true).build();
+        RefreshToken refreshToken = RefreshToken.builder()
+                .id(1L).token("refresh-token-123").user(user).build();
         when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password123", "hashed")).thenReturn(true);
         when(jwtService.generateToken("test@test.com", "EMPLOYEE")).thenReturn("jwt-token-123");
+        when(refreshTokenService.createRefreshToken(user)).thenReturn(refreshToken);
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token-123"));
+                .andExpect(jsonPath("$.token").value("jwt-token-123"))
+                .andExpect(jsonPath("$.refreshToken").value("refresh-token-123"));
     }
 
     @Test
