@@ -1,5 +1,7 @@
 package com.hrpilot.backend.employee;
 
+import com.hrpilot.backend.common.storage.FileStorageService;
+import com.hrpilot.backend.department.DepartmentRepository;
 import com.hrpilot.backend.employee.dto.CreateEmployeeRequest;
 import com.hrpilot.backend.employee.dto.EmployeeResponse;
 import com.hrpilot.backend.user.User;
@@ -34,6 +36,15 @@ class EmployeeServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private DepartmentRepository departmentRepository;
+
+    @Mock
+    private EmploymentHistoryRepository historyRepository;
+
+    @Mock
+    private FileStorageService fileStorageService;
 
     @InjectMocks
     private EmployeeService employeeService;
