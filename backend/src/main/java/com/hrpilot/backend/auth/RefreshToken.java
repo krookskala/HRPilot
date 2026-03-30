@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "refresh_tokens")
@@ -28,4 +29,15 @@ public class RefreshToken {
 
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
+
+    @Column(name = "issued_at", nullable = false)
+    private LocalDateTime issuedAt;
+
+    @Column(name = "revoked_at")
+    private LocalDateTime revokedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.issuedAt = LocalDateTime.now();
+    }
 }
