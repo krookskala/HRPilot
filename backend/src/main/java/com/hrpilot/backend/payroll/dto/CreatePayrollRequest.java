@@ -20,5 +20,7 @@ public record CreatePayrollRequest(
     BigDecimal bonus,
 
     @NotNull
-    BigDecimal deductions
+    BigDecimal deductions,
+
+    String taxClass
 ) {}
