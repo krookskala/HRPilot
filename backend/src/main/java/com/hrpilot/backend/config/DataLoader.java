@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Component
 @Profile("dev")
@@ -123,6 +125,7 @@ public class DataLoader implements CommandLineRunner {
                 .role(role)
                 .isActive(true)
                 .preferredLang("en")
+                .activatedAt(LocalDateTime.now())
                 .build();
         return userRepository.save(user);
     }
@@ -159,6 +162,7 @@ public class DataLoader implements CommandLineRunner {
                 .type(type)
                 .startDate(start)
                 .endDate(end)
+                .workingDays((int) ChronoUnit.DAYS.between(start, end) + 1)
                 .status(status)
                 .reason(reason)
                 .build();
@@ -176,10 +180,17 @@ public class DataLoader implements CommandLineRunner {
                 .year(year)
                 .month(month)
                 .baseSalary(monthly)
+                .grossSalary(monthly.add(bonus))
                 .bonus(bonus)
                 .deductions(deductions)
+                .employeeSocialContributions(deductions)
+                .employerSocialContributions(BigDecimal.ZERO)
+                .incomeTax(BigDecimal.ZERO)
+                .taxClass("I")
                 .netSalary(net)
                 .status(status)
+                .publishedAt(status != PayrollStatus.DRAFT ? java.time.LocalDateTime.now() : null)
+                .paidAt(status == PayrollStatus.PAID ? java.time.LocalDateTime.now() : null)
                 .build();
         payrollRepository.save(payroll);
     }
