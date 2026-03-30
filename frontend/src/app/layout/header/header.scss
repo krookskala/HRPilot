@@ -70,3 +70,8 @@ button[mat-icon-button] {
     background-color: rgba(239, 68, 68, 0.08);
   }
 }
+
+.active-lang {
+  font-weight: 700;
+  color: var(--hr-primary) !important;
+}
