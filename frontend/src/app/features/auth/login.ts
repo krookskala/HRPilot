@@ -8,13 +8,14 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { NgIf } from "@angular/common";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
+import { TranslateModule } from "@ngx-translate/core";
 
 @Component({
     selector: 'app-login',
     standalone: true,
     imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, NgIf],
+    MatInputModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, NgIf, RouterLink, TranslateModule],
     templateUrl: './login.html',
     styleUrl: './login.scss'
 })
@@ -29,7 +30,7 @@ export class Login {
 
     form = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]]
+        password: ['', [Validators.required, Validators.minLength(8)]]
     });
 
     login() {
