@@ -1,0 +1,107 @@
+<div class="detail-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Employee Detail</h1>
+            <p class="page-subtitle">Profile, history, photo, and employee documents</p>
+        </div>
+    </div>
+
+    <div *ngIf="loading" class="spinner-center">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    <div *ngIf="error" class="error-banner">{{ error }}</div>
+
+    <div *ngIf="employee" class="detail-grid">
+        <mat-card class="employee-card">
+            <mat-card-content>
+                <div class="photo-section">
+                    <div class="photo-preview" *ngIf="photoPreviewUrl; else placeholder">
+                        <img [src]="photoPreviewUrl" [alt]="employee.firstName + ' ' + employee.lastName">
+                    </div>
+                    <ng-template #placeholder>
+                        <div class="photo-placeholder">
+                            <mat-icon>account_circle</mat-icon>
+                        </div>
+                    </ng-template>
+                    <label class="photo-upload" *ngIf="canManage">
+                        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
+                        <button mat-stroked-button type="button" [disabled]="uploadingPhoto">
+                            <mat-icon>photo_camera</mat-icon>
+                            {{ uploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
+                        </button>
+                    </label>
+                </div>
+
+                <div class="identity-grid">
+                    <div><strong>Name:</strong> {{ employee.firstName }} {{ employee.lastName }}</div>
+                    <div><strong>Email:</strong> {{ employee.email }}</div>
+                    <div><strong>Position:</strong> {{ employee.position }}</div>
+                    <div><strong>Department:</strong> {{ employee.departmentName || 'Unassigned' }}</div>
+                    <div><strong>Hire date:</strong> {{ employee.hireDate | date:'mediumDate' }}</div>
+                    <div><strong>Salary:</strong> {{ employee.salary | number:'1.2-2' }} EUR</div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-content>
+                <h2>Employment History</h2>
+                <div *ngIf="employee.employmentHistory.length === 0" class="empty-text">No history recorded yet.</div>
+                <div *ngFor="let item of employee.employmentHistory" class="history-item">
+                    <mat-icon>history</mat-icon>
+                    <div>
+                        <div class="history-title">{{ item.changeType }}: {{ item.oldValue || 'n/a' }} -> {{ item.newValue || 'n/a' }}</div>
+                        <div class="history-date">{{ item.changedAt | date:'medium' }}</div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <mat-card *ngIf="employee" class="documents-card">
+        <mat-card-content>
+            <div class="section-header">
+                <div>
+                    <h2>Employee Documents</h2>
+                    <p class="section-subtitle">Secure HR files available to authorized viewers.</p>
+                </div>
+            </div>
+
+            <form class="document-form" *ngIf="canManage" [formGroup]="documentForm">
+                <mat-form-field appearance="outline">
+                    <mat-label>Document title</mat-label>
+                    <input matInput formControlName="title">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput rows="3" formControlName="description"></textarea>
+                </mat-form-field>
+
+                <input type="file" (change)="onDocumentSelected($event)">
+                <button mat-flat-button color="primary" type="button" (click)="uploadDocument()" [disabled]="uploadingDocument">
+                    <mat-icon>upload_file</mat-icon>
+                    {{ uploadingDocument ? 'Uploading...' : 'Upload Document' }}
+                </button>
+            </form>
+
+            <div *ngIf="employee.documents.length === 0" class="empty-text">No documents uploaded yet.</div>
+
+            <div class="document-list">
+                <div *ngFor="let document of employee.documents" class="document-item">
+                    <div>
+                        <div class="document-title">{{ document.title }}</div>
+                        <div class="document-meta">
+                            {{ document.originalFilename }} · {{ document.uploadedAt | date:'medium' }}
+                        </div>
+                        <div class="document-meta" *ngIf="document.description">{{ document.description }}</div>
+                    </div>
+                    <button mat-stroked-button type="button" (click)="downloadDocument(document.id, document.originalFilename)">
+                        <mat-icon>download</mat-icon>
+                        Download
+                    </button>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
