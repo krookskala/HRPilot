@@ -2,17 +2,21 @@ package com.hrpilot.backend.leave;
 
 import com.hrpilot.backend.common.exception.BusinessRuleException;
 import com.hrpilot.backend.common.exception.ResourceNotFoundException;
+import com.hrpilot.backend.department.DepartmentScopeService;
 import com.hrpilot.backend.employee.Employee;
 import com.hrpilot.backend.employee.EmployeeRepository;
 import com.hrpilot.backend.leave.dto.LeaveBalanceResponse;
+import com.hrpilot.backend.user.CurrentUserService;
+import com.hrpilot.backend.user.Role;
+import com.hrpilot.backend.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -21,10 +25,9 @@ public class LeaveBalanceService {
 
     private final LeaveBalanceRepository leaveBalanceRepository;
     private final EmployeeRepository employeeRepository;
-
-    private static final int DEFAULT_ANNUAL_DAYS = 30;
-    private static final int DEFAULT_SICK_DAYS = 15;
-    private static final int DEFAULT_UNPAID_DAYS = 10;
+    private final LeavePolicyService leavePolicyService;
+    private final CurrentUserService currentUserService;
+    private final DepartmentScopeService departmentScopeService;
 
     public List<LeaveBalanceResponse> getBalances(Long employeeId, int year) {
         if (!employeeRepository.existsById(employeeId)) {
@@ -40,11 +43,21 @@ public class LeaveBalanceService {
         return balances.stream().map(this::toResponse).toList();
     }
 
-    @Transactional
-    public void deductBalance(Long employeeId, LeaveType leaveType, LocalDate startDate, LocalDate endDate) {
-        int year = startDate.getYear();
-        int days = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
+    public List<LeaveBalanceResponse> getBalancesForEmployee(Long employeeId, int year) {
+        User actorUser = currentUserService.getCurrentUserEntity();
+        assertCanViewEmployee(employeeId, actorUser);
+        return getBalances(employeeId, year);
+    }
 
+    public List<LeaveBalanceResponse> getCurrentUserBalances(int year) {
+        User actorUser = currentUserService.getCurrentUserEntity();
+        return employeeRepository.findByUserId(actorUser.getId())
+            .map(employee -> getBalances(employee.getId(), year))
+            .orElse(List.of());
+    }
+
+    @Transactional
+    public void deductBalance(Long employeeId, LeaveType leaveType, int year, int days) {
         LeaveBalance balance = leaveBalanceRepository
             .findByEmployeeIdAndLeaveTypeAndYear(employeeId, leaveType, year)
             .orElseGet(() -> {
@@ -67,10 +80,7 @@ public class LeaveBalanceService {
     }
 
     @Transactional
-    public void restoreBalance(Long employeeId, LeaveType leaveType, LocalDate startDate, LocalDate endDate) {
-        int year = startDate.getYear();
-        int days = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
-
+    public void restoreBalance(Long employeeId, LeaveType leaveType, int year, int days) {
         leaveBalanceRepository.findByEmployeeIdAndLeaveTypeAndYear(employeeId, leaveType, year)
             .ifPresent(balance -> {
                 balance.setUsedDays(Math.max(0, balance.getUsedDays() - days));
@@ -83,23 +93,48 @@ public class LeaveBalanceService {
         Employee employee = employeeRepository.findById(employeeId)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", employeeId));
 
+        Map<LeaveType, LeavePolicy> policies = leavePolicyService.getPoliciesByType();
         List<LeaveBalance> balances = List.of(
-            createBalance(employee, LeaveType.ANNUAL, year, DEFAULT_ANNUAL_DAYS),
-            createBalance(employee, LeaveType.SICK, year, DEFAULT_SICK_DAYS),
-            createBalance(employee, LeaveType.UNPAID, year, DEFAULT_UNPAID_DAYS)
+            createBalance(employee, LeaveType.ANNUAL, year, policies.getOrDefault(LeaveType.ANNUAL, null)),
+            createBalance(employee, LeaveType.SICK, year, policies.getOrDefault(LeaveType.SICK, null)),
+            createBalance(employee, LeaveType.UNPAID, year, policies.getOrDefault(LeaveType.UNPAID, null))
         );
 
         return leaveBalanceRepository.saveAll(balances);
     }
 
-    private LeaveBalance createBalance(Employee employee, LeaveType type, int year, int totalDays) {
+    private LeaveBalance createBalance(Employee employee, LeaveType type, int year, LeavePolicy policy) {
         return LeaveBalance.builder()
             .employee(employee)
             .leaveType(type)
             .year(year)
-            .totalDays(totalDays)
+            .totalDays(policy != null ? policy.getAnnualDays() : leavePolicyService.getAnnualDays(type))
             .usedDays(0)
             .build();
+    }
+
+    private void assertCanViewEmployee(Long employeeId, User actorUser) {
+        if (actorUser.getRole() == Role.ADMIN || actorUser.getRole() == Role.HR_MANAGER) {
+            return;
+        }
+
+        Employee targetEmployee = employeeRepository.findById(employeeId)
+            .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", employeeId));
+
+        Employee actorEmployee = employeeRepository.findByUserId(actorUser.getId()).orElse(null);
+        if (actorEmployee != null && actorEmployee.getId().equals(employeeId)) {
+            return;
+        }
+
+        if (actorUser.getRole() == Role.DEPARTMENT_MANAGER && isInManagementScope(targetEmployee, actorUser)) {
+            return;
+        }
+
+        throw new AccessDeniedException("You do not have access to these leave balances");
+    }
+
+    private boolean isInManagementScope(Employee employee, User actorUser) {
+        return departmentScopeService.isEmployeeInManagedScope(employee, actorUser.getId());
     }
 
     private LeaveBalanceResponse toResponse(LeaveBalance balance) {
