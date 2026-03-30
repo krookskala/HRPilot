@@ -10,7 +10,7 @@ const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router);
     const authService = inject(AuthService);
-    const token = localStorage.getItem('token');
+    const token = authService.getToken();
 
     if (token) {
         req = req.clone({
@@ -36,7 +36,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                         }),
                         catchError((refreshError) => {
                             isRefreshing = false;
-                            authService.logout();
+                            authService.clearSession();
                             router.navigate(['/login']);
                             return throwError(() => refreshError);
                         })
@@ -55,7 +55,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                 );
             }
             if (error.status === 403) {
-                alert('You do not have permission to perform this action');
+                console.warn('Access denied: insufficient permissions');
             }
             return throwError(() => error);
         })
