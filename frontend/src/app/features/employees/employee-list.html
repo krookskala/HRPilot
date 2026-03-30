@@ -96,6 +96,9 @@
             <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let emp">
+                    <button mat-icon-button matTooltip="View detail" (click)="openDetail(emp.id)">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
                     <button mat-icon-button color="warn" matTooltip="Delete"
                             (click)="delete(emp.id)" *ngIf="canManage">
                         <mat-icon>delete</mat-icon>
