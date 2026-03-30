@@ -2,6 +2,7 @@ package com.hrpilot.backend.security;
 
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.UserRepository;
+import com.hrpilot.backend.security.AuthenticatedUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,14 +27,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
     HttpServletResponse response, FilterChain filterChain) throws
     ServletException, IOException {
-        String autHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        if (autHeader == null || !autHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.length() <= 7) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = autHeader.substring(7);
+        String token = authHeader.substring(7);
 
         if (jwtService.isTokenValid(token) &&
         SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -47,12 +48,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String role = userOpt.get().getRole().name();
 
-            UsernamePasswordAuthenticationToken authToken = new
-        UsernamePasswordAuthenticationToken(
-            email,
-            null,
-            List.of(new SimpleGrantedAuthority("ROLE_" + role))
-        );
+            AuthenticatedUser principal = new AuthenticatedUser(
+                userOpt.get().getId(),
+                email,
+                userOpt.get().getRole()
+            );
+
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                principal,
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+            );
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
