@@ -2,6 +2,7 @@ package com.hrpilot.backend.department;
 
 import com.hrpilot.backend.department.dto.CreateDepartmentRequest;
 import com.hrpilot.backend.department.dto.DepartmentResponse;
+import com.hrpilot.backend.employee.EmployeeRepository;
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.UserRepository;
 import com.hrpilot.backend.user.Role;
@@ -33,6 +34,9 @@ class DepartmentServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private EmployeeRepository employeeRepository;
 
     @InjectMocks
     private DepartmentService departmentService;
@@ -172,6 +176,8 @@ class DepartmentServiceTest {
     void deleteDepartment_departmentExists_deletesSuccessfully() {
         // Arrange
         when(departmentRepository.existsById(1L)).thenReturn(true);
+        when(departmentRepository.findByParentDepartmentId(1L)).thenReturn(List.of());
+        when(employeeRepository.existsByDepartmentId(1L)).thenReturn(false);
 
         // Act
         departmentService.deleteDepartment(1L);
