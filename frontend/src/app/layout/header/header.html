@@ -4,11 +4,25 @@
         <span class="logo-text">HRPilot</span>
     </div>
     <span class="flex-1"></span>
-    <div class="user-section">
+    <div class="user-section" *ngIf="currentUser$ | async as currentUser">
+        <button mat-icon-button [matMenuTriggerFor]="langMenu" matTooltip="Language">
+            <mat-icon>language</mat-icon>
+        </button>
+        <mat-menu #langMenu="matMenu">
+            <button mat-menu-item (click)="switchLang('en')" [class.active-lang]="currentLang === 'en'">
+                English
+            </button>
+            <button mat-menu-item (click)="switchLang('de')" [class.active-lang]="currentLang === 'de'">
+                Deutsch
+            </button>
+        </mat-menu>
+        <button mat-icon-button [routerLink]="'/notifications'" [matTooltip]="'header.notificationsTooltip' | translate">
+            <mat-icon>notifications</mat-icon>
+        </button>
         <mat-icon class="user-icon">account_circle</mat-icon>
-        <span class="user-label">Admin</span>
+        <span class="user-label">{{ currentUser.firstName || currentUser.email }}</span>
         <div class="divider"></div>
-        <button mat-icon-button (click)="logout()" matTooltip="Logout">
+        <button mat-icon-button (click)="logout()" [matTooltip]="'header.logoutTooltip' | translate">
             <mat-icon>logout</mat-icon>
         </button>
     </div>
