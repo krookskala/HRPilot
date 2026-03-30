@@ -18,3 +18,20 @@ spring:
 jwt:
   expiration: 3600000
   refresh-expiration: 604800000
+
+app:
+  frontend-base-url: http://localhost:4200
+  invitation:
+    expiration-ms: 259200000
+  password-reset:
+    expiration-ms: 3600000
+  storage:
+    provider: local
+    local:
+      upload-dir: uploads
+    s3:
+      bucket:
+      region:
+      endpoint:
+      access-key:
+      secret-key:
