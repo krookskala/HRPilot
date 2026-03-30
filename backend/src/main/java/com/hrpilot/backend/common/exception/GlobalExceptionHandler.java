@@ -1,6 +1,7 @@
 package com.hrpilot.backend.common.exception;
 
 import com.hrpilot.backend.common.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -49,8 +51,7 @@ public class GlobalExceptionHandler {
         String message = ex.getBindingResult()
             .getFieldErrors()
             .stream()
-            .map(fieldError -> fieldError.getField() + ": " +
-fieldError.getDefaultMessage())
+            .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
             .reduce((a, b) -> a + ", " + b)
             .orElse("Validation Failed");
 
@@ -87,10 +88,11 @@ fieldError.getDefaultMessage())
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
+        log.error("Unhandled runtime exception", ex);
         ErrorResponse error = new ErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             "INTERNAL_ERROR",
-            ex.getMessage(),
+            "An unexpected error occurred. Please try again later.",
             LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
