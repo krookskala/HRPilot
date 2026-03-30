@@ -1,10 +1,16 @@
 package com.hrpilot.backend.user;
 
+import com.hrpilot.backend.audit.AuditLogService;
+import com.hrpilot.backend.auth.InvitationTokenService;
+import com.hrpilot.backend.auth.RefreshTokenService;
 import com.hrpilot.backend.user.dto.CreateUserRequest;
 import com.hrpilot.backend.user.dto.UpdateUserRequest;
 import com.hrpilot.backend.user.dto.UserResponse;
 import com.hrpilot.backend.common.exception.ResourceNotFoundException;
 import com.hrpilot.backend.common.exception.DuplicateResourceException;
+import com.hrpilot.backend.employee.EmployeeRepository;
+import com.hrpilot.backend.notification.NotificationService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,10 +38,30 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private InvitationTokenService invitationTokenService;
+
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
+    @Mock
+    private AuditLogService auditLogService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        lenient().when(employeeRepository.findByUserId(any(Long.class))).thenReturn(Optional.empty());
+    }
 
     @Test
     void createUser_success() {
@@ -105,7 +132,7 @@ class UserServiceTest {
         User user2 = User.builder().id(2L).email("b@test.com").role(Role.ADMIN).build();
         Pageable pageable = PageRequest.of(0, 10);
         Page<User> page = new PageImpl<>(List.of(user1, user2), pageable, 2);
-        when(userRepository.findAll(pageable)).thenReturn(page);
+        when(userRepository.search(null, null, null, pageable)).thenReturn(page);
 
         // Act
         Page<UserResponse> responses = userService.getAllUsers(pageable);
@@ -150,19 +177,24 @@ class UserServiceTest {
     @Test
     void deleteUser_userExists_deletesSuccessfully() {
         // Arrange
-        when(userRepository.existsById(1L)).thenReturn(true);
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .role(Role.EMPLOYEE)
+                .build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // Act
         userService.deleteUser(1L);
 
         // Assert
-        verify(userRepository, times(1)).deleteById(1L);
+        verify(userRepository, times(1)).delete(user);
     }
 
     @Test
     void deleteUser_userNotFound_throwsException() {
         // Arrange
-        when(userRepository.existsById(99L)).thenReturn(false);
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(99L));
