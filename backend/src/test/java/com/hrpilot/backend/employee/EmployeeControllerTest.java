@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import com.hrpilot.backend.config.DataWebConfig;
 import com.hrpilot.backend.config.SecurityConfig;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(EmployeeController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, DataWebConfig.class})
 class EmployeeControllerTest {
 
     @Autowired
@@ -70,7 +71,7 @@ class EmployeeControllerTest {
     void createEmployee_asAdmin_returns201() throws Exception {
         CreateEmployeeRequest request = new CreateEmployeeRequest(
                 1L, "John", "Doe", "Developer",
-                new BigDecimal("5000"), LocalDate.of(2024, 1, 15));
+                new BigDecimal("5000"), LocalDate.of(2024, 1, 15), 1L);
         when(employeeService.createEmployee(any())).thenReturn(buildResponse());
 
         mockMvc.perform(post("/api/employees")
@@ -86,7 +87,7 @@ class EmployeeControllerTest {
     void createEmployee_asEmployee_returns403() throws Exception {
         CreateEmployeeRequest request = new CreateEmployeeRequest(
                 1L, "John", "Doe", "Developer",
-                new BigDecimal("5000"), LocalDate.of(2024, 1, 15));
+                new BigDecimal("5000"), LocalDate.of(2024, 1, 15), 1L);
 
         mockMvc.perform(post("/api/employees")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +100,7 @@ class EmployeeControllerTest {
     void createEmployee_asHRManager_returns201() throws Exception {
         CreateEmployeeRequest request = new CreateEmployeeRequest(
                 1L, "John", "Doe", "Developer",
-                new BigDecimal("5000"), LocalDate.of(2024, 1, 15));
+                new BigDecimal("5000"), LocalDate.of(2024, 1, 15), 1L);
         when(employeeService.createEmployee(any())).thenReturn(buildResponse());
 
         mockMvc.perform(post("/api/employees")
@@ -161,7 +162,7 @@ class EmployeeControllerTest {
     void createEmployee_invalidRequest_returns400() throws Exception {
         CreateEmployeeRequest request = new CreateEmployeeRequest(
                 null, "", "", "",
-                null, null);
+                null, null, null);
 
         mockMvc.perform(post("/api/employees")
                         .contentType(MediaType.APPLICATION_JSON)
