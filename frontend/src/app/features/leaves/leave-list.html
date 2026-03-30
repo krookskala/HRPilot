@@ -2,7 +2,9 @@
     <div class="page-header">
         <div>
             <h1 class="page-title">Leave Requests</h1>
-            <p class="page-subtitle">Track and manage employee leave requests</p>
+            <p class="page-subtitle">
+                {{ canApprove ? 'Track and manage leave requests in your scope' : 'Track your leave requests and balances' }}
+            </p>
         </div>
         <button mat-flat-button color="primary" (click)="openDialog()">
             <mat-icon>add</mat-icon>
@@ -10,7 +12,24 @@
         </button>
     </div>
 
-    <!-- Leave Balance Cards -->
+    <div class="filter-row" *ngIf="canApprove">
+        <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select [(ngModel)]="statusFilter" (selectionChange)="applyFilters()">
+                <mat-option value="">All statuses</mat-option>
+                <mat-option *ngFor="let status of leaveStatuses" [value]="status">{{ status }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Type</mat-label>
+            <mat-select [(ngModel)]="typeFilter" (selectionChange)="applyFilters()">
+                <mat-option value="">All types</mat-option>
+                <mat-option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
     <div class="balance-grid" *ngIf="balances.length > 0">
         <mat-card class="balance-card" *ngFor="let balance of balances">
             <mat-card-content>
@@ -51,7 +70,6 @@
 
     <div class="table-panel" *ngIf="!loading && !error">
         <table mat-table [dataSource]="leaves">
-
             <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef>ID</th>
                 <td mat-cell *matCellDef="let leave">{{ leave.id }}</td>
@@ -69,12 +87,17 @@
 
             <ng-container matColumnDef="startDate">
                 <th mat-header-cell *matHeaderCellDef>Start Date</th>
-                <td mat-cell *matCellDef="let leave">{{ leave.startDate }}</td>
+                <td mat-cell *matCellDef="let leave">{{ leave.startDate | date:'mediumDate' }}</td>
             </ng-container>
 
             <ng-container matColumnDef="endDate">
                 <th mat-header-cell *matHeaderCellDef>End Date</th>
-                <td mat-cell *matCellDef="let leave">{{ leave.endDate }}</td>
+                <td mat-cell *matCellDef="let leave">{{ leave.endDate | date:'mediumDate' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="workingDays">
+                <th mat-header-cell *matHeaderCellDef>Working Days</th>
+                <td mat-cell *matCellDef="let leave">{{ leave.workingDays }}</td>
             </ng-container>
 
             <ng-container matColumnDef="status">
@@ -83,9 +106,13 @@
                     <span class="status-badge"
                           [class.status-pending]="leave.status === 'PENDING'"
                           [class.status-approved]="leave.status === 'APPROVED'"
-                          [class.status-rejected]="leave.status === 'REJECTED'">
+                          [class.status-rejected]="leave.status === 'REJECTED'"
+                          [class.status-cancelled]="leave.status === 'CANCELLED'">
                         {{ leave.status }}
                     </span>
+                    <div class="status-meta" *ngIf="leave.rejectionReason || leave.cancellationReason">
+                        {{ leave.rejectionReason || leave.cancellationReason }}
+                    </div>
                 </td>
             </ng-container>
 
@@ -100,6 +127,13 @@
                             (click)="reject(leave.id)" *ngIf="canApprove && leave.status === 'PENDING'">
                         <mat-icon>cancel</mat-icon>
                     </button>
+                    <button mat-icon-button color="warn" matTooltip="Cancel request"
+                            (click)="cancel(leave)" *ngIf="canCancel(leave)">
+                        <mat-icon>event_busy</mat-icon>
+                    </button>
+                    <button mat-icon-button matTooltip="View history" (click)="toggleHistory(leave)">
+                        <mat-icon>history</mat-icon>
+                    </button>
                 </td>
             </ng-container>
 
@@ -108,6 +142,7 @@
         </table>
 
         <mat-paginator
+            *ngIf="canApprove"
             [length]="totalElements"
             [pageSize]="pageSize"
             [pageIndex]="pageIndex"
@@ -116,4 +151,23 @@
             showFirstLastButtons>
         </mat-paginator>
     </div>
+
+    <mat-card class="history-panel" *ngIf="selectedLeaveId">
+        <mat-card-header>
+            <mat-card-title>Leave History</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div *ngIf="historyItems.length === 0" class="history-empty">No history available for this request.</div>
+            <div *ngFor="let item of historyItems" class="history-item">
+                <div class="history-line">
+                    <strong>{{ item.actionType }}</strong>
+                    <span>{{ item.toStatus }}</span>
+                </div>
+                <div class="history-meta">
+                    {{ item.actorUserEmail || 'System' }} · {{ item.occurredAt | date:'medium' }}
+                </div>
+                <div class="history-note" *ngIf="item.note">{{ item.note }}</div>
+            </div>
+        </mat-card-content>
+    </mat-card>
 </div>
