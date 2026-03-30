@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Invite User</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="dialog-form">
+        <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+                @for (role of roles; track role) {
+                    <mat-option [value]="role">{{ role }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Preferred language</mat-label>
+            <input matInput formControlName="preferredLang" />
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="cancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="save()">Create Invite</button>
+</mat-dialog-actions>
