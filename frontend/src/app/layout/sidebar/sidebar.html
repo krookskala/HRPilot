@@ -1,24 +1,36 @@
 <nav class="sidebar-nav">
     <div class="nav-items">
+        <a mat-list-item routerLink="/profile" routerLinkActive="active" class="nav-item">
+            <mat-icon>badge</mat-icon>
+            <span>{{ 'nav.myProfile' | translate }}</span>
+        </a>
         <a mat-list-item routerLink="/dashboard" routerLinkActive="active" class="nav-item">
             <mat-icon>dashboard</mat-icon>
-            <span>Dashboard</span>
+            <span>{{ 'nav.dashboard' | translate }}</span>
+        </a>
+        <a mat-list-item routerLink="/notifications" routerLinkActive="active" class="nav-item">
+            <mat-icon>notifications</mat-icon>
+            <span>{{ 'nav.notifications' | translate }}</span>
         </a>
         <a mat-list-item routerLink="/employees" routerLinkActive="active" class="nav-item">
             <mat-icon>people</mat-icon>
-            <span>Employees</span>
+            <span>{{ 'nav.employees' | translate }}</span>
         </a>
         <a mat-list-item routerLink="/departments" routerLinkActive="active" class="nav-item">
             <mat-icon>apartment</mat-icon>
-            <span>Departments</span>
+            <span>{{ 'nav.departments' | translate }}</span>
         </a>
         <a mat-list-item routerLink="/leaves" routerLinkActive="active" class="nav-item">
             <mat-icon>event_available</mat-icon>
-            <span>Leave Requests</span>
+            <span>{{ 'nav.leaveRequests' | translate }}</span>
         </a>
-        <a mat-list-item routerLink="/payrolls" routerLinkActive="active" class="nav-item" *ngIf="isAdminOrHR">
+        <a mat-list-item routerLink="/payrolls" routerLinkActive="active" class="nav-item">
             <mat-icon>payments</mat-icon>
-            <span>Payrolls</span>
+            <span>{{ 'nav.payrolls' | translate }}</span>
+        </a>
+        <a mat-list-item routerLink="/users" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+            <mat-icon>manage_accounts</mat-icon>
+            <span>{{ 'nav.users' | translate }}</span>
         </a>
     </div>
 
@@ -26,7 +38,7 @@
         <mat-divider></mat-divider>
         <a mat-list-item (click)="logout()" class="nav-item logout-item">
             <mat-icon>logout</mat-icon>
-            <span>Logout</span>
+            <span>{{ 'nav.logout' | translate }}</span>
         </a>
     </div>
 </nav>
