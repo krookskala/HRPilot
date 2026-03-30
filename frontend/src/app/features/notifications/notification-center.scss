@@ -1,0 +1,29 @@
+.notification-list {
+  display: grid;
+  gap: 16px;
+}
+
+.notification-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.notification-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.notification-message {
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.notification-date {
+  color: var(--hr-text-secondary);
+  font-size: 0.8125rem;
+}
+
+.unread {
+  border-left: 4px solid var(--hr-primary);
+}
