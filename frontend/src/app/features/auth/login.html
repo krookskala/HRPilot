@@ -3,15 +3,15 @@
         <div class="brand-content">
             <mat-icon class="brand-icon">business</mat-icon>
             <h1 class="brand-title">HRPilot</h1>
-            <p class="brand-subtitle">HR Management Platform</p>
+            <p class="brand-subtitle">{{ 'login.brandSubtitle' | translate }}</p>
         </div>
     </div>
 
     <div class="login-form-panel">
         <div class="form-wrapper">
             <div class="form-header">
-                <h2>Welcome back</h2>
-                <p>Sign in to your account</p>
+                <h2>{{ 'login.welcomeBack' | translate }}</h2>
+                <p>{{ 'login.signInSubtitle' | translate }}</p>
             </div>
 
             <div *ngIf="error" class="error-message">
@@ -21,25 +21,27 @@
 
             <form [formGroup]="form" class="login-form" (ngSubmit)="login()">
                 <mat-form-field appearance="outline">
-                    <mat-label>Email</mat-label>
+                    <mat-label>{{ 'login.email' | translate }}</mat-label>
                     <mat-icon matPrefix>email</mat-icon>
                     <input matInput type="email" formControlName="email" />
-                    <mat-error>Valid email is required</mat-error>
+                    <mat-error>{{ 'login.emailRequired' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Password</mat-label>
+                    <mat-label>{{ 'login.password' | translate }}</mat-label>
                     <mat-icon matPrefix>lock</mat-icon>
                     <input matInput type="password" formControlName="password" />
-                    <mat-error>Password must be at least 6 characters</mat-error>
+                    <mat-error>{{ 'login.passwordRequired' | translate }}</mat-error>
                 </mat-form-field>
 
                 <button mat-flat-button color="primary" type="submit" class="login-button"
                         [disabled]="loading">
                     <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-                    <span *ngIf="!loading">Sign In</span>
+                    <span *ngIf="!loading">{{ 'login.signIn' | translate }}</span>
                 </button>
             </form>
+
+            <a routerLink="/forgot-password" class="forgot-link">{{ 'login.forgotPassword' | translate }}</a>
         </div>
     </div>
 </div>
