@@ -4,8 +4,10 @@ import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.UserRepository;
 import com.hrpilot.backend.department.dto.DepartmentResponse;
 import com.hrpilot.backend.department.dto.CreateDepartmentRequest;
+import com.hrpilot.backend.common.exception.BusinessRuleException;
 import com.hrpilot.backend.common.exception.ResourceNotFoundException;
 import com.hrpilot.backend.common.exception.DuplicateResourceException;
+import com.hrpilot.backend.employee.EmployeeRepository;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
     public DepartmentResponse createDepartment(CreateDepartmentRequest request) {
         log.info("Creating department with name: {}", request.name());
@@ -63,6 +66,12 @@ public class DepartmentService {
         log.info("Deleting department with id: {}", id);
         if (!departmentRepository.existsById(id)) {
             throw new ResourceNotFoundException("Department", "id", id);
+        }
+        if (!departmentRepository.findByParentDepartmentId(id).isEmpty()) {
+            throw new BusinessRuleException("Cannot delete department with sub-departments");
+        }
+        if (employeeRepository.existsByDepartmentId(id)) {
+            throw new BusinessRuleException("Cannot delete department with assigned employees");
         }
         departmentRepository.deleteById(id);
         log.info("Department deleted successfully with id: {}", id);
