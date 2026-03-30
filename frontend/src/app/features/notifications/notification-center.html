@@ -1,0 +1,30 @@
+<div class="notification-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Notifications</h1>
+            <p class="page-subtitle">Your recent activity and system alerts</p>
+        </div>
+    </div>
+
+    <div *ngIf="loading" class="spinner-center">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    <div *ngIf="error" class="error-banner">{{ error }}</div>
+
+    <div class="notification-list" *ngIf="!loading && !error">
+        <mat-card *ngFor="let notification of notifications" [class.unread]="!notification.read">
+            <mat-card-content>
+                <div class="notification-row">
+                    <div>
+                        <div class="notification-title">{{ notification.title }}</div>
+                        <div class="notification-message">{{ notification.message }}</div>
+                        <div class="notification-date">{{ notification.createdAt | date:'medium' }}</div>
+                    </div>
+                    <button mat-stroked-button *ngIf="!notification.read" (click)="markAsRead(notification.id)">
+                        Mark read
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
