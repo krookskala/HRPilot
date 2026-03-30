@@ -2,6 +2,11 @@
   max-width: 1400px;
 }
 
+.runs-card,
+.components-card {
+  margin-bottom: 20px;
+}
+
 .error-banner {
   display: flex;
   align-items: center;
@@ -21,6 +26,42 @@
   }
 }
 
+.spinner-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: var(--hr-text-secondary);
+  font-size: 0.875rem;
+}
+
 table {
   width: 100%;
+}
+
+.component-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.component-title {
+  font-weight: 600;
+}
+
+.component-meta {
+  font-size: 0.8125rem;
+  color: var(--hr-text-secondary);
+}
+
+.component-amount {
+  font-weight: 700;
+  color: #0f172a;
 }
