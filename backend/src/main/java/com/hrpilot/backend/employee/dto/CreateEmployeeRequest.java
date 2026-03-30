@@ -1,5 +1,6 @@
 package com.hrpilot.backend.employee.dto;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -19,8 +20,11 @@ public record CreateEmployeeRequest(
     String position,
 
     @NotNull
+    @DecimalMin(value = "0.01", message = "Salary must be positive")
     BigDecimal salary,
 
     @NotNull
-    LocalDate hireDate
+    LocalDate hireDate,
+
+    Long departmentId
 ) {}
