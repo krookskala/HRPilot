@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface EmploymentHistoryRepository extends JpaRepository<EmploymentHistory, Long> {
     List<EmploymentHistory> findByEmployeeIdOrderByChangedAtDesc(Long employeeId);
+    void deleteByEmployeeId(Long employeeId);
 }
