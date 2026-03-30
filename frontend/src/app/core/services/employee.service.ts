@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
-import { CreateEmployeeRequest, Employee } from "../../shared/models/employee.model";
+import { CreateEmployeeRequest, Employee, EmployeeDetail, EmployeeDocument } from "../../shared/models/employee.model";
 import { Page } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
@@ -35,6 +35,10 @@ export class EmployeeService {
         return this.http.post<Employee>(`${this.apiUrl}/employees`, request);
     }
 
+    getEmployeeDetail(id: number): Observable<EmployeeDetail> {
+        return this.http.get<EmployeeDetail>(`${this.apiUrl}/employees/${id}/detail`);
+    }
+
     exportCsv(): Observable<Blob> {
         return this.http.get(`${this.apiUrl}/employees/export/csv`, {
             responseType: 'blob'
@@ -45,5 +49,31 @@ export class EmployeeService {
         const formData = new FormData();
         formData.append('file', file);
         return this.http.post<Employee>(`${this.apiUrl}/employees/${employeeId}/photo`, formData);
+    }
+
+    downloadPhoto(employeeId: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/employees/${employeeId}/photo/download`, {
+            responseType: 'blob'
+        });
+    }
+
+    getDocuments(employeeId: number): Observable<EmployeeDocument[]> {
+        return this.http.get<EmployeeDocument[]>(`${this.apiUrl}/employees/${employeeId}/documents`);
+    }
+
+    uploadDocument(employeeId: number, file: File, title: string, description?: string | null): Observable<EmployeeDocument> {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('title', title);
+        if (description) {
+            formData.append('description', description);
+        }
+        return this.http.post<EmployeeDocument>(`${this.apiUrl}/employees/${employeeId}/documents`, formData);
+    }
+
+    downloadDocument(employeeId: number, documentId: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/employees/${employeeId}/documents/${documentId}/download`, {
+            responseType: 'blob'
+        });
     }
 }
