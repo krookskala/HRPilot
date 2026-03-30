@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -21,9 +22,6 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken createRefreshToken(User user) {
-        // Delete existing tokens for this user
-        refreshTokenRepository.deleteByUserId(user.getId());
-
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
                 .token(UUID.randomUUID().toString())
@@ -34,11 +32,18 @@ public class RefreshTokenService {
     }
 
     public RefreshToken verifyRefreshToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
+        RefreshToken refreshToken = refreshTokenRepository.findByTokenAndRevokedAtIsNull(token)
                 .orElseThrow(() -> new AuthenticationException("Invalid refresh token"));
 
+        if (!refreshToken.getUser().isActive()) {
+            refreshToken.setRevokedAt(LocalDateTime.now());
+            refreshTokenRepository.save(refreshToken);
+            throw new AuthenticationException("User account is inactive");
+        }
+
         if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
-            refreshTokenRepository.delete(refreshToken);
+            refreshToken.setRevokedAt(LocalDateTime.now());
+            refreshTokenRepository.save(refreshToken);
             throw new AuthenticationException("Refresh token expired. Please login again.");
         }
 
@@ -46,7 +51,28 @@ public class RefreshTokenService {
     }
 
     @Transactional
+    public RefreshToken rotateRefreshToken(String token) {
+        RefreshToken existingToken = verifyRefreshToken(token);
+        existingToken.setRevokedAt(LocalDateTime.now());
+        refreshTokenRepository.save(existingToken);
+        return createRefreshToken(existingToken.getUser());
+    }
+
+    @Transactional
+    public void revokeToken(String token) {
+        refreshTokenRepository.findByTokenAndRevokedAtIsNull(token)
+            .ifPresent(refreshToken -> {
+                refreshToken.setRevokedAt(LocalDateTime.now());
+                refreshTokenRepository.save(refreshToken);
+            });
+    }
+
+    @Transactional
     public void deleteByUserId(Long userId) {
-        refreshTokenRepository.deleteByUserId(userId);
+        refreshTokenRepository.findByUserIdAndRevokedAtIsNull(userId)
+            .forEach(token -> {
+                token.setRevokedAt(LocalDateTime.now());
+                refreshTokenRepository.save(token);
+            });
     }
 }
