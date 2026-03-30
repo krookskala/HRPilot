@@ -1,0 +1,14 @@
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.dialog-form {
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
