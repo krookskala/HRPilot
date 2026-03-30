@@ -1,0 +1,30 @@
+<div class="auth-page">
+    <mat-card class="auth-card">
+        <div class="auth-header">
+            <mat-icon>mail</mat-icon>
+            <h1>Accept Invitation</h1>
+            <p *ngIf="email">{{ email }}</p>
+        </div>
+
+        <div *ngIf="loading" class="auth-message">Validating invitation...</div>
+        <div *ngIf="error" class="auth-error">{{ error }}</div>
+
+        <form *ngIf="!loading && !error" [formGroup]="form" class="auth-form" (ngSubmit)="submit()">
+            <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input matInput type="password" formControlName="password" />
+                <mat-error>Password must be at least 8 characters</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Confirm Password</mat-label>
+                <input matInput type="password" formControlName="confirmPassword" />
+                <mat-error>Confirm your password</mat-error>
+            </mat-form-field>
+
+            <button mat-flat-button color="primary" type="submit" [disabled]="submitting">
+                Activate Account
+            </button>
+        </form>
+    </mat-card>
+</div>
