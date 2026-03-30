@@ -24,7 +24,6 @@ export class LeaveDialog {
     leaveTypes = Object.values(LeaveType);
 
     form = this.fb.group({
-        employeeId: [0, [Validators.required, Validators.min(1)]],
         type: [LeaveType.ANNUAL, [Validators.required]],
         startDate: ['', [Validators.required]],
         endDate: ['', [Validators.required]],
