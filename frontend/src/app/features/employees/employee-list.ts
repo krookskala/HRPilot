@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
+import { Router } from "@angular/router";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { EmployeeService } from "../../core/services/employee.service";
 import { DepartmentService } from "../../core/services/department.service";
@@ -39,6 +40,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     private cdr = inject(ChangeDetectorRef);
     private dialog = inject(MatDialog);
+    private router = inject(Router);
     private destroy$ = new Subject<void>();
 
     employees: Employee[] = [];
@@ -174,5 +176,9 @@ export class EmployeeList implements OnInit, OnDestroy {
                 });
             }
         });
+    }
+
+    openDetail(id: number): void {
+        this.router.navigate(['/employees', id]);
     }
 }
