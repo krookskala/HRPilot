@@ -1,11 +1,15 @@
 package com.hrpilot.backend.employee;
 
 import com.hrpilot.backend.employee.dto.CreateEmployeeRequest;
+import com.hrpilot.backend.employee.dto.EmployeeDetailResponse;
+import com.hrpilot.backend.employee.dto.EmployeeDocumentResponse;
 import com.hrpilot.backend.employee.dto.UpdateEmployeeRequest;
 import com.hrpilot.backend.employee.dto.EmployeeResponse;
 import com.hrpilot.backend.employee.dto.EmploymentHistoryResponse;
+import com.hrpilot.backend.common.storage.StoredFileContent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +66,11 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<EmployeeDetailResponse> getEmployeeDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(employeeService.getEmployeeDetail(id));
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<EmployeeResponse> updateEmployee(@PathVariable Long id,
@@ -82,10 +91,46 @@ public class EmployeeController {
     }
 
     @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<EmployeeResponse> uploadPhoto(@PathVariable Long id,
                                                          @RequestParam("file") MultipartFile file) {
         EmployeeResponse response = employeeService.uploadPhoto(id, file);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/photo/download")
+    public ResponseEntity<InputStreamResource> downloadPhoto(@PathVariable Long id) {
+        StoredFileContent fileContent = employeeService.downloadPhoto(id);
+        return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(fileContent.contentType()))
+            .contentLength(fileContent.contentLength())
+            .body(fileContent.resource());
+    }
+
+    @GetMapping("/{id}/documents")
+    public ResponseEntity<List<EmployeeDocumentResponse>> getDocuments(@PathVariable Long id) {
+        return ResponseEntity.ok(employeeService.getEmployeeDocuments(id));
+    }
+
+    @PostMapping(value = "/{id}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
+    public ResponseEntity<EmployeeDocumentResponse> uploadDocument(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam("file") MultipartFile file) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(employeeService.uploadDocument(id, title, description, file));
+    }
+
+    @GetMapping("/{id}/documents/{documentId}/download")
+    public ResponseEntity<InputStreamResource> downloadDocument(
+            @PathVariable Long id,
+            @PathVariable Long documentId) {
+        StoredFileContent fileContent = employeeService.downloadDocument(id, documentId);
+        return ResponseEntity.ok()
+            .header("Content-Disposition", "attachment; filename=\"" + fileContent.filename() + "\"")
+            .contentType(MediaType.parseMediaType(fileContent.contentType()))
+            .contentLength(fileContent.contentLength())
+            .body(fileContent.resource());
     }
 }
