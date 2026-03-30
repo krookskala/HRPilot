@@ -3,13 +3,20 @@ spring:
     url: jdbc:postgresql://localhost:5432/hrpilot
     username: hrpilot
     password: hrpilot123
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 16
 
 jwt:
-  secret: hrpilot-dev-secret-key-that-is-at-least-256-bits-long-for-security
+  secret: ${JWT_SECRET:change-me-in-production-this-is-a-dev-only-placeholder-key-256bit}
 
 logging:
   level:
