@@ -5,12 +5,14 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatIconModule } from "@angular/material/icon";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatSelectModule } from "@angular/material/select";
 
 @Component({
     selector: 'app-payroll-dialog',
     standalone: true,
     imports: [MatDialogModule, ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule],
+    MatInputModule, MatButtonModule, MatIconModule, MatSlideToggleModule, MatSelectModule],
     templateUrl: './payroll-dialog.html',
     styleUrl: './payroll-dialog.scss'
 })
@@ -20,12 +22,13 @@ export class PayrollDialog {
     private fb = inject(FormBuilder);
 
     form = this.fb.group({
+        name: ['Monthly Payroll Run', [Validators.required]],
         employeeId: [0, [Validators.required, Validators.min(1)]],
         year: [new Date().getFullYear(), [Validators.required, Validators.min(2020)]],
         month: [new Date().getMonth() + 1, [Validators.required, Validators.min(1), Validators.max(12)]],
-        baseSalary: [0, [Validators.required, Validators.min(0)]],
         bonus: [0, [Validators.required, Validators.min(0)]],
-        deductions: [0, [Validators.required, Validators.min(0)]]
+        additionalDeduction: [0, [Validators.required, Validators.min(0)]],
+        taxClass: ['I', [Validators.required]]
     });
 
     save() {
