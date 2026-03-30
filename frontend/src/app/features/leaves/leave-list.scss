@@ -2,7 +2,20 @@
   max-width: 1200px;
 }
 
-// Balance Cards
+.filter-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  mat-form-field {
+    min-width: 200px;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
 .balance-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -92,6 +105,12 @@
   &.bar-danger { background: #ef4444; }
 }
 
+.status-meta {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--hr-text-secondary);
+}
+
 .error-banner {
   display: flex;
   align-items: center;
@@ -113,4 +132,36 @@
 
 table {
   width: 100%;
+}
+
+.history-panel {
+  margin-top: 20px;
+}
+
+.history-empty {
+  color: var(--hr-text-secondary);
+  font-size: 0.875rem;
+}
+
+.history-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.history-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f172a;
+}
+
+.history-meta,
+.history-note {
+  margin-top: 4px;
+  font-size: 0.8125rem;
+  color: var(--hr-text-secondary);
 }
