@@ -7,7 +7,8 @@ export enum LeaveType {
 export enum LeaveStatus {
     PENDING = 'PENDING',
     APPROVED = 'APPROVED',
-    REJECTED = 'REJECTED'
+    REJECTED = 'REJECTED',
+    CANCELLED = 'CANCELLED'
 }
 
 export interface LeaveRequest {
@@ -17,8 +18,31 @@ export interface LeaveRequest {
     type: LeaveType;
     startDate: string;
     endDate: string;
+    workingDays: number;
     status: LeaveStatus;
-    reason: string;
+    reason: string | null;
+    approvedByUserId: number | null;
+    approvedByUserEmail: string | null;
+    rejectedByUserId: number | null;
+    rejectedByUserEmail: string | null;
+    cancelledByUserId: number | null;
+    cancelledByUserEmail: string | null;
+    actionedAt: string | null;
+    cancelledAt: string | null;
+    rejectionReason: string | null;
+    cancellationReason: string | null;
+    createdAt: string;
+}
+
+export interface LeaveRequestHistory {
+    id: number;
+    actionType: 'CREATED' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+    fromStatus: LeaveStatus | null;
+    toStatus: LeaveStatus;
+    actorUserId: number | null;
+    actorUserEmail: string | null;
+    note: string | null;
+    occurredAt: string;
 }
 
 export interface LeaveBalance {
@@ -36,5 +60,5 @@ export interface CreateLeaveRequest {
     type: LeaveType;
     startDate: string;
     endDate: string;
-    reason: string;
+    reason: string | null;
 }
