@@ -1,10 +1,16 @@
 <div class="dialog-header">
     <mat-icon>payments</mat-icon>
-    <h2>Add Payroll</h2>
+    <h2>Create Payroll Run</h2>
 </div>
 
 <mat-dialog-content>
     <form [formGroup]="form" class="dialog-form">
+
+        <mat-form-field appearance="outline">
+            <mat-label>Run Name</mat-label>
+            <input matInput formControlName="name" />
+            <mat-error>Name is required</mat-error>
+        </mat-form-field>
 
         <mat-form-field appearance="outline">
             <mat-label>Employee ID</mat-label>
@@ -25,9 +31,15 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Base Salary</mat-label>
-            <input matInput type="number" formControlName="baseSalary" />
-            <mat-error>Base salary is required</mat-error>
+            <mat-label>Tax Class</mat-label>
+            <mat-select formControlName="taxClass">
+                <mat-option value="I">I</mat-option>
+                <mat-option value="II">II</mat-option>
+                <mat-option value="III">III</mat-option>
+                <mat-option value="IV">IV</mat-option>
+                <mat-option value="V">V</mat-option>
+                <mat-option value="VI">VI</mat-option>
+            </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -37,9 +49,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Deductions</mat-label>
-            <input matInput type="number" formControlName="deductions" />
-            <mat-error>Deductions is required</mat-error>
+            <mat-label>Additional Deduction</mat-label>
+            <input matInput type="number" formControlName="additionalDeduction" />
+            <mat-error>Additional deduction is required</mat-error>
         </mat-form-field>
 
     </form>
