@@ -11,6 +11,32 @@ export interface Employee {
     departmentName: string;
 }
 
+export interface EmployeeDocument {
+    id: number;
+    documentType: 'HR_DOCUMENT';
+    title: string;
+    description: string | null;
+    originalFilename: string;
+    contentType: string;
+    fileSize: number;
+    uploadedByUserId: number | null;
+    uploadedByEmail: string | null;
+    uploadedAt: string;
+}
+
+export interface EmploymentHistoryItem {
+    id: number;
+    changeType: string;
+    oldValue: string | null;
+    newValue: string | null;
+    changedAt: string;
+}
+
+export interface EmployeeDetail extends Employee {
+    employmentHistory: EmploymentHistoryItem[];
+    documents: EmployeeDocument[];
+}
+
 export interface CreateEmployeeRequest {
     userId: number;
     firstName: string;
@@ -18,6 +44,6 @@ export interface CreateEmployeeRequest {
     position: string;
     salary: number;
     hireDate: string;
-    departmentId: number;
-    photoUrl: string;
+    departmentId: number | null;
+    photoUrl?: string | null;
 }
