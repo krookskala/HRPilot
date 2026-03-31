@@ -3,10 +3,12 @@ package com.hrpilot.backend.auth;
 import com.hrpilot.backend.audit.AuditLogService;
 import com.hrpilot.backend.auth.dto.*;
 import com.hrpilot.backend.common.exception.AuthenticationException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.hrpilot.backend.notification.NotificationService;
 import com.hrpilot.backend.notification.NotificationType;
 import com.hrpilot.backend.security.JwtService;
-import com.hrpilot.backend.user.CurrentUserService;
+
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.UserRepository;
 import com.hrpilot.backend.user.dto.CurrentUserResponse;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
+@Tag(name = "Authentication", description = "Login, token refresh, invitation, and password reset")
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
@@ -38,6 +41,7 @@ public class AuthController {
     @Value("${app.frontend-base-url:http://localhost:4200}")
     private String frontendBaseUrl;
 
+    @Operation(summary = "Authenticate with email and password")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         log.info("Login attempt for email: {}", request.email());
@@ -66,6 +70,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken.getToken(), buildUserResponse(user)));
     }
 
+    @Operation(summary = "Refresh access token")
     @PostMapping("/refresh")
     public ResponseEntity<TokenRefreshResponse> refreshToken(
             @Valid @RequestBody TokenRefreshRequest request) {
@@ -79,18 +84,21 @@ public class AuthController {
         return ResponseEntity.ok(new TokenRefreshResponse(newAccessToken, refreshToken.getToken()));
     }
 
+    @Operation(summary = "Logout and revoke refresh token")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request) {
         refreshTokenService.revokeToken(request.refreshToken());
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Get invitation details")
     @GetMapping("/invitations/{token}")
     public ResponseEntity<InvitationDetailsResponse> getInvitation(@PathVariable String token) {
         InvitationToken invitationToken = invitationTokenService.validateInvitation(token);
         return ResponseEntity.ok(invitationTokenService.toDetails(invitationToken));
     }
 
+    @Operation(summary = "Accept invitation and set password")
     @PostMapping("/invitations/accept")
     public ResponseEntity<AuthResponse> acceptInvitation(
             @Valid @RequestBody AcceptInvitationRequest request) {
@@ -117,13 +125,14 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken.getToken(), buildUserResponse(user)));
     }
 
+    @Operation(summary = "Request password reset")
     @PostMapping("/password/request")
     public ResponseEntity<PasswordResetResponse> requestPasswordReset(
             @Valid @RequestBody PasswordResetRequest request) {
         User user = userRepository.findByEmail(request.email()).orElse(null);
 
         if (user != null) {
-            PasswordResetToken token = passwordResetTokenService.createResetToken(user);
+            passwordResetTokenService.createResetToken(user);
             auditLogService.log(user, "PASSWORD_RESET_REQUESTED", "User", user.getId().toString(),
                 "Password reset requested", null);
             log.info("Password reset token created for user: {}", user.getEmail());
@@ -138,6 +147,7 @@ public class AuthController {
         ));
     }
 
+    @Operation(summary = "Validate password reset token")
     @GetMapping("/password/{token}")
     public ResponseEntity<TokenValidationResponse> validatePasswordResetToken(@PathVariable String token) {
         PasswordResetToken resetToken = passwordResetTokenService.validate(token);
@@ -147,6 +157,7 @@ public class AuthController {
         ));
     }
 
+    @Operation(summary = "Reset password with token")
     @PostMapping("/password/reset")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody PasswordResetConfirmRequest request) {
         PasswordResetToken resetToken = passwordResetTokenService.validate(request.token());
