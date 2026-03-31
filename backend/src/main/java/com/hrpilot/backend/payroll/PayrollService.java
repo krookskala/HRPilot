@@ -128,30 +128,33 @@ public class PayrollService {
         return toRunResponse(payrollRun);
     }
 
+    @Transactional(readOnly = true)
     public Page<PayrollResponse> getAllPayrolls(Pageable pageable) {
         return payrollRepository.findAll(pageable).map(this::toSummaryResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<PayrollRunResponse> getPayrollRuns(Pageable pageable) {
         return payrollRunRepository.findAll(pageable).map(this::toRunResponse);
     }
 
-    public List<PayrollResponse> getPayrollsByEmployee(Long employeeId) {
+    @Transactional(readOnly = true)
+    public Page<PayrollResponse> getPayrollsByEmployee(Long employeeId, Pageable pageable) {
         assertCanViewEmployeePayroll(employeeId);
-        return payrollRepository.findByEmployeeIdOrderByYearDescMonthDesc(employeeId).stream()
-            .map(this::toSummaryResponse)
-            .toList();
+        return payrollRepository.findByEmployeeIdOrderByYearDescMonthDesc(employeeId, pageable)
+            .map(this::toSummaryResponse);
     }
 
-    public List<PayrollResponse> getCurrentUserPayrolls() {
+    @Transactional(readOnly = true)
+    public Page<PayrollResponse> getCurrentUserPayrolls(Pageable pageable) {
         User actorUser = currentUserService.getCurrentUserEntity();
         return employeeRepository.findByUserId(actorUser.getId())
-            .map(employee -> payrollRepository.findByEmployeeIdOrderByYearDescMonthDesc(employee.getId()).stream()
-                .map(this::toSummaryResponse)
-                .toList())
-            .orElse(List.of());
+            .map(employee -> payrollRepository.findByEmployeeIdOrderByYearDescMonthDesc(employee.getId(), pageable)
+                .map(this::toSummaryResponse))
+            .orElse(Page.empty(pageable));
     }
 
+    @Transactional(readOnly = true)
     public List<PayrollComponentResponse> getComponents(Long payrollId) {
         PayrollRecord record = getVisiblePayroll(payrollId);
         return payrollComponentRepository.findByPayrollRecordIdOrderByIdAsc(record.getId()).stream()
@@ -222,11 +225,13 @@ public class PayrollService {
         return toRunResponse(payrollRunRepository.save(run));
     }
 
+    @Transactional(readOnly = true)
     public StoredFileContent downloadPayslip(Long payrollId) {
         PayrollRecord record = getVisiblePayroll(payrollId);
         return loadPayslip(record);
     }
 
+    @Transactional(readOnly = true)
     public StoredFileContent downloadPayslipForCurrentUser(Long payrollId) {
         PayrollRecord record = payrollRepository.findById(payrollId)
             .orElseThrow(() -> new ResourceNotFoundException("PayrollRecord", "id", payrollId));
@@ -326,7 +331,7 @@ public class PayrollService {
     private PayrollRecord createRecord(Employee employee, int year, int month, PayrollRun run,
                                        PayrollCalculationResult calculation, BigDecimal bonus, BigDecimal additionalDeduction) {
         BigDecimal normalizedBonus = bonus != null ? bonus : BigDecimal.ZERO;
-        BigDecimal normalizedAdditionalDeduction = additionalDeduction != null ? additionalDeduction : BigDecimal.ZERO;
+
         return PayrollRecord.builder()
             .employee(employee)
             .run(run)
