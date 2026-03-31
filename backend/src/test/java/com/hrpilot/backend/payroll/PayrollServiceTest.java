@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -218,13 +218,15 @@ class PayrollServiceTest {
         PayrollRecord record = buildPayrollRecord(employee, PayrollStatus.PUBLISHED);
 
         when(currentUserService.getCurrentUserEntity()).thenReturn(buildUser(Role.ADMIN));
-        when(payrollRepository.findByEmployeeIdOrderByYearDescMonthDesc(1L)).thenReturn(List.of(record));
+        Pageable pageable = PageRequest.of(0, 10);
+        when(payrollRepository.findByEmployeeIdOrderByYearDescMonthDesc(1L, pageable))
+            .thenReturn(new PageImpl<>(List.of(record)));
 
-        List<PayrollResponse> responses = payrollService.getPayrollsByEmployee(1L);
+        Page<PayrollResponse> responses = payrollService.getPayrollsByEmployee(1L, pageable);
 
-        assertEquals(1, responses.size());
-        assertEquals(1L, responses.getFirst().employeeId());
-        assertEquals("John Doe", responses.getFirst().employeeFullName());
+        assertEquals(1, responses.getContent().size());
+        assertEquals(1L, responses.getContent().getFirst().employeeId());
+        assertEquals("John Doe", responses.getContent().getFirst().employeeFullName());
     }
 
     @Test
