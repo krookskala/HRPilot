@@ -14,6 +14,7 @@ import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long>, JpaSpecificationExecutor<LeaveRequest> {
     List<LeaveRequest> findByEmployeeIdOrderByCreatedAtDesc(Long employeeId);
+    Page<LeaveRequest> findByEmployeeIdOrderByCreatedAtDesc(Long employeeId, Pageable pageable);
     List<LeaveRequest> findByEmployeeIdInOrderByCreatedAtDesc(Collection<Long> employeeIds);
     boolean existsByEmployeeIdAndStatusInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
         Long employeeId,
@@ -21,8 +22,6 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
         LocalDate endDate,
         LocalDate startDate
     );
-    long countByStatus(LeaveStatus status);
-    long countByEmployeeIdAndStatus(Long employeeId, LeaveStatus status);
     long countByEmployeeIdInAndStatus(Collection<Long> employeeIds, LeaveStatus status);
 
     @Query("SELECT l.status, COUNT(l) FROM LeaveRequest l GROUP BY l.status")
