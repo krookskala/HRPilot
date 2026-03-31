@@ -152,7 +152,7 @@ class LeaveRequestServiceTest {
         LeaveRequest leave = buildLeaveRequest(LeaveStatus.PENDING);
         Pageable pageable = PageRequest.of(0, 10);
         Page<LeaveRequest> page = new PageImpl<>(List.of(leave), pageable, 1);
-        when(leaveRequestRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+        when(leaveRequestRepository.findAll(org.mockito.ArgumentMatchers.<Specification<LeaveRequest>>any(), eq(pageable))).thenReturn(page);
 
         Page<LeaveRequestResponse> responses = leaveRequestService.getVisibleLeaveRequests(null, null, null, null, pageable);
 
@@ -164,12 +164,13 @@ class LeaveRequestServiceTest {
     void getLeaveRequestsByEmployee_success() {
         LeaveRequest leave = buildLeaveRequest(LeaveStatus.PENDING);
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
-        when(leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(1L)).thenReturn(List.of(leave));
+        Pageable pageable = PageRequest.of(0, 10);
+        when(leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(1L, pageable)).thenReturn(new PageImpl<>(List.of(leave)));
 
-        List<LeaveRequestResponse> responses = leaveRequestService.getLeaveRequestsByEmployee(1L);
+        Page<LeaveRequestResponse> responses = leaveRequestService.getLeaveRequestsByEmployee(1L, pageable);
 
-        assertEquals(1, responses.size());
-        assertEquals(1L, responses.get(0).employeeId());
+        assertEquals(1, responses.getTotalElements());
+        assertEquals(1L, responses.getContent().get(0).employeeId());
     }
 
     @Test
