@@ -89,6 +89,7 @@ public class LeaveRequestService {
         return toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public Page<LeaveRequestResponse> getVisibleLeaveRequests(
             LeaveStatus status,
             LeaveType type,
@@ -100,25 +101,26 @@ public class LeaveRequestService {
         return leaveRequestRepository.findAll(specification, pageable).map(this::toResponse);
     }
 
-    public List<LeaveRequestResponse> getLeaveRequestsByEmployee(Long employeeId) {
+    @Transactional(readOnly = true)
+    public Page<LeaveRequestResponse> getLeaveRequestsByEmployee(Long employeeId, Pageable pageable) {
         User actorUser = currentUserService.getCurrentUserEntity();
         Employee employee = employeeRepository.findById(employeeId)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", employeeId));
         assertCanViewLeave(actorUser, employee);
-        return leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(employeeId).stream()
-            .map(this::toResponse)
-            .toList();
+        return leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(employeeId, pageable)
+            .map(this::toResponse);
     }
 
-    public List<LeaveRequestResponse> getCurrentUserLeaveRequests() {
+    @Transactional(readOnly = true)
+    public Page<LeaveRequestResponse> getCurrentUserLeaveRequests(Pageable pageable) {
         User actorUser = currentUserService.getCurrentUserEntity();
         return employeeRepository.findByUserId(actorUser.getId())
-            .map(employee -> leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(employee.getId()).stream()
-                .map(this::toResponse)
-                .toList())
-            .orElse(List.of());
+            .map(employee -> leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(employee.getId(), pageable)
+                .map(this::toResponse))
+            .orElse(Page.empty(pageable));
     }
 
+    @Transactional(readOnly = true)
     public List<LeaveRequestHistoryResponse> getLeaveRequestHistory(Long id) {
         LeaveRequest leaveRequest = getVisibleLeaveRequest(id);
         return leaveRequestHistoryRepository.findByLeaveRequestIdOrderByOccurredAtDesc(leaveRequest.getId()).stream()
