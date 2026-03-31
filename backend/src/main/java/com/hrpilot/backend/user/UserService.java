@@ -2,11 +2,15 @@ package com.hrpilot.backend.user;
 
 import com.hrpilot.backend.audit.AuditLogService;
 import com.hrpilot.backend.auth.InvitationToken;
+import com.hrpilot.backend.auth.InvitationTokenRepository;
 import com.hrpilot.backend.auth.InvitationTokenService;
+import com.hrpilot.backend.auth.PasswordResetTokenRepository;
 import com.hrpilot.backend.auth.RefreshTokenService;
 import com.hrpilot.backend.common.exception.DuplicateResourceException;
 import com.hrpilot.backend.common.exception.ResourceNotFoundException;
 import com.hrpilot.backend.employee.EmployeeRepository;
+import com.hrpilot.backend.employee.EmployeeService;
+import com.hrpilot.backend.notification.NotificationRepository;
 import com.hrpilot.backend.notification.NotificationService;
 import com.hrpilot.backend.notification.NotificationType;
 import com.hrpilot.backend.user.dto.AdminInviteUserRequest;
@@ -22,6 +26,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.time.LocalDateTime;
 
@@ -32,10 +40,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
     private final InvitationTokenService invitationTokenService;
+    private final InvitationTokenRepository invitationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final RefreshTokenService refreshTokenService;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmployeeService employeeService;
 
     @Value("${app.frontend-base-url:http://localhost:4200}")
     private String frontendBaseUrl;
@@ -94,14 +106,32 @@ public class UserService {
         return toResponse(userRepository.save(user));
     }
 
+    @Transactional(readOnly = true)
     public Page<UserResponse> getAllUsers(String email, Role role, Boolean isActive, Pageable pageable) {
-        return userRepository.search(email, role, isActive, pageable).map(this::toResponse);
+        Specification<User> spec = Specification.allOf(
+            (root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                if (email != null && !email.isBlank()) {
+                    predicates.add(cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+                }
+                if (role != null) {
+                    predicates.add(cb.equal(root.get("role"), role));
+                }
+                if (isActive != null) {
+                    predicates.add(cb.equal(root.get("isActive"), isActive));
+                }
+                return cb.and(predicates.toArray(new Predicate[0]));
+            }
+        );
+        return userRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<UserResponse> getAllUsers(Pageable pageable) {
         return getAllUsers(null, null, null, pageable);
     }
 
+    @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
@@ -162,11 +192,25 @@ public class UserService {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
+        // 1. Delete auth tokens
         refreshTokenService.deleteByUserId(id);
+        invitationTokenRepository.deleteByUserId(id);
+        passwordResetTokenRepository.deleteByUserId(id);
+
+        // 2. Delete employee and its dependencies (leave, payroll, etc.) if exists
+        employeeRepository.findByUserId(id)
+            .ifPresent(employee -> employeeService.deleteEmployee(employee.getId()));
+
+        // 3. Delete notifications
+        notificationRepository.deleteByUserId(id);
+
+        // 4. Delete the user
         userRepository.delete(user);
 
-        auditLogService.log(actorUser, "USER_DELETED", "User", id.toString(),
-            "User deleted: " + user.getEmail(), null);
+        if (actorUser != null) {
+            auditLogService.log(actorUser, "USER_DELETED", "User", id.toString(),
+                "User deleted: " + user.getEmail(), null);
+        }
     }
 
     public void deleteUser(Long id) {
