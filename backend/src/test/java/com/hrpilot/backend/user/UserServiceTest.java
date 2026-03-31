@@ -44,6 +44,9 @@ class UserServiceTest {
     private InvitationTokenService invitationTokenService;
 
     @Mock
+    private com.hrpilot.backend.auth.InvitationTokenRepository invitationTokenRepository;
+
+    @Mock
     private RefreshTokenService refreshTokenService;
 
     @Mock
@@ -54,6 +57,15 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private com.hrpilot.backend.auth.PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Mock
+    private com.hrpilot.backend.notification.NotificationRepository notificationRepository;
+
+    @Mock
+    private com.hrpilot.backend.employee.EmployeeService employeeService;
 
     @InjectMocks
     private UserService userService;
@@ -132,7 +144,7 @@ class UserServiceTest {
         User user2 = User.builder().id(2L).email("b@test.com").role(Role.ADMIN).build();
         Pageable pageable = PageRequest.of(0, 10);
         Page<User> page = new PageImpl<>(List.of(user1, user2), pageable, 2);
-        when(userRepository.search(null, null, null, pageable)).thenReturn(page);
+        when(userRepository.findAll(argThat((org.springframework.data.jpa.domain.Specification<User> spec) -> spec != null), eq(pageable))).thenReturn(page);
 
         // Act
         Page<UserResponse> responses = userService.getAllUsers(pageable);
