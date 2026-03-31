@@ -25,4 +25,14 @@ public final class EmployeeSpecification {
         return (root, query, cb) ->
             cb.like(cb.lower(root.get("position")), "%" + position.toLowerCase() + "%");
     }
+
+    public static Specification<Employee> hasDepartmentIdIn(java.util.Collection<Long> departmentIds) {
+        return (root, query, cb) ->
+            root.get("department").get("id").in(departmentIds);
+    }
+
+    public static Specification<Employee> hasUserId(Long userId) {
+        return (root, query, cb) ->
+            cb.equal(root.get("user").get("id"), userId);
+    }
 }
