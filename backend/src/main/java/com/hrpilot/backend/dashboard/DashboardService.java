@@ -1,6 +1,5 @@
 package com.hrpilot.backend.dashboard;
 
-import com.hrpilot.backend.audit.AuditLog;
 import com.hrpilot.backend.audit.AuditLogRepository;
 import com.hrpilot.backend.dashboard.dto.DashboardResponse;
 import com.hrpilot.backend.dashboard.dto.DashboardResponse.*;
@@ -9,12 +8,9 @@ import com.hrpilot.backend.department.DepartmentRepository;
 import com.hrpilot.backend.employee.Employee;
 import com.hrpilot.backend.employee.EmployeeRepository;
 import com.hrpilot.backend.leave.LeaveBalanceRepository;
-import com.hrpilot.backend.leave.LeaveRequest;
 import com.hrpilot.backend.leave.LeaveRequestRepository;
 import com.hrpilot.backend.leave.LeaveStatus;
-import com.hrpilot.backend.notification.Notification;
 import com.hrpilot.backend.notification.NotificationRepository;
-import com.hrpilot.backend.payroll.PayrollRecord;
 import com.hrpilot.backend.payroll.PayrollRepository;
 import com.hrpilot.backend.payroll.PayrollStatus;
 import com.hrpilot.backend.user.CurrentUserService;
@@ -31,7 +27,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
@@ -356,19 +351,7 @@ public class DashboardService {
             .toList();
     }
 
-    private long countScopedLeave(Collection<Long> employeeIds, LeaveStatus status) {
-        if (employeeIds.isEmpty()) {
-            return 0;
-        }
-        return leaveRequestRepository.countByEmployeeIdInAndStatus(employeeIds, status);
-    }
 
-    private long countScopedPayroll(Collection<Long> employeeIds, PayrollStatus status) {
-        if (employeeIds.isEmpty()) {
-            return 0;
-        }
-        return payrollRepository.countByEmployeeIdInAndStatus(employeeIds, status);
-    }
 
     private int availableLeaveDays(Long employeeId) {
         return leaveBalanceRepository.findByEmployeeIdAndYear(employeeId, LocalDate.now().getYear()).stream()
