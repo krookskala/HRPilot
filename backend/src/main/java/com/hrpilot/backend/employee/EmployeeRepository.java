@@ -18,7 +18,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     boolean existsByUserId(Long userId);
     boolean existsByDepartmentId(Long departmentId);
     List<Employee> findByDepartmentIdIn(Collection<Long> departmentIds);
-    long countByDepartmentIdIn(Collection<Long> departmentIds);
+
+    @Query("SELECT e FROM Employee e LEFT JOIN FETCH e.user LEFT JOIN FETCH e.department")
+    List<Employee> findAllWithUserAndDepartment();
 
     @Query("SELECT e.department.name, COUNT(e) FROM Employee e WHERE e.department IS NOT NULL GROUP BY e.department.name")
     List<Object[]> countGroupByDepartmentName();
