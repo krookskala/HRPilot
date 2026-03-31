@@ -194,11 +194,11 @@ class LeaveRequestControllerTest {
     @Test
     @WithMockUser
     void getLeaveRequestsByEmployee_returns200() throws Exception {
-        when(leaveRequestService.getLeaveRequestsByEmployee(1L))
-            .thenReturn(List.of(buildResponse(LeaveStatus.PENDING)));
+        when(leaveRequestService.getLeaveRequestsByEmployee(eq(1L), any(Pageable.class)))
+            .thenReturn(new PageImpl<>(List.of(buildResponse(LeaveStatus.PENDING))));
 
         mockMvc.perform(get("/api/leave-requests/employee/1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].employeeId").value(1));
+            .andExpect(jsonPath("$.content[0].employeeId").value(1));
     }
 }
