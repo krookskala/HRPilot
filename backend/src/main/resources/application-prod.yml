@@ -11,6 +11,17 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+
 logging:
   level:
     com.hrpilot.backend: INFO
