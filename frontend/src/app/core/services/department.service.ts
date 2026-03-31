@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
-import { Department, CreateDepartmentRequest } from "../../shared/models/department.model";
+import { Department, CreateDepartmentRequest, UpdateDepartmentRequest } from "../../shared/models/department.model";
 import { Page } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
@@ -20,5 +20,9 @@ export class DepartmentService {
 
     createDepartment(request: CreateDepartmentRequest): Observable<Department> {
         return this.http.post<Department>(`${this.apiUrl}/departments`, request);
+    }
+
+    updateDepartment(id: number, request: UpdateDepartmentRequest): Observable<Department> {
+        return this.http.put<Department>(`${this.apiUrl}/departments/${id}`, request);
     }
 }
