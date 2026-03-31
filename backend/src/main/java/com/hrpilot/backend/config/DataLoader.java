@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Component
 @Profile("dev")
@@ -39,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
     private final LeaveRequestRepository leaveRequestRepository;
     private final PayrollRepository payrollRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.hrpilot.backend.leave.LeaveCalendarService leaveCalendarService;
 
     @Override
     @Transactional
@@ -51,7 +51,7 @@ public class DataLoader implements CommandLineRunner {
         log.info("Seeding database with demo data...");
 
         // ── Users ──────────────────────────────────────────
-        User admin = createUser("admin@hrpilot.com", "admin123", Role.ADMIN);
+        createUser("admin@hrpilot.com", "admin123", Role.ADMIN);
         User hrManager = createUser("hr@hrpilot.com", "hr1234", Role.HR_MANAGER);
         User manager1 = createUser("john.doe@hrpilot.com", "pass1234", Role.DEPARTMENT_MANAGER);
         User manager2 = createUser("jane.smith@hrpilot.com", "pass1234", Role.DEPARTMENT_MANAGER);
@@ -84,7 +84,7 @@ public class DataLoader implements CommandLineRunner {
                 new BigDecimal("60000"), LocalDate.of(2023, 8, 15), finance);
         Employee empEmma = createEmployee(emp5, "Emma", "Fischer", "Frontend Developer",
                 new BigDecimal("65000"), LocalDate.of(2024, 1, 8), frontend);
-        Employee empFrank = createEmployee(emp6, "Frank", "Weber", "DevOps Engineer",
+        createEmployee(emp6, "Frank", "Weber", "DevOps Engineer",
                 new BigDecimal("70000"), LocalDate.of(2024, 3, 1), engineering);
 
         // ── Leave Requests ─────────────────────────────────
@@ -162,7 +162,7 @@ public class DataLoader implements CommandLineRunner {
                 .type(type)
                 .startDate(start)
                 .endDate(end)
-                .workingDays((int) ChronoUnit.DAYS.between(start, end) + 1)
+                .workingDays(leaveCalendarService.calculateWorkingDays(start, end))
                 .status(status)
                 .reason(reason)
                 .build();
