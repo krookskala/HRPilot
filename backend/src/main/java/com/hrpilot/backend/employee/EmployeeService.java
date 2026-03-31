@@ -166,7 +166,6 @@ public class EmployeeService {
                 spec = spec.and(EmployeeSpecification.hasUserId(actorUser.getId()));
             }
         }
-        // ADMIN and HR_MANAGER see all — no scope restriction
 
         // Apply user-provided filters
         if (search != null && !search.isBlank()) {
