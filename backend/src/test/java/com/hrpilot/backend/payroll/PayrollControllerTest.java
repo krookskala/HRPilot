@@ -213,13 +213,13 @@ class PayrollControllerTest {
     @Test
     @WithMockUser
     void getPayrollsByEmployee_returns200() throws Exception {
-        when(payrollService.getPayrollsByEmployee(1L))
-            .thenReturn(List.of(buildResponse(PayrollStatus.PUBLISHED)));
+        when(payrollService.getPayrollsByEmployee(org.mockito.ArgumentMatchers.eq(1L), any(Pageable.class)))
+            .thenReturn(new PageImpl<>(List.of(buildResponse(PayrollStatus.PUBLISHED))));
 
         mockMvc.perform(get("/api/payrolls/employee/1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].employeeFullName").value("John Doe"))
-            .andExpect(jsonPath("$[0].status").value("PUBLISHED"));
+            .andExpect(jsonPath("$.content[0].employeeFullName").value("John Doe"))
+            .andExpect(jsonPath("$.content[0].status").value("PUBLISHED"));
     }
 
     @Test
