@@ -7,7 +7,12 @@ import com.hrpilot.backend.department.DepartmentRepository;
 import com.hrpilot.backend.department.DepartmentScopeService;
 import com.hrpilot.backend.employee.dto.CreateEmployeeRequest;
 import com.hrpilot.backend.employee.dto.EmployeeResponse;
+import com.hrpilot.backend.leave.LeaveBalanceRepository;
+import com.hrpilot.backend.leave.LeaveRequestHistoryRepository;
+import com.hrpilot.backend.leave.LeaveRequestRepository;
 import com.hrpilot.backend.notification.NotificationService;
+import com.hrpilot.backend.payroll.PayrollComponentRepository;
+import com.hrpilot.backend.payroll.PayrollRepository;
 import com.hrpilot.backend.user.CurrentUserService;
 import com.hrpilot.backend.user.Role;
 import com.hrpilot.backend.user.User;
@@ -32,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.argThat;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -65,6 +71,21 @@ class EmployeeServiceTest {
 
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private LeaveRequestHistoryRepository leaveRequestHistoryRepository;
+
+    @Mock
+    private LeaveRequestRepository leaveRequestRepository;
+
+    @Mock
+    private LeaveBalanceRepository leaveBalanceRepository;
+
+    @Mock
+    private PayrollComponentRepository payrollComponentRepository;
+
+    @Mock
+    private PayrollRepository payrollRepository;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -137,7 +158,7 @@ class EmployeeServiceTest {
         Employee employee = buildEmployee(user);
         Pageable pageable = PageRequest.of(0, 10);
         Page<Employee> page = new PageImpl<>(List.of(employee), pageable, 1);
-        when(employeeRepository.findAll(pageable)).thenReturn(page);
+        when(employeeRepository.findAll(argThat((org.springframework.data.jpa.domain.Specification<Employee> spec) -> true), org.mockito.ArgumentMatchers.eq(pageable))).thenReturn(page);
 
         Page<EmployeeResponse> responses = employeeService.getAllEmployees(pageable);
 
