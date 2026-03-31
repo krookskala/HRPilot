@@ -7,7 +7,6 @@ import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
-import { NgIf } from "@angular/common";
 import { Router, RouterLink } from "@angular/router";
 import { TranslateModule } from "@ngx-translate/core";
 
@@ -15,7 +14,7 @@ import { TranslateModule } from "@ngx-translate/core";
     selector: 'app-login',
     standalone: true,
     imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, NgIf, RouterLink, TranslateModule],
+    MatInputModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, RouterLink, TranslateModule],
     templateUrl: './login.html',
     styleUrl: './login.scss'
 })
