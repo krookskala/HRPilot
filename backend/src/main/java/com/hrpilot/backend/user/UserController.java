@@ -4,6 +4,8 @@ import com.hrpilot.backend.user.dto.AdminInviteUserRequest;
 import com.hrpilot.backend.user.dto.UserResponse;
 import com.hrpilot.backend.user.dto.UserInvitationResponse;
 import com.hrpilot.backend.user.dto.UpdateUserRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+@Tag(name = "Users", description = "User management (admin only)")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class UserController {
     private final UserService userService;
     private final CurrentUserService currentUserService;
 
+    @Operation(summary = "Invite a new user")
     @PostMapping("/invite")
     public ResponseEntity<UserInvitationResponse> inviteUser(
             @Valid @RequestBody AdminInviteUserRequest request) {
@@ -38,6 +42,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "List all users with optional filtering")
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getAllUsers(
             @org.springframework.web.bind.annotation.RequestParam(required = false) String email,
@@ -47,21 +52,25 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers(email, role, isActive, pageable));
     }
 
+    @Operation(summary = "Get user by ID")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @Operation(summary = "Update a user")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(userService.updateUser(id, request, currentUserService.getCurrentUserEntity()));
     }
 
+    @Operation(summary = "Resend invitation to a user")
     @PostMapping("/{id}/resend-invite")
     public ResponseEntity<UserInvitationResponse> resendInvitation(@PathVariable Long id) {
         return ResponseEntity.ok(userService.resendInvitation(id, currentUserService.getCurrentUserEntity()));
     }
 
+    @Operation(summary = "Delete a user")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id, currentUserService.getCurrentUserEntity());
