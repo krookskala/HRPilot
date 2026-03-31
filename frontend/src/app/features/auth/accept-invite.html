@@ -3,13 +3,20 @@
         <div class="auth-header">
             <mat-icon>mail</mat-icon>
             <h1>Accept Invitation</h1>
-            <p *ngIf="email">{{ email }}</p>
+            @if (email) {
+            <p>{{ email }}</p>
+            }
         </div>
 
-        <div *ngIf="loading" class="auth-message">Validating invitation...</div>
-        <div *ngIf="error" class="auth-error">{{ error }}</div>
+        @if (loading) {
+        <div class="auth-message">Validating invitation...</div>
+        }
+        @if (error) {
+        <div class="auth-error">{{ error }}</div>
+        }
 
-        <form *ngIf="!loading && !error" [formGroup]="form" class="auth-form" (ngSubmit)="submit()">
+        @if (!loading && !error) {
+        <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()">
             <mat-form-field appearance="outline">
                 <mat-label>Password</mat-label>
                 <input matInput type="password" formControlName="password" />
@@ -26,5 +33,6 @@
                 Activate Account
             </button>
         </form>
+        }
     </mat-card>
 </div>
