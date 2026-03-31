@@ -36,12 +36,12 @@ export class LeaveService {
         return this.http.get<Page<LeaveRequest>>(`${this.apiUrl}/leave-requests`, { params });
     }
 
-    getByEmployee(employeeId: number): Observable<LeaveRequest[]> {
-        return this.http.get<LeaveRequest[]>(`${this.apiUrl}/leave-requests/employee/${employeeId}`);
+    getByEmployee(employeeId: number, page = 0, size = 20): Observable<Page<LeaveRequest>> {
+        return this.http.get<Page<LeaveRequest>>(`${this.apiUrl}/leave-requests/employee/${employeeId}?page=${page}&size=${size}`);
     }
 
-    getMine(): Observable<LeaveRequest[]> {
-        return this.http.get<LeaveRequest[]>(`${this.apiUrl}/me/leave-requests`);
+    getMine(page = 0, size = 20): Observable<Page<LeaveRequest>> {
+        return this.http.get<Page<LeaveRequest>>(`${this.apiUrl}/me/leave-requests?page=${page}&size=${size}`);
     }
 
     create(request: CreateLeaveRequest): Observable<LeaveRequest> {
