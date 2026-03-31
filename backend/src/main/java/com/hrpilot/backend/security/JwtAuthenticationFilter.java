@@ -2,7 +2,7 @@ package com.hrpilot.backend.security;
 
 import com.hrpilot.backend.user.User;
 import com.hrpilot.backend.user.UserRepository;
-import com.hrpilot.backend.security.AuthenticatedUser;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
