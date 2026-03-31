@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/hrpilot
-    username: hrpilot
-    password: hrpilot123
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/hrpilot}
+    username: ${DB_USERNAME:hrpilot}
+    password: ${DB_PASSWORD:hrpilot123}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
