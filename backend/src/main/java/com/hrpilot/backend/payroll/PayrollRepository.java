@@ -35,13 +35,8 @@ public interface PayrollRepository extends JpaRepository<PayrollRecord, Long> {
 
     boolean existsByEmployeeIdAndYearAndMonth(Long employeeId, int year, int month);
     Optional<PayrollRecord> findByIdAndEmployeeId(Long id, Long employeeId);
-    long countByStatus(PayrollStatus status);
-    long countByEmployeeIdInAndStatus(Collection<Long> employeeIds, PayrollStatus status);
     long countByEmployeeIdAndStatusIn(Long employeeId, Collection<PayrollStatus> statuses);
     long countByRunId(Long runId);
-
-    @Query("SELECT COALESCE(SUM(p.netSalary), 0) FROM PayrollRecord p WHERE p.status = 'PAID'")
-    BigDecimal sumPaidNetSalary();
 
     @Query("SELECT p.status, COUNT(p), COALESCE(SUM(p.netSalary), 0) FROM PayrollRecord p GROUP BY p.status")
     List<Object[]> countAndSumGroupByStatus();
