@@ -15,8 +15,13 @@ import com.hrpilot.backend.employee.dto.EmployeeDocumentResponse;
 import com.hrpilot.backend.employee.dto.EmployeeResponse;
 import com.hrpilot.backend.employee.dto.EmploymentHistoryResponse;
 import com.hrpilot.backend.employee.dto.UpdateEmployeeRequest;
+import com.hrpilot.backend.leave.LeaveBalanceRepository;
+import com.hrpilot.backend.leave.LeaveRequestHistoryRepository;
+import com.hrpilot.backend.leave.LeaveRequestRepository;
 import com.hrpilot.backend.notification.NotificationService;
 import com.hrpilot.backend.notification.NotificationType;
+import com.hrpilot.backend.payroll.PayrollComponentRepository;
+import com.hrpilot.backend.payroll.PayrollRepository;
 import com.hrpilot.backend.user.CurrentUserService;
 import com.hrpilot.backend.user.Role;
 import com.hrpilot.backend.user.User;
@@ -47,7 +52,13 @@ public class EmployeeService {
     private final CurrentUserService currentUserService;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final LeaveRequestHistoryRepository leaveRequestHistoryRepository;
+    private final LeaveRequestRepository leaveRequestRepository;
+    private final LeaveBalanceRepository leaveBalanceRepository;
+    private final PayrollComponentRepository payrollComponentRepository;
+    private final PayrollRepository payrollRepository;
 
+    @Transactional
     public EmployeeResponse createEmployee(CreateEmployeeRequest request) {
         log.info("Creating employee for user id: {}", request.userId());
         User user = userRepository.findById(request.userId())
@@ -117,6 +128,7 @@ public class EmployeeService {
         return toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<EmploymentHistoryResponse> getEmploymentHistory(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", employeeId));
@@ -127,15 +139,36 @@ public class EmployeeService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public Page<EmployeeResponse> getAllEmployees(Pageable pageable) {
-        return employeeRepository.findAll(pageable)
-            .map(this::toResponse);
+        return scopedSearch(null, null, null, pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<EmployeeResponse> searchEmployees(String search, Long departmentId,
                                                   String position, Pageable pageable) {
-        Specification<Employee> spec = (root, query, cb) -> cb.conjunction();
+        return scopedSearch(search, departmentId, position, pageable);
+    }
 
+    private Page<EmployeeResponse> scopedSearch(String search, Long departmentId,
+                                                 String position, Pageable pageable) {
+        Specification<Employee> spec = Specification.allOf();
+
+        // Role-based scope restriction
+        User actorUser = currentUserService.getCurrentUserEntity();
+        if (actorUser.getRole() == Role.EMPLOYEE) {
+            spec = spec.and(EmployeeSpecification.hasUserId(actorUser.getId()));
+        } else if (actorUser.getRole() == Role.DEPARTMENT_MANAGER) {
+            var scopedDeptIds = departmentScopeService.getManagedDepartmentIds(actorUser.getId());
+            if (!scopedDeptIds.isEmpty()) {
+                spec = spec.and(EmployeeSpecification.hasDepartmentIdIn(scopedDeptIds));
+            } else {
+                spec = spec.and(EmployeeSpecification.hasUserId(actorUser.getId()));
+            }
+        }
+        // ADMIN and HR_MANAGER see all — no scope restriction
+
+        // Apply user-provided filters
         if (search != null && !search.isBlank()) {
             spec = spec.and(EmployeeSpecification.hasNameContaining(search));
         }
@@ -149,6 +182,7 @@ public class EmployeeService {
         return employeeRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public EmployeeResponse getEmployeeById(Long id) {
         Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", id));
@@ -156,6 +190,7 @@ public class EmployeeService {
         return toResponse(employee);
     }
 
+    @Transactional(readOnly = true)
     public EmployeeDetailResponse getEmployeeDetail(Long id) {
         Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", id));
@@ -189,6 +224,7 @@ public class EmployeeService {
         return toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public StoredFileContent downloadPhoto(Long id) {
         Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", id));
@@ -229,6 +265,7 @@ public class EmployeeService {
         return toDocumentResponse(document);
     }
 
+    @Transactional(readOnly = true)
     public List<EmployeeDocumentResponse> getEmployeeDocuments(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", employeeId));
@@ -238,6 +275,7 @@ public class EmployeeService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public StoredFileContent downloadDocument(Long employeeId, Long documentId) {
         EmployeeDocument document = employeeDocumentRepository.findByIdAndEmployeeId(documentId, employeeId)
             .orElseThrow(() -> new ResourceNotFoundException("EmployeeDocument", "id", documentId));
@@ -245,8 +283,9 @@ public class EmployeeService {
         return fileStorageService.load(document.getStorageKey(), document.getOriginalFilename());
     }
 
+    @Transactional(readOnly = true)
     public String exportToCsv() {
-        List<Employee> employees = employeeRepository.findAll();
+        List<Employee> employees = employeeRepository.findAllWithUserAndDepartment();
         StringBuilder sb = new StringBuilder();
         sb.append("ID,First Name,Last Name,Email,Position,Department,Salary,Hire Date\n");
 
@@ -264,16 +303,29 @@ public class EmployeeService {
         return sb.toString();
     }
 
+    @Transactional
     public void deleteEmployee(Long id) {
         log.info("Deleting employee with id: {}", id);
         Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", id));
 
+        // 1. Delete file storage artifacts
         if (employee.getPhotoUrl() != null) {
             fileStorageService.delete(employee.getPhotoUrl());
         }
         employeeDocumentRepository.findByEmployeeIdOrderByCreatedAtDesc(id)
             .forEach(document -> fileStorageService.delete(document.getStorageKey()));
+
+        // 2. Delete dependent records in correct FK order
+        leaveRequestHistoryRepository.deleteByLeaveRequestEmployeeId(id);
+        leaveRequestRepository.deleteByEmployeeId(id);
+        leaveBalanceRepository.deleteByEmployeeId(id);
+        payrollComponentRepository.deleteByPayrollRecordEmployeeId(id);
+        payrollRepository.deleteByEmployeeId(id);
+        historyRepository.deleteByEmployeeId(id);
+        employeeDocumentRepository.deleteByEmployeeId(id);
+
+        // 3. Delete the employee itself
         employeeRepository.delete(employee);
         log.info("Employee deleted successfully with id: {}", id);
     }
