@@ -7,6 +7,8 @@ import com.hrpilot.backend.employee.dto.UpdateEmployeeRequest;
 import com.hrpilot.backend.employee.dto.EmployeeResponse;
 import com.hrpilot.backend.employee.dto.EmploymentHistoryResponse;
 import com.hrpilot.backend.common.storage.StoredFileContent;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -21,12 +23,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
+@Tag(name = "Employees", description = "Employee management operations")
 @RestController
 @RequestMapping("/api/employees")
 @RequiredArgsConstructor
 public class EmployeeController {
     private final EmployeeService employeeService;
 
+    @Operation(summary = "Create a new employee")
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<EmployeeResponse> createEmployee(@Valid @RequestBody CreateEmployeeRequest request) {
@@ -34,7 +38,9 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeResponse);
     }
 
+    @Operation(summary = "List employees with optional filtering")
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployees(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long departmentId,
@@ -51,6 +57,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(summary = "Export employees to CSV")
     @GetMapping("/export/csv")
     @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<byte[]> exportCsv() {
@@ -61,28 +68,36 @@ public class EmployeeController {
             .body(csv.getBytes());
     }
 
+    @Operation(summary = "Get employee by ID")
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<EmployeeResponse> getEmployeeById(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
+    @Operation(summary = "Get detailed employee information")
     @GetMapping("/{id}/detail")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<EmployeeDetailResponse> getEmployeeDetail(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.getEmployeeDetail(id));
     }
 
+    @Operation(summary = "Update an employee")
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<EmployeeResponse> updateEmployee(@PathVariable Long id,
-                                                            @RequestBody UpdateEmployeeRequest request) {
+                                                            @Valid @RequestBody UpdateEmployeeRequest request) {
         return ResponseEntity.ok(employeeService.updateEmployee(id, request));
     }
 
+    @Operation(summary = "Get employment history")
     @GetMapping("/{id}/history")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<EmploymentHistoryResponse>> getHistory(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.getEmploymentHistory(id));
     }
 
+    @Operation(summary = "Delete an employee")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
@@ -90,14 +105,18 @@ public class EmployeeController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Upload employee photo")
     @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<EmployeeResponse> uploadPhoto(@PathVariable Long id,
                                                          @RequestParam("file") MultipartFile file) {
         EmployeeResponse response = employeeService.uploadPhoto(id, file);
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Download employee photo")
     @GetMapping("/{id}/photo/download")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<InputStreamResource> downloadPhoto(@PathVariable Long id) {
         StoredFileContent fileContent = employeeService.downloadPhoto(id);
         return ResponseEntity.ok()
@@ -106,11 +125,14 @@ public class EmployeeController {
             .body(fileContent.resource());
     }
 
+    @Operation(summary = "List employee documents")
     @GetMapping("/{id}/documents")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<EmployeeDocumentResponse>> getDocuments(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.getEmployeeDocuments(id));
     }
 
+    @Operation(summary = "Upload employee document")
     @PostMapping(value = "/{id}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<EmployeeDocumentResponse> uploadDocument(
@@ -122,7 +144,9 @@ public class EmployeeController {
             .body(employeeService.uploadDocument(id, title, description, file));
     }
 
+    @Operation(summary = "Download employee document")
     @GetMapping("/{id}/documents/{documentId}/download")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<InputStreamResource> downloadDocument(
             @PathVariable Long id,
             @PathVariable Long documentId) {
