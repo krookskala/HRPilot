@@ -5,6 +5,5 @@ import java.util.List;
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
     boolean existsByName(String name);
-    List<Department> findByManagerId(Long managerId);
     List<Department> findByParentDepartmentId(Long parentDepartmentId);
 }
