@@ -1,272 +1,306 @@
 <div class="dashboard">
-    <div class="welcome-banner" *ngIf="data">
-        <div class="welcome-content">
-            <div class="eyebrow">{{ data.role.replace('_', ' ') }}</div>
-            <h1 class="welcome-title">{{ data.headline }}</h1>
-            <p class="welcome-text">{{ data.subheadline }}</p>
+    @if (data) {
+        <div class="welcome-banner">
+            <div class="welcome-content">
+                <div class="eyebrow">{{ data.role.replace('_', ' ') }}</div>
+                <h1 class="welcome-title">{{ data.headline }}</h1>
+                <p class="welcome-text">{{ data.subheadline }}</p>
+            </div>
+            <mat-icon class="welcome-icon">insights</mat-icon>
         </div>
-        <mat-icon class="welcome-icon">insights</mat-icon>
-    </div>
+    }
 
-    <div *ngIf="loading" class="spinner-center">
-        <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (loading) {
+        <div class="spinner-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    }
 
-    <div *ngIf="error" class="error-banner">{{ error }}</div>
+    @if (error) {
+        <div class="error-banner">{{ error }}</div>
+    }
 
-    <div class="metrics-grid" *ngIf="data">
-        <mat-card class="metric-card" *ngFor="let metric of data.keyMetrics; trackBy: trackMetric">
-            <mat-card-content>
-                <div class="metric-icon" [class]="'metric-icon ' + metric.accent">
-                    <mat-icon>{{ metric.icon }}</mat-icon>
-                </div>
-                <div class="metric-copy">
-                    <div class="metric-value">{{ metric.value }}</div>
-                    <div class="metric-label">{{ metric.label }}</div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-    </div>
-
-    <div class="overview-grid" *ngIf="data">
-        <mat-card class="overview-card">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon green">event_available</mat-icon>
-                <mat-card-title>{{ 'dashboard.leaveOverview' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="stat-row">
-                    <div class="stat-pill">
-                        <span class="stat-pill-value pending">{{ data.leaveOverview.pending }}</span>
-                        <span class="stat-pill-label">{{ 'dashboard.pending' | translate }}</span>
-                    </div>
-                    <div class="stat-pill">
-                        <span class="stat-pill-value approved">{{ data.leaveOverview.approved }}</span>
-                        <span class="stat-pill-label">{{ 'dashboard.approved' | translate }}</span>
-                    </div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-pill">
-                        <span class="stat-pill-value rejected">{{ data.leaveOverview.rejected }}</span>
-                        <span class="stat-pill-label">{{ 'dashboard.rejected' | translate }}</span>
-                    </div>
-                    <div class="stat-pill">
-                        <span class="stat-pill-value cancelled">{{ data.leaveOverview.cancelled }}</span>
-                        <span class="stat-pill-label">{{ 'dashboard.cancelled' | translate }}</span>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="overview-card">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon indigo">payments</mat-icon>
-                <mat-card-title>{{ 'dashboard.payrollOverview' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="stat-row">
-                    <div class="stat-pill">
-                        <span class="stat-pill-value draft">{{ data.payrollOverview.draft }}</span>
-                        <span class="stat-pill-label">{{ 'dashboard.draft' | translate }}</span>
-                    </div>
-                    <div class="stat-pill">
-                        <span class="stat-pill-value published">{{ data.payrollOverview.published }}</span>
-                        <span class="stat-pill-label">{{ 'dashboard.published' | translate }}</span>
-                    </div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-pill">
-                        <span class="stat-pill-value paid">{{ data.payrollOverview.paid }}</span>
-                        <span class="stat-pill-label">{{ 'dashboard.paid' | translate }}</span>
-                    </div>
-                    <div class="stat-pill total-pill">
-                        <span class="stat-pill-value total">{{ data.payrollOverview.totalNetSalary | number:'1.2-2' }} EUR</span>
-                        <span class="stat-pill-label">{{ 'dashboard.totalNet' | translate }}</span>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="overview-card">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon slate">notifications</mat-icon>
-                <mat-card-title>{{ 'dashboard.notificationHealth' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="single-stat">
-                    <div class="single-stat-value">{{ data.notificationOverview.unreadNotifications }}</div>
-                    <div class="single-stat-label">{{ 'dashboard.unreadNotifications' | translate }}</div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="overview-card" *ngIf="data.teamOverview">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon orange">groups</mat-icon>
-                <mat-card-title>{{ 'dashboard.teamSnapshot' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="summary-list">
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.managedDepartments' | translate }}</span>
-                        <strong>{{ data.teamOverview.managedDepartments }}</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.teamMembers' | translate }}</span>
-                        <strong>{{ data.teamOverview.teamMembers }}</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.pendingLeaveRequests' | translate }}</span>
-                        <strong>{{ data.teamOverview.pendingLeaveRequests }}</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.paidPayrolls' | translate }}</span>
-                        <strong>{{ data.teamOverview.paidPayrolls }}</strong>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="overview-card" *ngIf="data.personalOverview">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon cyan">badge</mat-icon>
-                <mat-card-title>{{ 'dashboard.mySnapshot' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="summary-list">
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.availableLeaveDays' | translate }}</span>
-                        <strong>{{ data.personalOverview.availableLeaveDays }}</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.pendingLeaveRequests' | translate }}</span>
-                        <strong>{{ data.personalOverview.pendingLeaveRequests }}</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.payslipsOnRecord' | translate }}</span>
-                        <strong>{{ data.personalOverview.payrollRecords }}</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.profileCompletion' | translate }}</span>
-                        <strong>{{ data.personalOverview.profileCompletion }}%</strong>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="overview-card" *ngIf="data.auditOverview">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon slate">shield</mat-icon>
-                <mat-card-title>{{ 'dashboard.auditSurface' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="summary-list">
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.totalAuditEvents' | translate }}</span>
-                        <strong>{{ data.auditOverview.totalEvents }}</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>{{ 'dashboard.recentTrackedActions' | translate }}</span>
-                        <strong>{{ data.auditOverview.recentEvents }}</strong>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-    </div>
-
-    <div class="charts-grid" *ngIf="data && (leaveChartConfig || payrollChartConfig || departmentChartConfig)">
-        <mat-card class="chart-card" *ngIf="leaveChartConfig">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon green">pie_chart</mat-icon>
-                <mat-card-title>{{ 'dashboard.leaveStatus' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="chart-container">
-                    <canvas baseChart
-                        [type]="leaveChartConfig.type"
-                        [data]="leaveChartConfig.data"
-                        [options]="leaveChartConfig.options">
-                    </canvas>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="chart-card" *ngIf="payrollChartConfig">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon indigo">bar_chart</mat-icon>
-                <mat-card-title>{{ 'dashboard.payrollStatus' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="chart-container">
-                    <canvas baseChart
-                        [type]="payrollChartConfig.type"
-                        [data]="payrollChartConfig.data"
-                        [options]="payrollChartConfig.options">
-                    </canvas>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="chart-card" *ngIf="departmentChartConfig">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon orange">donut_large</mat-icon>
-                <mat-card-title>{{ 'dashboard.departmentDistribution' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="chart-container">
-                    <canvas baseChart
-                        [type]="departmentChartConfig.type"
-                        [data]="departmentChartConfig.data"
-                        [options]="departmentChartConfig.options">
-                    </canvas>
-                </div>
-            </mat-card-content>
-        </mat-card>
-    </div>
-
-    <div class="activity-section" *ngIf="data">
-        <mat-card class="activity-card" *ngIf="data.recentActivities.length > 0; else emptyActivity">
-            <mat-card-header>
-                <mat-icon mat-card-avatar class="overview-header-icon cyan">history</mat-icon>
-                <mat-card-title>{{ 'dashboard.recentActivity' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="activity-list">
-                    <div class="activity-item" *ngFor="let activity of data.recentActivities">
-                        <div class="activity-type-icon" [class]="'activity-type-icon ' + activityAccent(activity.type)">
-                            <mat-icon>{{ activityIcon(activity.type) }}</mat-icon>
+    @if (data) {
+        <div class="metrics-grid">
+            @for (metric of data.keyMetrics; track trackMetric($index, metric)) {
+                <mat-card class="metric-card">
+                    <mat-card-content>
+                        <div class="metric-icon" [class]="'metric-icon ' + metric.accent">
+                            <mat-icon>{{ metric.icon }}</mat-icon>
                         </div>
-                        <div class="activity-copy">
-                            <div class="activity-description">{{ activity.description }}</div>
-                            <div class="activity-time">{{ activity.timestamp | date:'medium' }}</div>
+                        <div class="metric-copy">
+                            <div class="metric-value">{{ metric.value }}</div>
+                            <div class="metric-label">{{ metric.label }}</div>
                         </div>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
 
-        <ng-template #emptyActivity>
-            <mat-card class="activity-card empty-card">
+    @if (data) {
+        <div class="overview-grid">
+            <mat-card class="overview-card">
+                <mat-card-header>
+                    <mat-icon mat-card-avatar class="overview-header-icon green">event_available</mat-icon>
+                    <mat-card-title>{{ 'dashboard.leaveOverview' | translate }}</mat-card-title>
+                </mat-card-header>
                 <mat-card-content>
-                    <div class="empty-state">
-                        <mat-icon>inbox</mat-icon>
-                        <p>{{ 'dashboard.noActivity' | translate }}</p>
+                    <div class="stat-row">
+                        <div class="stat-pill">
+                            <span class="stat-pill-value pending">{{ data.leaveOverview.pending }}</span>
+                            <span class="stat-pill-label">{{ 'dashboard.pending' | translate }}</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span class="stat-pill-value approved">{{ data.leaveOverview.approved }}</span>
+                            <span class="stat-pill-label">{{ 'dashboard.approved' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-pill">
+                            <span class="stat-pill-value rejected">{{ data.leaveOverview.rejected }}</span>
+                            <span class="stat-pill-label">{{ 'dashboard.rejected' | translate }}</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span class="stat-pill-value cancelled">{{ data.leaveOverview.cancelled }}</span>
+                            <span class="stat-pill-label">{{ 'dashboard.cancelled' | translate }}</span>
+                        </div>
                     </div>
                 </mat-card-content>
             </mat-card>
-        </ng-template>
-    </div>
 
-    <div class="quick-section" *ngIf="data">
-        <h2 class="section-title">{{ 'dashboard.quickActions' | translate }}</h2>
-        <div class="quick-grid">
-            <a routerLink="{{ action.route }}" class="quick-card" *ngFor="let action of quickActions; trackBy: trackAction">
-                <div class="quick-icon" [class]="'quick-icon ' + action.accent">
-                    <mat-icon>{{ action.icon }}</mat-icon>
-                </div>
-                <div class="quick-label">{{ action.label }}</div>
-                <mat-icon class="quick-arrow">arrow_forward</mat-icon>
-            </a>
+            <mat-card class="overview-card">
+                <mat-card-header>
+                    <mat-icon mat-card-avatar class="overview-header-icon indigo">payments</mat-icon>
+                    <mat-card-title>{{ 'dashboard.payrollOverview' | translate }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="stat-row">
+                        <div class="stat-pill">
+                            <span class="stat-pill-value draft">{{ data.payrollOverview.draft }}</span>
+                            <span class="stat-pill-label">{{ 'dashboard.draft' | translate }}</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span class="stat-pill-value published">{{ data.payrollOverview.published }}</span>
+                            <span class="stat-pill-label">{{ 'dashboard.published' | translate }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-pill">
+                            <span class="stat-pill-value paid">{{ data.payrollOverview.paid }}</span>
+                            <span class="stat-pill-label">{{ 'dashboard.paid' | translate }}</span>
+                        </div>
+                        <div class="stat-pill total-pill">
+                            <span class="stat-pill-value total">{{ data.payrollOverview.totalNetSalary | number:'1.2-2' }} EUR</span>
+                            <span class="stat-pill-label">{{ 'dashboard.totalNet' | translate }}</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="overview-card">
+                <mat-card-header>
+                    <mat-icon mat-card-avatar class="overview-header-icon slate">notifications</mat-icon>
+                    <mat-card-title>{{ 'dashboard.notificationHealth' | translate }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="single-stat">
+                        <div class="single-stat-value">{{ data.notificationOverview.unreadNotifications }}</div>
+                        <div class="single-stat-label">{{ 'dashboard.unreadNotifications' | translate }}</div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            @if (data.teamOverview) {
+                <mat-card class="overview-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon orange">groups</mat-icon>
+                        <mat-card-title>{{ 'dashboard.teamSnapshot' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="summary-list">
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.managedDepartments' | translate }}</span>
+                                <strong>{{ data.teamOverview.managedDepartments }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.teamMembers' | translate }}</span>
+                                <strong>{{ data.teamOverview.teamMembers }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.pendingLeaveRequests' | translate }}</span>
+                                <strong>{{ data.teamOverview.pendingLeaveRequests }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.paidPayrolls' | translate }}</span>
+                                <strong>{{ data.teamOverview.paidPayrolls }}</strong>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+
+            @if (data.personalOverview) {
+                <mat-card class="overview-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon cyan">badge</mat-icon>
+                        <mat-card-title>{{ 'dashboard.mySnapshot' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="summary-list">
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.availableLeaveDays' | translate }}</span>
+                                <strong>{{ data.personalOverview.availableLeaveDays }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.pendingLeaveRequests' | translate }}</span>
+                                <strong>{{ data.personalOverview.pendingLeaveRequests }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.payslipsOnRecord' | translate }}</span>
+                                <strong>{{ data.personalOverview.payrollRecords }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.profileCompletion' | translate }}</span>
+                                <strong>{{ data.personalOverview.profileCompletion }}%</strong>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+
+            @if (data.auditOverview) {
+                <mat-card class="overview-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon slate">shield</mat-icon>
+                        <mat-card-title>{{ 'dashboard.auditSurface' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="summary-list">
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.totalAuditEvents' | translate }}</span>
+                                <strong>{{ data.auditOverview.totalEvents }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.recentTrackedActions' | translate }}</span>
+                                <strong>{{ data.auditOverview.recentEvents }}</strong>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
         </div>
-    </div>
+    }
+
+    @if (data && (leaveChartConfig || payrollChartConfig || departmentChartConfig)) {
+        <div class="charts-grid">
+            @if (leaveChartConfig) {
+                <mat-card class="chart-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon green">pie_chart</mat-icon>
+                        <mat-card-title>{{ 'dashboard.leaveStatus' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="chart-container">
+                            <canvas baseChart
+                                [type]="leaveChartConfig.type"
+                                [data]="leaveChartConfig.data"
+                                [options]="leaveChartConfig.options">
+                            </canvas>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+
+            @if (payrollChartConfig) {
+                <mat-card class="chart-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon indigo">bar_chart</mat-icon>
+                        <mat-card-title>{{ 'dashboard.payrollStatus' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="chart-container">
+                            <canvas baseChart
+                                [type]="payrollChartConfig.type"
+                                [data]="payrollChartConfig.data"
+                                [options]="payrollChartConfig.options">
+                            </canvas>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+
+            @if (departmentChartConfig) {
+                <mat-card class="chart-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon orange">donut_large</mat-icon>
+                        <mat-card-title>{{ 'dashboard.departmentDistribution' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="chart-container">
+                            <canvas baseChart
+                                [type]="departmentChartConfig.type"
+                                [data]="departmentChartConfig.data"
+                                [options]="departmentChartConfig.options">
+                            </canvas>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
+
+    @if (data) {
+        <div class="activity-section">
+            @if (data.recentActivities.length > 0) {
+                <mat-card class="activity-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon cyan">history</mat-icon>
+                        <mat-card-title>{{ 'dashboard.recentActivity' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="activity-list">
+                            @for (activity of data.recentActivities; track activity.timestamp) {
+                                <div class="activity-item">
+                                    <div class="activity-type-icon" [class]="'activity-type-icon ' + activityAccent(activity.type)">
+                                        <mat-icon>{{ activityIcon(activity.type) }}</mat-icon>
+                                    </div>
+                                    <div class="activity-copy">
+                                        <div class="activity-description">{{ activity.description }}</div>
+                                        <div class="activity-time">{{ activity.timestamp | date:'medium' }}</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            } @else {
+                <mat-card class="activity-card empty-card">
+                    <mat-card-content>
+                        <div class="empty-state">
+                            <mat-icon>inbox</mat-icon>
+                            <p>{{ 'dashboard.noActivity' | translate }}</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
+
+    @if (data) {
+        <div class="quick-section">
+            <h2 class="section-title">{{ 'dashboard.quickActions' | translate }}</h2>
+            <div class="quick-grid">
+                @for (action of quickActions; track trackAction($index, action)) {
+                    <a routerLink="{{ action.route }}" class="quick-card">
+                        <div class="quick-icon" [class]="'quick-icon ' + action.accent">
+                            <mat-icon>{{ action.icon }}</mat-icon>
+                        </div>
+                        <div class="quick-label">{{ action.label }}</div>
+                        <mat-icon class="quick-arrow">arrow_forward</mat-icon>
+                    </a>
+                }
+            </div>
+        </div>
+    }
 </div>
