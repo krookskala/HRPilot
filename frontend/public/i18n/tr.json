@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "myProfile": "Profilim",
+    "dashboard": "Gösterge Paneli",
+    "notifications": "Bildirimler",
+    "employees": "Çalışanlar",
+    "departments": "Departmanlar",
+    "leaveRequests": "İzin Talepleri",
+    "payrolls": "Bordrolar",
+    "users": "Kullanıcılar",
+    "auditLogs": "Denetim Kayıtları",
+    "settings": "Ayarlar",
+    "reports": "Raporlar",
+    "logout": "Çıkış Yap"
+  },
+  "header": {
+    "notificationsTooltip": "Bildirimler",
+    "logoutTooltip": "Çıkış Yap"
+  },
+  "login": {
+    "brandSubtitle": "İK Yönetim Platformu",
+    "welcomeBack": "Tekrar Hoş Geldiniz",
+    "signInSubtitle": "Hesabınıza giriş yapın",
+    "email": "E-posta",
+    "password": "Şifre",
+    "emailRequired": "Geçerli bir e-posta zorunludur",
+    "passwordRequired": "Şifre en az 8 karakter olmalıdır",
+    "signIn": "Giriş Yap",
+    "forgotPassword": "Şifrenizi mi unuttunuz?",
+    "defaultError": "E-posta veya Şifre Hatalı"
+  },
+  "dashboard": {
+    "leaveOverview": "İzin Özeti",
+    "payrollOverview": "Bordro Özeti",
+    "notificationHealth": "Bildirim Durumu",
+    "teamSnapshot": "Ekipten Görünüm",
+    "mySnapshot": "Görünümüm",
+    "auditSurface": "Denetim Kayıtları",
+    "recentActivity": "Son Etkinlikler",
+    "noActivity": "Henüz son etkinlik yok.",
+    "quickActions": "Hızlı İşlemler",
+    "leaveStatus": "İzin Durumu",
+    "payrollStatus": "Bordro Durumu",
+    "departmentDistribution": "Departman Dağılımı",
+    "pending": "Beklemede",
+    "approved": "Onaylandı",
+    "rejected": "Reddedildi",
+    "cancelled": "İptal Edildi",
+    "draft": "Taslak",
+    "published": "Yayınlandı",
+    "paid": "Ödendi",
+    "totalNet": "Toplam Net",
+    "unreadNotifications": "İncelenmeyi bekleyen okunmamış bildirimler",
+    "managedDepartments": "Yönetilen departmanlar",
+    "teamMembers": "Ekip üyeleri",
+    "pendingLeaveRequests": "Bekleyen izin talepleri",
+    "paidPayrolls": "Ödenen bordrolar",
+    "availableLeaveDays": "Kullanılabilir izin günleri",
+    "payslipsOnRecord": "Kayıtlı maaş bordroları",
+    "profileCompletion": "Profil tamamlama",
+    "totalAuditEvents": "Toplam denetim olayları",
+    "recentTrackedActions": "İzlenen son eylemler",
+    "failedToLoad": "Gösterge paneli verileri yüklenemedi"
+  },
+  "reports": {
+    "title": "Raporlar",
+    "subtitle": "Detaylı özetler ve veri aktarımları",
+    "leaveSummary": "İzin Özeti",
+    "payrollSummary": "Bordro Özeti",
+    "teamSummary": "Ekip Özeti",
+    "exportCsv": "Çalışan CSV Dışa Aktar"
+  },
+  "settings": {
+    "subtitle": "Tercihlerinizi yönetin",
+    "language": "Dil"
+  },
+  "actions": {
+    "manageEmployees": "Çalışanları Yönet",
+    "manageDepartments": "Departmanları Yönet",
+    "reviewLeave": "İzinleri İncele",
+    "manageUsers": "Kullanıcıları Yönet",
+    "processPayroll": "Bordro İşle",
+    "employeeDirectory": "Çalışan Rehberi",
+    "teamLeaveQueue": "Ekip İzin Kuyruğu",
+    "teamPayroll": "Ekip Bordrosu",
+    "employeeProfiles": "Çalışan Profilleri",
+    "myProfile": "Profilim",
+    "myLeave": "İzinlerim",
+    "myPayroll": "Bordrom"
+  }
+}
