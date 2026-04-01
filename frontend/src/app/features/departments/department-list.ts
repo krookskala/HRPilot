@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from "@angular/core";
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { DepartmentService } from "../../core/services/department.service";
 import { AuthService } from "../../core/services/auth.service";
 import { Department } from "../../shared/models/department.model";
@@ -9,19 +9,19 @@ import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { NgIf } from "@angular/common";
+import { Subject, takeUntil } from "rxjs";
 import { DepartmentDialog } from "./department-dialog";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
     selector: 'app-department-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, NgIf],
+    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule],
     templateUrl: './department-list.html',
     styleUrl: './department-list.scss'
 })
 
-export class DepartmentList implements OnInit {
+export class DepartmentList implements OnInit, OnDestroy {
     private departmentService = inject(DepartmentService);
     private authService = inject(AuthService);
     private cdr = inject(ChangeDetectorRef);
@@ -35,6 +35,7 @@ export class DepartmentList implements OnInit {
     pageIndex = 0;
     loading = false;
     error = '';
+    private destroy$ = new Subject<void>();
 
     ngOnInit(): void {
         this.loadDepartments();
@@ -43,7 +44,7 @@ export class DepartmentList implements OnInit {
     loadDepartments() {
         this.loading = true;
         this.error = '';
-        this.departmentService.getAll(this.pageIndex, this.pageSize).subscribe({
+        this.departmentService.getAll(this.pageIndex, this.pageSize).pipe(takeUntil(this.destroy$)).subscribe({
             next: (page) => {
                 this.departments = page.content;
                 this.totalElements = page.totalElements;
@@ -69,10 +70,29 @@ export class DepartmentList implements OnInit {
             width: '350px',
             data: { title: 'Delete Department', message: 'Are you sure you want to delete this department?' }
         });
-        ref.afterClosed().subscribe(confirmed => {
+        ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(confirmed => {
             if (confirmed) {
-                this.departmentService.deleteDepartment(id).subscribe({
-                    next: () => { this.loadDepartments(); }
+                this.departmentService.deleteDepartment(id).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: () => { this.loadDepartments(); },
+                    error: () => {
+                        this.error = 'Failed to delete department';
+                        this.cdr.detectChanges();
+                    }
+                });
+            }
+        });
+    }
+
+    edit(dept: Department) {
+        const ref = this.dialog.open(DepartmentDialog, { width: '400px', data: dept });
+        ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+            if (result) {
+                this.departmentService.updateDepartment(dept.id, result).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: () => { this.loadDepartments(); },
+                    error: () => {
+                        this.error = 'Failed to update department';
+                        this.cdr.detectChanges();
+                    }
                 });
             }
         });
@@ -80,12 +100,21 @@ export class DepartmentList implements OnInit {
 
     openDialog() {
         const ref = this.dialog.open(DepartmentDialog, { width: '400px' });
-        ref.afterClosed().subscribe(result => {
+        ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
             if (result) {
-                this.departmentService.createDepartment(result).subscribe({
-                    next: () => { this.loadDepartments(); }
+                this.departmentService.createDepartment(result).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: () => { this.loadDepartments(); },
+                    error: () => {
+                        this.error = 'Failed to create department';
+                        this.cdr.detectChanges();
+                    }
                 });
             }
         });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }
