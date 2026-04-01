@@ -5,12 +5,11 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatDividerModule } from "@angular/material/divider";
 import { TranslateModule } from "@ngx-translate/core";
 import { AuthService } from "../../core/services/auth.service";
-import { NgIf } from "@angular/common";
 
 @Component({
     selector: 'app-sidebar',
     standalone: true,
-    imports: [RouterLink, RouterLinkActive, MatListModule, MatIconModule, MatDividerModule, NgIf, TranslateModule],
+    imports: [RouterLink, RouterLinkActive, MatListModule, MatIconModule, MatDividerModule, TranslateModule],
     templateUrl: './sidebar.html',
     styleUrl: './sidebar.scss'
 })
