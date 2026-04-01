@@ -98,7 +98,7 @@ class EmployeeServiceTest {
             .id(5L)
             .email("hr@test.com")
             .role(Role.HR_MANAGER)
-            .isActive(true)
+            .active(true)
             .build();
         lenient().when(currentUserService.getCurrentUserEntity()).thenReturn(actorUser);
     }
