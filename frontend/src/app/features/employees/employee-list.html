@@ -5,14 +5,28 @@
             <p class="page-subtitle">Manage your organization's workforce</p>
         </div>
         <div class="header-actions">
-            <button mat-stroked-button (click)="exportCsv()" *ngIf="canManage">
-                <mat-icon>download</mat-icon>
-                Export CSV
-            </button>
-            <button mat-flat-button color="primary" (click)="openDialog()" *ngIf="canManage">
-                <mat-icon>add</mat-icon>
-                Add Employee
-            </button>
+            <div class="view-toggle">
+                <button mat-icon-button [class.active]="viewMode === 'table'" matTooltip="Table view"
+                        (click)="viewMode = 'table'">
+                    <mat-icon>view_list</mat-icon>
+                </button>
+                <button mat-icon-button [class.active]="viewMode === 'card'" matTooltip="Card view"
+                        (click)="viewMode = 'card'">
+                    <mat-icon>view_module</mat-icon>
+                </button>
+            </div>
+            @if (canManage) {
+                <button mat-stroked-button (click)="exportCsv()">
+                    <mat-icon>download</mat-icon>
+                    Export CSV
+                </button>
+            }
+            @if (canManage) {
+                <button mat-flat-button color="primary" (click)="openDialog()">
+                    <mat-icon>add</mat-icon>
+                    Add Employee
+                </button>
+            }
         </div>
     </div>
 
@@ -30,9 +44,11 @@
                     <mat-label>Department</mat-label>
                     <mat-select [formControl]="departmentControl">
                         <mat-option [value]="null">All Departments</mat-option>
-                        <mat-option *ngFor="let dept of departments" [value]="dept.id">
-                            {{ dept.name }}
-                        </mat-option>
+                        @for (dept of departments; track dept.id) {
+                            <mat-option [value]="dept.id">
+                                {{ dept.name }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
 
@@ -42,73 +58,112 @@
                     <mat-icon matPrefix>work</mat-icon>
                 </mat-form-field>
 
-                <button mat-stroked-button class="clear-btn" (click)="clearFilters()"
-                        *ngIf="hasActiveFilters()">
-                    <mat-icon>clear</mat-icon>
-                    Clear
-                </button>
+                @if (hasActiveFilters()) {
+                    <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
+                        <mat-icon>clear</mat-icon>
+                        Clear
+                    </button>
+                }
             </div>
         </mat-card-content>
     </mat-card>
 
-    <div *ngIf="loading" class="spinner-center">
-        <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (loading) {
+        <div class="spinner-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    }
 
-    <div *ngIf="error" class="error-banner">
-        <mat-icon>error_outline</mat-icon>
-        {{ error }}
-    </div>
+    @if (error) {
+        <div class="error-banner">
+            <mat-icon>error_outline</mat-icon>
+            {{ error }}
+        </div>
+    }
 
-    <div class="table-panel" *ngIf="!loading && !error">
-        <table mat-table [dataSource]="employees">
+    @if (!loading && !error) {
+        @if (viewMode === 'table') {
+            <div class="table-panel">
+                <table mat-table [dataSource]="employees">
 
-            <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef>ID</th>
-                <td mat-cell *matCellDef="let emp">{{ emp.id }}</td>
-            </ng-container>
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef>ID</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.id }}</td>
+                    </ng-container>
 
-            <ng-container matColumnDef="firstName">
-                <th mat-header-cell *matHeaderCellDef>First Name</th>
-                <td mat-cell *matCellDef="let emp">{{ emp.firstName }}</td>
-            </ng-container>
+                    <ng-container matColumnDef="firstName">
+                        <th mat-header-cell *matHeaderCellDef>First Name</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.firstName }}</td>
+                    </ng-container>
 
-            <ng-container matColumnDef="lastName">
-                <th mat-header-cell *matHeaderCellDef>Last Name</th>
-                <td mat-cell *matCellDef="let emp">{{ emp.lastName }}</td>
-            </ng-container>
+                    <ng-container matColumnDef="lastName">
+                        <th mat-header-cell *matHeaderCellDef>Last Name</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.lastName }}</td>
+                    </ng-container>
 
-            <ng-container matColumnDef="department">
-                <th mat-header-cell *matHeaderCellDef>Department</th>
-                <td mat-cell *matCellDef="let emp">{{ emp.departmentName || '—' }}</td>
-            </ng-container>
+                    <ng-container matColumnDef="department">
+                        <th mat-header-cell *matHeaderCellDef>Department</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.departmentName || '—' }}</td>
+                    </ng-container>
 
-            <ng-container matColumnDef="position">
-                <th mat-header-cell *matHeaderCellDef>Position</th>
-                <td mat-cell *matCellDef="let emp">{{ emp.position }}</td>
-            </ng-container>
+                    <ng-container matColumnDef="position">
+                        <th mat-header-cell *matHeaderCellDef>Position</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.position }}</td>
+                    </ng-container>
 
-            <ng-container matColumnDef="salary">
-                <th mat-header-cell *matHeaderCellDef>Salary</th>
-                <td mat-cell *matCellDef="let emp">{{ emp.salary | number:'1.2-2' }} €</td>
-            </ng-container>
+                    <ng-container matColumnDef="salary">
+                        <th mat-header-cell *matHeaderCellDef>Salary</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.salary | number:'1.2-2' }} €</td>
+                    </ng-container>
 
-            <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let emp">
-                    <button mat-icon-button matTooltip="View detail" (click)="openDetail(emp.id)">
-                        <mat-icon>visibility</mat-icon>
-                    </button>
-                    <button mat-icon-button color="warn" matTooltip="Delete"
-                            (click)="delete(emp.id)" *ngIf="canManage">
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </td>
-            </ng-container>
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                        <td mat-cell *matCellDef="let emp">
+                            <button mat-icon-button matTooltip="View detail" (click)="openDetail(emp.id)">
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+                            @if (canManage) {
+                                <button mat-icon-button color="warn" matTooltip="Delete"
+                                        (click)="delete(emp.id)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            }
+                        </td>
+                    </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+        }
+
+        @if (viewMode === 'card') {
+            <div class="card-grid">
+                @for (emp of employees; track emp.id) {
+                    <mat-card class="employee-card" (click)="openDetail(emp.id)">
+                        <mat-card-header>
+                            <div mat-card-avatar class="avatar-circle">
+                                {{ emp.firstName?.charAt(0) }}{{ emp.lastName?.charAt(0) }}
+                            </div>
+                            <mat-card-title>{{ emp.firstName }} {{ emp.lastName }}</mat-card-title>
+                            <mat-card-subtitle>{{ emp.position || '—' }}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <div class="card-info">
+                                <div class="card-info-row">
+                                    <mat-icon>apartment</mat-icon>
+                                    <span>{{ emp.departmentName || '—' }}</span>
+                                </div>
+                                <div class="card-info-row">
+                                    <mat-icon>payments</mat-icon>
+                                    <span>{{ emp.salary | number:'1.2-2' }} €</span>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                }
+            </div>
+        }
 
         <mat-paginator
             [length]="totalElements"
@@ -118,5 +173,5 @@
             (page)="onPageChange($event)"
             showFirstLastButtons>
         </mat-paginator>
-    </div>
+    }
 </div>
