@@ -82,7 +82,7 @@ class PayrollServiceTest {
             .email("john@example.com")
             .passwordHash("secret")
             .role(role)
-            .isActive(true)
+            .active(true)
             .build();
     }
 
