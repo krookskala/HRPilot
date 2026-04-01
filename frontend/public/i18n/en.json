@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "myProfile": "My Profile",
+    "dashboard": "Dashboard",
+    "notifications": "Notifications",
+    "employees": "Employees",
+    "departments": "Departments",
+    "leaveRequests": "Leave Requests",
+    "payrolls": "Payrolls",
+    "users": "Users",
+    "auditLogs": "Audit Logs",
+    "settings": "Settings",
+    "reports": "Reports",
+    "logout": "Logout"
+  },
+  "header": {
+    "notificationsTooltip": "Notifications",
+    "logoutTooltip": "Logout"
+  },
+  "login": {
+    "brandSubtitle": "HR Management Platform",
+    "welcomeBack": "Welcome back",
+    "signInSubtitle": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "emailRequired": "Valid email is required",
+    "passwordRequired": "Password must be at least 8 characters",
+    "signIn": "Sign In",
+    "forgotPassword": "Forgot your password?",
+    "defaultError": "Email or Password Wrong"
+  },
+  "dashboard": {
+    "leaveOverview": "Leave Overview",
+    "payrollOverview": "Payroll Overview",
+    "notificationHealth": "Notification Health",
+    "teamSnapshot": "Team Snapshot",
+    "mySnapshot": "My Snapshot",
+    "auditSurface": "Audit Surface",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity yet.",
+    "quickActions": "Quick Actions",
+    "leaveStatus": "Leave Status",
+    "payrollStatus": "Payroll Status",
+    "departmentDistribution": "Department Distribution",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "cancelled": "Cancelled",
+    "draft": "Draft",
+    "published": "Published",
+    "paid": "Paid",
+    "totalNet": "Total Net",
+    "unreadNotifications": "Unread notifications waiting for review",
+    "managedDepartments": "Managed departments",
+    "teamMembers": "Team members",
+    "pendingLeaveRequests": "Pending leave requests",
+    "paidPayrolls": "Paid payrolls",
+    "availableLeaveDays": "Available leave days",
+    "payslipsOnRecord": "Payslips on record",
+    "profileCompletion": "Profile completion",
+    "totalAuditEvents": "Total audit events",
+    "recentTrackedActions": "Recent tracked actions",
+    "failedToLoad": "Failed to load dashboard data"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Detailed summaries and data exports",
+    "leaveSummary": "Leave Summary",
+    "payrollSummary": "Payroll Summary",
+    "teamSummary": "Team Summary",
+    "exportCsv": "Export Employees CSV"
+  },
+  "settings": {
+    "subtitle": "Manage your preferences",
+    "language": "Language"
+  },
+  "actions": {
+    "manageEmployees": "Manage Employees",
+    "manageDepartments": "Manage Departments",
+    "reviewLeave": "Review Leave",
+    "manageUsers": "Manage Users",
+    "processPayroll": "Process Payroll",
+    "employeeDirectory": "Employee Directory",
+    "teamLeaveQueue": "Team Leave Queue",
+    "teamPayroll": "Team Payroll",
+    "employeeProfiles": "Employee Profiles",
+    "myProfile": "My Profile",
+    "myLeave": "My Leave",
+    "myPayroll": "My Payroll"
+  }
+}
