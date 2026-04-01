@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from "@angular/core";
-import { DatePipe, DecimalPipe, NgFor, NgIf } from "@angular/common";
+import { DatePipe, DecimalPipe } from "@angular/common";
 import { ActivatedRoute } from "@angular/router";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -8,7 +8,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { finalize } from "rxjs";
+import { Subject, finalize, takeUntil } from "rxjs";
 import { AuthService } from "../../core/services/auth.service";
 import { EmployeeService } from "../../core/services/employee.service";
 import { EmployeeDetail } from "../../shared/models/employee.model";
@@ -25,8 +25,6 @@ import { EmployeeDetail } from "../../shared/models/employee.model";
         MatIconModule,
         MatInputModule,
         MatProgressSpinnerModule,
-        NgFor,
-        NgIf,
         ReactiveFormsModule
     ],
     templateUrl: './employee-detail.html',
@@ -37,6 +35,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
     private employeeService = inject(EmployeeService);
     private authService = inject(AuthService);
     private fb = inject(FormBuilder);
+    private destroy$ = new Subject<void>();
 
     employee: EmployeeDetail | null = null;
     photoPreviewUrl: string | null = null;
@@ -64,6 +63,8 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
         if (this.photoPreviewUrl) {
             URL.revokeObjectURL(this.photoPreviewUrl);
         }
@@ -73,6 +74,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
         this.loading = true;
         this.error = '';
         this.employeeService.getEmployeeDetail(id).pipe(
+            takeUntil(this.destroy$),
             finalize(() => this.loading = false)
         ).subscribe({
             next: employee => {
@@ -93,7 +95,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
         }
 
         this.uploadingPhoto = true;
-        this.employeeService.uploadPhoto(this.employee.id, file).subscribe({
+        this.employeeService.uploadPhoto(this.employee.id, file).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.uploadingPhoto = false;
                 this.loadEmployee(this.employee!.id);
@@ -122,7 +124,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
             this.selectedDocumentFile,
             this.documentForm.value.title ?? '',
             this.documentForm.value.description ?? null
-        ).subscribe({
+        ).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.uploadingDocument = false;
                 this.selectedDocumentFile = null;
@@ -140,8 +142,9 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
         if (!this.employee) {
             return;
         }
-        this.employeeService.downloadDocument(this.employee.id, documentId).subscribe(blob => {
-            this.saveBlob(blob, filename);
+        this.employeeService.downloadDocument(this.employee.id, documentId).pipe(takeUntil(this.destroy$)).subscribe({
+            next: blob => { this.saveBlob(blob, filename); },
+            error: () => { this.error = 'Failed to download document'; }
         });
     }
 
