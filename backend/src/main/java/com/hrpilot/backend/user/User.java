@@ -34,7 +34,7 @@ public class User extends BaseEntity {
 
     @Column(name = "is_active", nullable = false)
     @Builder.Default
-    private boolean isActive = true;
+    private boolean active = true;
 
     @Column(name = "preferred_lang", nullable = false)
     @Builder.Default
