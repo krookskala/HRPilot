@@ -54,9 +54,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                     })
                 );
             }
-            if (error.status === 403) {
-                console.warn('Access denied: insufficient permissions');
-            }
             return throwError(() => error);
         })
     );
