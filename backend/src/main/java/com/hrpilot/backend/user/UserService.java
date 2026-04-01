@@ -63,7 +63,7 @@ public class UserService {
             .email(request.email())
             .passwordHash(null)
             .role(request.role())
-            .isActive(false)
+            .active(false)
             .preferredLang(request.preferredLang() == null || request.preferredLang().isBlank()
                 ? "en"
                 : request.preferredLang())
@@ -98,7 +98,7 @@ public class UserService {
             .email(request.email())
             .passwordHash(passwordEncoder.encode(request.password()))
             .role(request.role())
-            .isActive(true)
+            .active(true)
             .preferredLang("en")
             .activatedAt(LocalDateTime.now())
             .build();
