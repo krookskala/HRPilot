@@ -152,7 +152,7 @@ public class DashboardService {
             case HR_MANAGER -> List.of(
                 metric("Pending Approvals", leaveCounts.getOrDefault(LeaveStatus.PENDING, 0L), "pending_actions", "green"),
                 metric("Draft Payrolls", getPayrollCount(payrollStats, PayrollStatus.DRAFT), "payments", "indigo"),
-                metric("Inactive Accounts", userRepository.countByIsActive(false), "person_off", "orange"),
+                metric("Inactive Accounts", userRepository.countByActive(false), "person_off", "orange"),
                 metric("Unread Alerts", unreadNotifications, "notifications", "slate")
             );
             case DEPARTMENT_MANAGER -> List.of(
