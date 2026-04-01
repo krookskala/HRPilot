@@ -28,13 +28,27 @@
             <mat-icon>payments</mat-icon>
             <span>{{ 'nav.payrolls' | translate }}</span>
         </a>
-        <a mat-list-item routerLink="/users" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        @if (isAdmin) {
+        <a mat-list-item routerLink="/users" routerLinkActive="active" class="nav-item">
             <mat-icon>manage_accounts</mat-icon>
             <span>{{ 'nav.users' | translate }}</span>
         </a>
+        <a mat-list-item routerLink="/audit-logs" routerLinkActive="active" class="nav-item">
+            <mat-icon>policy</mat-icon>
+            <span>{{ 'nav.auditLogs' | translate }}</span>
+        </a>
+        <a mat-list-item routerLink="/reports" routerLinkActive="active" class="nav-item">
+            <mat-icon>assessment</mat-icon>
+            <span>{{ 'nav.reports' | translate }}</span>
+        </a>
+        }
     </div>
 
     <div class="nav-bottom">
+        <a mat-list-item routerLink="/settings" routerLinkActive="active" class="nav-item">
+            <mat-icon>settings</mat-icon>
+            <span>{{ 'nav.settings' | translate }}</span>
+        </a>
         <mat-divider></mat-divider>
         <a mat-list-item (click)="logout()" class="nav-item logout-item">
             <mat-icon>logout</mat-icon>
