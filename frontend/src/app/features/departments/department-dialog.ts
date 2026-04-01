@@ -1,10 +1,11 @@
 import { Component, inject } from "@angular/core";
-import { MatDialogRef, MatDialogModule } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from "@angular/material/dialog";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatIconModule } from "@angular/material/icon";
+import { Department } from "../../shared/models/department.model";
 
 @Component({
     selector: 'app-department-dialog',
@@ -18,11 +19,14 @@ import { MatIconModule } from "@angular/material/icon";
 export class DepartmentDialog {
     private dialogRef = inject(MatDialogRef<DepartmentDialog>);
     private fb = inject(FormBuilder);
+    data: Department | null = inject(MAT_DIALOG_DATA, { optional: true });
+
+    isEdit = !!this.data;
 
     form = this.fb.group({
-        name: ['', [Validators.required, Validators.minLength(2)]],
+        name: [this.data?.name || '', [Validators.required, Validators.minLength(2)]],
         managerId: [null as number | null],
-        parentDepartmentId: [null as number | null]
+        parentDepartmentId: [this.data?.parentDepartmentId || null as number | null]
     });
 
     save() {
