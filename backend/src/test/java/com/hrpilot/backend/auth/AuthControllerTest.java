@@ -91,7 +91,7 @@ class AuthControllerTest {
             .email("test@test.com")
             .passwordHash("hashed")
             .role(Role.EMPLOYEE)
-            .isActive(true)
+            .active(true)
             .build();
         RefreshToken refreshToken = RefreshToken.builder()
             .id(1L)
@@ -143,12 +143,12 @@ class AuthControllerTest {
 
     @Test
     void acceptInvitation_success_returnsTokens() throws Exception {
-        AcceptInvitationRequest request = new AcceptInvitationRequest("invite-token", "password123");
+        AcceptInvitationRequest request = new AcceptInvitationRequest("invite-token", "Password123!");
         User user = User.builder()
             .id(1L)
             .email("invitee@test.com")
             .role(Role.EMPLOYEE)
-            .isActive(false)
+            .active(false)
             .build();
         InvitationToken invitationToken = InvitationToken.builder()
             .token("invite-token")
@@ -205,7 +205,7 @@ class AuthControllerTest {
             .email("test@test.com")
             .passwordHash("hashed")
             .role(Role.EMPLOYEE)
-            .isActive(true)
+            .active(true)
             .build();
 
         when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
