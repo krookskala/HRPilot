@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { DatePipe, NgFor, NgIf } from "@angular/common";
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
+import { DatePipe } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -15,6 +15,8 @@ import { AuthService } from "../../core/services/auth.service";
 import { LeaveService } from "../../core/services/leave.service";
 import { LeaveBalance, LeaveRequest, LeaveRequestHistory, LeaveStatus, LeaveType } from "../../shared/models/leave.model";
 import { Role } from "../../shared/models/user.model";
+import { Page } from "../../shared/models/page.model";
+import { Subject, takeUntil } from "rxjs";
 import { LeaveActionDialog } from "./leave-action-dialog";
 import { LeaveDialog } from "./leave-dialog";
 
@@ -34,16 +36,16 @@ import { LeaveDialog } from "./leave-dialog";
         MatSelectModule,
         MatTableModule,
         MatTooltipModule,
-        NgFor,
-        NgIf
     ],
     templateUrl: './leave-list.html',
     styleUrl: './leave-list.scss'
 })
-export class LeaveList implements OnInit {
+export class LeaveList implements OnInit, OnDestroy {
     private leaveService = inject(LeaveService);
     private authService = inject(AuthService);
     private dialog = inject(MatDialog);
+    private cdr = inject(ChangeDetectorRef);
+    private destroy$ = new Subject<void>();
 
     readonly currentUser = this.authService.getCurrentUserSnapshot();
     readonly leaveTypes = Object.values(LeaveType);
@@ -71,15 +73,21 @@ export class LeaveList implements OnInit {
         this.loadBalances();
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     loadBalances(): void {
         if (!this.currentUser?.employeeId) {
             this.balances = [];
             return;
         }
 
-        this.leaveService.getMyBalances().subscribe({
+        this.leaveService.getMyBalances().pipe(takeUntil(this.destroy$)).subscribe({
             next: (balances) => {
                 this.balances = balances;
+                this.cdr.detectChanges();
             }
         });
     }
@@ -89,15 +97,17 @@ export class LeaveList implements OnInit {
         this.error = '';
 
         if (this.isSelfService) {
-            this.leaveService.getMine().subscribe({
-                next: (result: LeaveRequest[]) => {
-                    this.leaves = result;
-                    this.totalElements = result.length;
+            this.leaveService.getMine(this.pageIndex, this.pageSize).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (result: Page<LeaveRequest>) => {
+                    this.leaves = result.content;
+                    this.totalElements = result.totalElements;
                     this.loading = false;
+                    this.cdr.detectChanges();
                 },
                 error: () => {
                     this.error = 'Failed to load leave requests';
                     this.loading = false;
+                    this.cdr.detectChanges();
                 }
             });
             return;
@@ -106,15 +116,17 @@ export class LeaveList implements OnInit {
         this.leaveService.getAll(this.pageIndex, this.pageSize, {
                 status: this.statusFilter || null,
                 type: this.typeFilter || null
-            }).subscribe({
+            }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (result: { content: LeaveRequest[]; totalElements: number }) => {
                 this.leaves = result.content;
                 this.totalElements = result.totalElements;
                 this.loading = false;
+                this.cdr.detectChanges();
             },
             error: () => {
                 this.error = 'Failed to load leave requests';
                 this.loading = false;
+                this.cdr.detectChanges();
             }
         });
     }
@@ -131,7 +143,7 @@ export class LeaveList implements OnInit {
     }
 
     approve(id: number): void {
-        this.leaveService.approve(id).subscribe({
+        this.leaveService.approve(id).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.loadLeaves();
                 this.loadBalances();
@@ -191,13 +203,15 @@ export class LeaveList implements OnInit {
         }
 
         this.selectedLeaveId = leave.id;
-        this.leaveService.getHistory(leave.id).subscribe({
+        this.leaveService.getHistory(leave.id).pipe(takeUntil(this.destroy$)).subscribe({
             next: (history) => {
                 this.historyItems = history;
+                this.cdr.detectChanges();
             },
             error: () => {
                 this.historyItems = [];
                 this.error = 'Failed to load leave history';
+                this.cdr.detectChanges();
             }
         });
     }
