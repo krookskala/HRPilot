@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { DatePipe, DecimalPipe, NgFor, NgIf } from "@angular/common";
+import { Component, inject, OnInit, ChangeDetectorRef } from "@angular/core";
+import { DatePipe, DecimalPipe } from "@angular/common";
 import { RouterLink } from "@angular/router";
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
@@ -23,12 +23,13 @@ type QuickAction = {
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [BaseChartDirective, DatePipe, DecimalPipe, MatCardModule, MatIconModule, MatProgressSpinnerModule, NgFor, NgIf, RouterLink, TranslateModule],
+    imports: [BaseChartDirective, DatePipe, DecimalPipe, MatCardModule, MatIconModule, MatProgressSpinnerModule, RouterLink, TranslateModule],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
     private dashboardService = inject(DashboardService);
+    private cdr = inject(ChangeDetectorRef);
 
     data: DashboardData | null = null;
     loading = true;
@@ -40,14 +41,19 @@ export class Dashboard implements OnInit {
 
     ngOnInit(): void {
         this.dashboardService.getDashboardData().pipe(
-            finalize(() => this.loading = false)
+            finalize(() => {
+                this.loading = false;
+                this.cdr.detectChanges();
+            })
         ).subscribe({
             next: data => {
                 this.data = data;
                 this.buildCharts(data);
+                this.cdr.detectChanges();
             },
             error: () => {
                 this.error = 'Failed to load dashboard data';
+                this.cdr.detectChanges();
             }
         });
     }
