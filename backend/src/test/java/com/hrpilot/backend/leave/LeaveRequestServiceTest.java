@@ -79,7 +79,7 @@ class LeaveRequestServiceTest {
             .id(10L)
             .email("admin@hrpilot.com")
             .role(Role.ADMIN)
-            .isActive(true)
+            .active(true)
             .build();
 
         employee = Employee.builder()
