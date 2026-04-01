@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "myProfile": "Mein Profil",
+    "dashboard": "Dashboard",
+    "notifications": "Benachrichtigungen",
+    "employees": "Mitarbeiter",
+    "departments": "Abteilungen",
+    "leaveRequests": "Urlaubsantr\u00e4ge",
+    "payrolls": "Gehaltsabrechnungen",
+    "users": "Benutzer",
+    "auditLogs": "Audit-Protokolle",
+    "settings": "Einstellungen",
+    "reports": "Berichte",
+    "logout": "Abmelden"
+  },
+  "header": {
+    "notificationsTooltip": "Benachrichtigungen",
+    "logoutTooltip": "Abmelden"
+  },
+  "login": {
+    "brandSubtitle": "HR-Management-Plattform",
+    "welcomeBack": "Willkommen zur\u00fcck",
+    "signInSubtitle": "Melden Sie sich bei Ihrem Konto an",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "emailRequired": "G\u00fcltige E-Mail-Adresse erforderlich",
+    "passwordRequired": "Passwort muss mindestens 8 Zeichen lang sein",
+    "signIn": "Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "defaultError": "E-Mail oder Passwort falsch"
+  },
+  "dashboard": {
+    "leaveOverview": "Urlaubs\u00fcbersicht",
+    "payrollOverview": "Gehalts\u00fcbersicht",
+    "notificationHealth": "Benachrichtigungsstatus",
+    "teamSnapshot": "Team\u00fcbersicht",
+    "mySnapshot": "Meine \u00dcbersicht",
+    "auditSurface": "Audit-\u00dcbersicht",
+    "recentActivity": "Letzte Aktivit\u00e4ten",
+    "noActivity": "Noch keine Aktivit\u00e4ten vorhanden.",
+    "quickActions": "Schnellaktionen",
+    "leaveStatus": "Urlaubsstatus",
+    "payrollStatus": "Gehaltsstatus",
+    "departmentDistribution": "Abteilungsverteilung",
+    "pending": "Ausstehend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt",
+    "cancelled": "Storniert",
+    "draft": "Entwurf",
+    "published": "Ver\u00f6ffentlicht",
+    "paid": "Bezahlt",
+    "totalNet": "Gesamt netto",
+    "unreadNotifications": "Ungelesene Benachrichtigungen warten auf Pr\u00fcfung",
+    "managedDepartments": "Verwaltete Abteilungen",
+    "teamMembers": "Teammitglieder",
+    "pendingLeaveRequests": "Ausstehende Urlaubsantr\u00e4ge",
+    "paidPayrolls": "Bezahlte Abrechnungen",
+    "availableLeaveDays": "Verf\u00fcgbare Urlaubstage",
+    "payslipsOnRecord": "Gehaltsabrechnungen",
+    "profileCompletion": "Profilvervollst\u00e4ndigung",
+    "totalAuditEvents": "Audit-Ereignisse gesamt",
+    "recentTrackedActions": "K\u00fcrzlich verfolgte Aktionen",
+    "failedToLoad": "Dashboard-Daten konnten nicht geladen werden"
+  },
+  "reports": {
+    "title": "Berichte",
+    "subtitle": "Detaillierte Zusammenfassungen und Datenexporte",
+    "leaveSummary": "Urlaubsübersicht",
+    "payrollSummary": "Gehaltsübersicht",
+    "teamSummary": "Teamübersicht",
+    "exportCsv": "Mitarbeiter CSV exportieren"
+  },
+  "settings": {
+    "subtitle": "Verwalten Sie Ihre Einstellungen",
+    "language": "Sprache"
+  },
+  "actions": {
+    "manageEmployees": "Mitarbeiter verwalten",
+    "manageDepartments": "Abteilungen verwalten",
+    "reviewLeave": "Urlaub pr\u00fcfen",
+    "manageUsers": "Benutzer verwalten",
+    "processPayroll": "Gehalt verarbeiten",
+    "employeeDirectory": "Mitarbeiterverzeichnis",
+    "teamLeaveQueue": "Team-Urlaubswarteschlange",
+    "teamPayroll": "Team-Gehalt",
+    "employeeProfiles": "Mitarbeiterprofile",
+    "myProfile": "Mein Profil",
+    "myLeave": "Mein Urlaub",
+    "myPayroll": "Meine Gehaltsabrechnung"
+  }
+}
