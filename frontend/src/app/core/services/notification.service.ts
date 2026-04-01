@@ -18,4 +18,8 @@ export class NotificationService {
     markAsRead(id: number): Observable<NotificationItem> {
         return this.http.put<NotificationItem>(`${this.apiUrl}/notifications/${id}/read`, {});
     }
+
+    markAllAsRead(): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/notifications/read-all`, {});
+    }
 }
