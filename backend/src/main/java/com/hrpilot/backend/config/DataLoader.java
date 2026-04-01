@@ -123,7 +123,7 @@ public class DataLoader implements CommandLineRunner {
                 .email(email)
                 .passwordHash(passwordEncoder.encode(password))
                 .role(role)
-                .isActive(true)
+                .active(true)
                 .preferredLang("en")
                 .activatedAt(LocalDateTime.now())
                 .build();
