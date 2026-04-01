@@ -4,27 +4,43 @@
             <h1 class="page-title">Notifications</h1>
             <p class="page-subtitle">Your recent activity and system alerts</p>
         </div>
+        @if (hasUnread) {
+            <button mat-stroked-button (click)="markAllAsRead()">
+                <mat-icon>done_all</mat-icon>
+                Mark all read
+            </button>
+        }
     </div>
 
-    <div *ngIf="loading" class="spinner-center">
-        <mat-spinner diameter="40"></mat-spinner>
-    </div>
-    <div *ngIf="error" class="error-banner">{{ error }}</div>
+    @if (loading) {
+        <div class="spinner-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    }
+    @if (error) {
+        <div class="error-banner">{{ error }}</div>
+    }
 
-    <div class="notification-list" *ngIf="!loading && !error">
-        <mat-card *ngFor="let notification of notifications" [class.unread]="!notification.read">
-            <mat-card-content>
-                <div class="notification-row">
-                    <div>
-                        <div class="notification-title">{{ notification.title }}</div>
-                        <div class="notification-message">{{ notification.message }}</div>
-                        <div class="notification-date">{{ notification.createdAt | date:'medium' }}</div>
-                    </div>
-                    <button mat-stroked-button *ngIf="!notification.read" (click)="markAsRead(notification.id)">
-                        Mark read
-                    </button>
-                </div>
-            </mat-card-content>
-        </mat-card>
-    </div>
+    @if (!loading && !error) {
+        <div class="notification-list">
+            @for (notification of notifications; track notification.id) {
+                <mat-card [class.unread]="!notification.read">
+                    <mat-card-content>
+                        <div class="notification-row">
+                            <div>
+                                <div class="notification-title">{{ notification.title }}</div>
+                                <div class="notification-message">{{ notification.message }}</div>
+                                <div class="notification-date">{{ notification.createdAt | date:'medium' }}</div>
+                            </div>
+                            @if (!notification.read) {
+                                <button mat-stroked-button (click)="markAsRead(notification.id)">
+                                    Mark read
+                                </button>
+                            }
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
 </div>
