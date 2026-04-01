@@ -4,7 +4,8 @@
         <span class="logo-text">HRPilot</span>
     </div>
     <span class="flex-1"></span>
-    <div class="user-section" *ngIf="currentUser$ | async as currentUser">
+    @if (currentUser$ | async; as currentUser) {
+    <div class="user-section">
         <button mat-icon-button [matMenuTriggerFor]="langMenu" matTooltip="Language">
             <mat-icon>language</mat-icon>
         </button>
@@ -26,4 +27,5 @@
             <mat-icon>logout</mat-icon>
         </button>
     </div>
+    }
 </mat-toolbar>
