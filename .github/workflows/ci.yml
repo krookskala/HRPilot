@@ -50,6 +50,10 @@ jobs:
           APP_STORAGE_PROVIDER: local
           APP_STORAGE_LOCAL_UPLOAD_DIR: target/test-uploads
 
+      - name: Dependency security check
+        run: mvn org.owasp:dependency-check-maven:check -B
+        continue-on-error: true
+
       - name: Build JAR
         run: mvn package -DskipTests -B
 
@@ -73,6 +77,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Security audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm run test
 
       - name: Build
         run: npm run build -- --configuration production
