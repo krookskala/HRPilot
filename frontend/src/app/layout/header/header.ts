@@ -5,14 +5,14 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatMenuModule } from "@angular/material/menu";
-import { AsyncPipe, NgIf } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { AuthService } from "../../core/services/auth.service";
 
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatTooltipModule, MatMenuModule, AsyncPipe, NgIf, RouterLink, TranslateModule],
+    imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatTooltipModule, MatMenuModule, AsyncPipe, RouterLink, TranslateModule],
     templateUrl: './header.html',
     styleUrl: './header.scss'
 })
