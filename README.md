@@ -1,226 +1,324 @@
-# HRPilot - HR Management Platform
+# HRPilot
 
 [![CI](https://github.com/Krookskala/HRPilot/actions/workflows/ci.yml/badge.svg)](https://github.com/Krookskala/HRPilot/actions)
-[![Java](https://img.shields.io/badge/Java-21-orange)](https://openjdk.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-green)](https://spring.io/projects/spring-boot)
-[![Angular](https://img.shields.io/badge/Angular-21-red)](https://angular.dev/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)](https://www.docker.com/)
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-green)
+![Angular](https://img.shields.io/badge/Angular-21-red)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
 
-A full-stack HR Management Platform built with **Spring Boot** and **Angular**, featuring role-based access control, JWT authentication, and a complete Docker deployment setup.
+HRPilot is a single-company HR platform built with Spring Boot and Angular. It includes invite-based onboarding, employee self-service, scoped leave approvals, payroll runs with payslips, notifications, audit logging, role-aware dashboards, and multi-language support.
+
+## Product Scope
+
+- Invite-only account setup with password reset, refresh-token rotation, logout revocation, and `/api/me` as the canonical current-user source
+- Admin user management with role updates, activation control, and invite re-issue flows
+- Employee profiles with employment history, photo upload, secured HR documents, and card/table directory view
+- Germany-aware leave workflow with working-day calculation, holiday support, overlap protection, scoped approvals, cancellation flow, and request history
+- Payroll runs with configurable tax class input, structured payroll components, publish/pay lifecycle, generated PDF payslips, and employee self-service payroll access
+- Department management with CRUD operations, hierarchical parent departments, and manager assignment
+- In-app notifications with individual and bulk mark-as-read, plus audit logging for sensitive or workflow-driven actions
+- Role-aware dashboard experiences for `ADMIN`, `HR_MANAGER`, `DEPARTMENT_MANAGER`, and `EMPLOYEE`
+- Reports page with leave, payroll, team summaries, and CSV employee export
+- Settings page with language preferences (English, German, Turkish)
+- Audit log viewer for admin-level security event tracking
 
 ## Architecture
 
 ```mermaid
 graph TB
     subgraph Frontend["Frontend (Angular 21)"]
-        UI[Angular Material + Tailwind CSS]
-        Guards[Auth & Role Guards]
-        Interceptor[JWT Interceptor]
-        Services[HTTP Services]
+        UI["Angular Material 3 + SCSS"]
+        Guards["Auth & Role Guards"]
+        I18n["i18n (EN / DE / TR)"]
+        Shell["Role-aware Dashboard + Features"]
+        Services["HTTP Services + Interceptors"]
     end
 
     subgraph Backend["Backend (Spring Boot 3.5)"]
-        Controllers[REST Controllers]
-        Security[Spring Security + JWT]
-        ServiceLayer[Service Layer]
-        JPA[Spring Data JPA]
+        API["REST API + OpenAPI"]
+        Security["JWT + Refresh Tokens + Rate Limiting"]
+        Domain["Feature Services"]
+        Storage["Local/S3 Storage"]
+        Persistence["JPA + Flyway"]
     end
 
-    subgraph Database["Database"]
-        PG[(PostgreSQL 16)]
+    subgraph Infra["Infrastructure"]
+        Nginx["Nginx (gzip + security headers)"]
+        Docker["Docker Compose (resource limits)"]
     end
 
-    UI --> Guards --> Services
-    Services --> Interceptor --> Controllers
-    Controllers --> Security --> ServiceLayer --> JPA --> PG
+    subgraph Database["PostgreSQL 16"]
+        PG[(HRPilot DB)]
+    end
+
+    UI --> Guards --> I18n --> Shell --> Services --> Nginx
+    Nginx --> API
+    API --> Security --> Domain --> Storage
+    Domain --> Persistence --> PG
 ```
 
-## Features
-
-- **Authentication & Authorization** - JWT-based auth with role-based access control (RBAC)
-- **Employee Management** - CRUD operations for employee records with salary tracking
-- **Department Management** - Hierarchical department structure with manager assignment
-- **Leave Management** - Leave request workflow with approval/rejection by managers
-- **Payroll Management** - Payroll record creation with draft/paid status tracking
-- **User Management** - Admin-only user administration with role assignment
-- **Dashboard** - Overview with module statistics
-- **Pagination** - Server-side pagination across all list views
-- **Form Validation** - Client-side reactive form validation with error messages
-- **API Documentation** - Interactive Swagger UI
-
-## Tech Stack
+## Stack
 
 | Layer | Technology |
-|-------|-----------|
-| **Backend** | Java 21, Spring Boot 3.5, Spring Security, Spring Data JPA |
-| **Frontend** | Angular 21, Angular Material, Tailwind CSS, RxJS |
-| **Database** | PostgreSQL 16 |
-| **Auth** | JWT (jjwt 0.12.6) |
-| **API Docs** | SpringDoc OpenAPI (Swagger UI) |
-| **Build** | Maven, Angular CLI |
-| **DevOps** | Docker, Docker Compose, GitHub Actions CI |
-| **Testing** | JUnit 5, Mockito, MockMvc, Spring Boot Test |
+| --- | --- |
+| Backend | Java 21, Spring Boot 3.5, Spring Security, Spring Data JPA, Flyway |
+| Frontend | Angular 21 standalone components, Angular Material 3, SCSS, RxJS |
+| Database | PostgreSQL 16 |
+| Auth | JWT access tokens + rotating refresh tokens + rate limiting |
+| Storage | Local filesystem fallback, S3-compatible object storage |
+| Documents | Apache PDFBox for payslips |
+| API Docs | SpringDoc OpenAPI / Swagger UI |
+| i18n | ngx-translate (English, German, Turkish) |
+| Testing | JUnit 5 + Mockito (backend), Vitest + jsdom (frontend), Playwright (e2e) |
+| CI/CD | GitHub Actions + OWASP dependency-check + npm audit |
+| Infrastructure | Docker Compose, Nginx with gzip and security headers |
 
-## Project Structure
+## Main Modules
 
-```
-HRPilot/
-├── backend/
-│   └── src/main/java/com/hrpilot/backend/
-│       ├── auth/              # Authentication (login, register)
-│       ├── user/              # User management (ADMIN only)
-│       ├── employee/          # Employee CRUD
-│       ├── department/        # Department CRUD
-│       ├── leave/             # Leave request workflow
-│       ├── payroll/           # Payroll management
-│       ├── config/            # Security, JWT, OpenAPI config
-│       ├── common/            # Base entity, exceptions, error handling
-│       └── health/            # Health check endpoint
-├── frontend/
-│   └── src/app/
-│       ├── core/              # Guards, interceptors, services
-│       ├── features/          # Feature modules (auth, dashboard, etc.)
-│       ├── layout/            # Header, sidebar, main layout
-│       └── shared/            # Models, shared components
-├── docker-compose.yml         # Production stack
-├── docker-compose.dev.yml     # Dev database only
-└── .github/workflows/ci.yml  # CI pipeline
-```
+### Identity and Access
 
-## API Endpoints
+- `POST /api/auth/login`
+- `POST /api/auth/refresh`
+- `POST /api/auth/logout`
+- `GET /api/auth/invitations/{token}`
+- `POST /api/auth/invitations/accept`
+- `POST /api/auth/password/request`
+- `GET /api/auth/password/{token}`
+- `POST /api/auth/password/reset`
+- `GET /api/me`
+- `GET /api/me/profile`
 
-### Public
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login and get JWT token |
-| GET | `/api/health` | Health check |
+### User and Profile Management
 
-### Employees (Authenticated)
-| Method | Endpoint | Roles | Description |
-|--------|----------|-------|-------------|
-| GET | `/api/employees` | Any | List all (paginated) |
-| GET | `/api/employees/{id}` | Any | Get by ID |
-| POST | `/api/employees` | ADMIN, HR_MANAGER | Create employee |
-| DELETE | `/api/employees/{id}` | ADMIN, HR_MANAGER | Delete employee |
+- `GET /api/users`
+- `POST /api/users/invite`
+- `PUT /api/users/{id}`
+- `POST /api/users/{id}/reinvite`
+- `GET /api/employees`
+- `GET /api/employees/{id}/detail`
+- `POST /api/employees/{id}/photo`
+- `GET /api/employees/{id}/documents`
+- `POST /api/employees/{id}/documents`
+- `GET /api/employees/export/csv`
 
-### Departments (Authenticated)
-| Method | Endpoint | Roles | Description |
-|--------|----------|-------|-------------|
-| GET | `/api/departments` | Any | List all (paginated) |
-| GET | `/api/departments/{id}` | Any | Get by ID |
-| POST | `/api/departments` | ADMIN | Create department |
-| DELETE | `/api/departments/{id}` | ADMIN | Delete department |
+### Department Management
 
-### Leave Requests (Authenticated)
-| Method | Endpoint | Roles | Description |
-|--------|----------|-------|-------------|
-| GET | `/api/leave-requests` | Any | List all (paginated) |
-| GET | `/api/leave-requests/employee/{id}` | Any | Get by employee |
-| POST | `/api/leave-requests` | Any | Submit request |
-| PUT | `/api/leave-requests/{id}/approve` | ADMIN, HR_MANAGER, DEPT_MANAGER | Approve |
-| PUT | `/api/leave-requests/{id}/reject` | ADMIN, HR_MANAGER, DEPT_MANAGER | Reject |
+- `GET /api/departments`
+- `POST /api/departments`
+- `PUT /api/departments/{id}`
+- `DELETE /api/departments/{id}`
 
-### Payrolls (Authenticated)
-| Method | Endpoint | Roles | Description |
-|--------|----------|-------|-------------|
-| GET | `/api/payrolls` | Any | List all (paginated) |
-| GET | `/api/payrolls/employee/{id}` | Any | Get by employee |
-| POST | `/api/payrolls` | ADMIN, HR_MANAGER | Create record |
-| PUT | `/api/payrolls/{id}/pay` | ADMIN, HR_MANAGER | Mark as paid |
+### Leave Workflow
 
-### Users (ADMIN only)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/users` | List all (paginated) |
-| GET | `/api/users/{id}` | Get by ID |
-| POST | `/api/users` | Create user |
-| PUT | `/api/users/{id}` | Update user |
-| DELETE | `/api/users/{id}` | Delete user |
+- `GET /api/leave-requests`
+- `GET /api/me/leave-requests`
+- `GET /api/leave-requests/{id}/history`
+- `POST /api/leave-requests`
+- `PUT /api/leave-requests/{id}/approve`
+- `PUT /api/leave-requests/{id}/reject`
+- `PUT /api/leave-requests/{id}/cancel`
+- `GET /api/leave-requests/balances/{employeeId}`
+- `GET /api/me/leave-balances`
 
-## Getting Started
+### Payroll
+
+- `GET /api/payrolls`
+- `GET /api/payrolls/runs`
+- `POST /api/payrolls`
+- `POST /api/payrolls/preview`
+- `POST /api/payrolls/runs`
+- `PUT /api/payrolls/runs/{id}/publish`
+- `PUT /api/payrolls/runs/{id}/pay`
+- `GET /api/payrolls/{id}/components`
+- `GET /api/payrolls/{id}/payslip`
+- `GET /api/me/payrolls`
+- `GET /api/me/payrolls/{id}/payslip`
+
+### Notifications and Audit
+
+- `GET /api/notifications`
+- `PUT /api/notifications/{id}/read`
+- `PUT /api/notifications/read-all`
+- `GET /api/audit-logs`
+
+### System
+
+- `GET /api/dashboard`
+- `GET /api/health`
+- `GET /actuator/health`
+
+## Frontend Pages
+
+| Page | Route | Access |
+| --- | --- | --- |
+| Dashboard | `/dashboard` | All authenticated users |
+| My Profile | `/profile` | All authenticated users |
+| Notifications | `/notifications` | All authenticated users |
+| Employees | `/employees` | All authenticated users |
+| Employee Detail | `/employees/:id` | All authenticated users |
+| Departments | `/departments` | All authenticated users |
+| Leave Requests | `/leaves` | All authenticated users |
+| Payrolls | `/payrolls` | All authenticated users |
+| Settings | `/settings` | All authenticated users |
+| Users | `/users` | ADMIN only |
+| Audit Logs | `/audit-logs` | ADMIN only |
+| Reports | `/reports` | ADMIN only |
+
+## Local Development
 
 ### Prerequisites
 
 - Java 21
-- Node.js 22
-- PostgreSQL 16
 - Maven 3.9+
-- Docker & Docker Compose (optional)
+- Node.js 22
+- npm 10+
+- Docker Desktop or a local PostgreSQL 16 instance
 
-### Option 1: Docker (Recommended)
+### Run with Docker
 
 ```bash
-# Clone the repository
-git clone https://github.com/Krookskala/HRPilot.git
-cd HRPilot
-
-# Start the full stack
 docker-compose up --build
-
-# Access the application
-# Frontend: http://localhost
-# Backend API: http://localhost:8080
-# Swagger UI: http://localhost/swagger-ui/
 ```
 
-### Option 2: Local Development
+Available services:
 
-**1. Start the database:**
+- Frontend: `http://localhost`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html` (dev profile only)
+
+### Run Locally
+
+1. Start PostgreSQL:
+
 ```bash
-docker-compose -f docker-compose.dev.yml up -d
+docker run -d --name hrpilot-db \
+  -e POSTGRES_DB=hrpilot \
+  -e POSTGRES_USER=hrpilot \
+  -e POSTGRES_PASSWORD=hrpilot123 \
+  -p 5432:5432 postgres:16
 ```
 
-**2. Start the backend:**
+2. Run the backend:
+
 ```bash
 cd backend
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-**3. Start the frontend:**
+3. Run the frontend:
+
 ```bash
 cd frontend
-npm install
-ng serve
+npm ci
+npm run start
 ```
 
-**4. Access the application:**
-- Frontend: http://localhost:4200
-- Backend API: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui/index.html
+### Demo Accounts (dev profile)
 
-## Role-Based Access Control
+| Email | Password | Role |
+| --- | --- | --- |
+| admin@hrpilot.com | admin123 | ADMIN |
+| hr@hrpilot.com | hr1234 | HR_MANAGER |
+| john.doe@hrpilot.com | pass1234 | DEPARTMENT_MANAGER |
+| jane.smith@hrpilot.com | pass1234 | DEPARTMENT_MANAGER |
+| alice.johnson@hrpilot.com | pass1234 | EMPLOYEE |
 
-| Role | Permissions |
-|------|------------|
-| **ADMIN** | Full access to all modules including user management |
-| **HR_MANAGER** | Manage employees, payrolls, approve/reject leave requests |
-| **DEPARTMENT_MANAGER** | Approve/reject leave requests for department |
-| **EMPLOYEE** | View data, submit leave requests |
+## Configuration
+
+### Core Environment Variables
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `SPRING_PROFILES_ACTIVE` | Active Spring profile | `dev` |
+| `DB_URL` | JDBC connection URL | `jdbc:postgresql://localhost:5432/hrpilot` |
+| `DB_USERNAME` | Database username | `hrpilot` |
+| `DB_PASSWORD` | Database password | `hrpilot123` |
+| `JWT_SECRET` | JWT signing key (min 256-bit) | dev-only fallback |
+| `APP_FRONTEND_BASE_URL` | Frontend URL for invite/reset links | `http://localhost:4200` |
+
+### Storage Configuration
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `APP_STORAGE_PROVIDER` | `local` or `s3` | `local` |
+| `APP_STORAGE_LOCAL_UPLOAD_DIR` | Local upload directory | `uploads` |
+| `APP_STORAGE_S3_BUCKET` | S3 bucket name | — |
+| `APP_STORAGE_S3_REGION` | S3 region | — |
+| `APP_STORAGE_S3_ENDPOINT` | Custom S3 endpoint for compatible providers | — |
+| `APP_STORAGE_S3_ACCESS_KEY` | S3 access key | — |
+| `APP_STORAGE_S3_SECRET_KEY` | S3 secret key | — |
 
 ## Testing
+
+### Backend
 
 ```bash
 cd backend
 mvn test
 ```
 
-**94 tests** covering:
-- **Service layer** unit tests (5 modules, 47 tests)
-- **Controller layer** integration tests with MockMvc (5 modules, 47 tests)
-- RBAC authorization tests with `@WithMockUser`
-- Exception handling and validation tests
+### Frontend Unit Tests
 
-## Environment Variables
+```bash
+cd frontend
+npm ci
+npm run test
+```
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `POSTGRES_DB` | Database name | `hrpilot` |
-| `POSTGRES_USER` | Database user | `hrpilot` |
-| `POSTGRES_PASSWORD` | Database password | `hrpilot123` |
-| `JWT_SECRET` | JWT signing key (min 256-bit) | dev key |
+### Frontend E2E Tests (Playwright)
 
-## License
+```bash
+cd frontend
+npx playwright install
+npm run e2e
+```
 
-This project is for educational and portfolio purposes.
+### Test Baseline
+
+| Suite | Count | Framework |
+| --- | --- | --- |
+| Backend unit/integration | 93 tests | JUnit 5 + Mockito |
+| Frontend unit | 82 tests (12 spec files) | Vitest + jsdom |
+| Frontend e2e | 2 spec files | Playwright |
+| Flyway migrations | V1 through V9 | Flyway |
+
+## CI/CD
+
+GitHub Actions pipeline runs on push/PR to `main` or `master`:
+
+1. **Backend** — `mvn verify` against PostgreSQL 16 service container
+2. **OWASP Dependency Check** — scans backend dependencies for known vulnerabilities
+3. **Frontend Build** — production build validation
+4. **npm Audit** — scans frontend dependencies for known vulnerabilities
+5. **Docker Build** — validates Docker image builds
+
+## Security
+
+- JWT access tokens with configurable expiration + rotating refresh tokens
+- `@PreAuthorize` method-level RBAC on all endpoints
+- Rate limiting on authentication endpoints
+- Password complexity enforcement (min 12 chars, upper/lower/digit/special)
+- CORS restricted to configured origins with explicit allowed headers
+- Nginx security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy)
+- Swagger UI disabled in production profile
+- Actuator endpoints restricted to health and info
+
+## RBAC Overview
+
+| Role | Main Responsibility |
+| --- | --- |
+| `ADMIN` | Full system control, user administration, audit logs, reports |
+| `HR_MANAGER` | HR operations, payroll processing, global leave supervision |
+| `DEPARTMENT_MANAGER` | Team-scoped leave and payroll visibility |
+| `EMPLOYEE` | Personal profile, leave, payroll, and notifications |
+
+## API Documentation
+
+- Swagger UI: `/swagger-ui/index.html` (dev profile only)
+- OpenAPI JSON: `/v3/api-docs` (dev profile only)
+
+## Notes
+
+- The platform is intentionally modeled as a single-company deployment.
+- Email delivery is not part of v1; invite and reset links are generated and shared manually.
+- In-app notifications are implemented; outbound email notifications are left for a future iteration.
+- The `DataLoader` seeds demo data automatically when running with the `dev` profile on an empty database.
