@@ -46,6 +46,11 @@ public class NotificationService {
     }
 
     @Transactional
+    public int markAllAsRead(Long userId) {
+        return notificationRepository.markAllAsRead(userId, LocalDateTime.now());
+    }
+
+    @Transactional
     public NotificationResponse markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", notificationId));
