@@ -26,6 +26,14 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getForUser(userId, pageable));
     }
 
+    @Operation(summary = "Mark all notifications as read")
+    @PutMapping("/read-all")
+    public ResponseEntity<Void> markAllAsRead() {
+        Long userId = currentUserService.getCurrentUser().id();
+        notificationService.markAllAsRead(userId);
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "Mark a notification as read")
     @PutMapping("/{id}/read")
     public ResponseEntity<NotificationResponse> markAsRead(@PathVariable Long id) {
