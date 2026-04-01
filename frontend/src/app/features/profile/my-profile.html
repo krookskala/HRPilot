@@ -6,79 +6,98 @@
         </div>
     </div>
 
-    <div *ngIf="loading" class="spinner-center">
-        <mat-spinner diameter="40"></mat-spinner>
-    </div>
-    <div *ngIf="error" class="error-banner">{{ error }}</div>
+    @if (loading) {
+        <div class="spinner-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    }
+    @if (error) {
+        <div class="error-banner">{{ error }}</div>
+    }
 
-    <div class="profile-grid" *ngIf="profile">
-        <mat-card>
-            <mat-card-content>
-                <h2>Account</h2>
-                <p><strong>Email:</strong> {{ profile.email }}</p>
-                <p><strong>Role:</strong> {{ profile.role }}</p>
-                <p><strong>Language:</strong> {{ profile.preferredLang }}</p>
-                <p><strong>Activated:</strong> {{ profile.activatedAt | date:'medium' }}</p>
-                <p><strong>Last login:</strong> {{ profile.lastLoginAt | date:'medium' }}</p>
-            </mat-card-content>
-        </mat-card>
+    @if (profile) {
+        <div class="profile-grid">
+            <mat-card>
+                <mat-card-content>
+                    <h2>Account</h2>
+                    <p><strong>Email:</strong> {{ profile.email }}</p>
+                    <p><strong>Role:</strong> {{ profile.role }}</p>
+                    <p><strong>Language:</strong> {{ profile.preferredLang }}</p>
+                    <p><strong>Activated:</strong> {{ profile.activatedAt | date:'medium' }}</p>
+                    <p><strong>Last login:</strong> {{ profile.lastLoginAt | date:'medium' }}</p>
+                </mat-card-content>
+            </mat-card>
 
-        <mat-card *ngIf="profile.employee">
-            <mat-card-content>
-                <h2>Employee</h2>
-                <div class="profile-photo-row">
-                    <div class="profile-photo" *ngIf="photoPreviewUrl; else photoPlaceholder">
-                        <img [src]="photoPreviewUrl" [alt]="profile.employee.firstName + ' ' + profile.employee.lastName">
-                    </div>
-                    <ng-template #photoPlaceholder>
-                        <div class="profile-photo placeholder">
-                            <mat-icon>account_circle</mat-icon>
+            @if (profile.employee) {
+                <mat-card>
+                    <mat-card-content>
+                        <h2>Employee</h2>
+                        <div class="profile-photo-row">
+                            @if (photoPreviewUrl) {
+                                <div class="profile-photo">
+                                    <img [src]="photoPreviewUrl" [alt]="profile.employee.firstName + ' ' + profile.employee.lastName">
+                                </div>
+                            } @else {
+                                <div class="profile-photo placeholder">
+                                    <mat-icon>account_circle</mat-icon>
+                                </div>
+                            }
+
+                            <label class="upload-label">
+                                <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
+                                <button mat-stroked-button type="button" [disabled]="uploadingPhoto">
+                                    <mat-icon>photo_camera</mat-icon>
+                                    {{ uploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
+                                </button>
+                            </label>
                         </div>
-                    </ng-template>
+                        <p><strong>Name:</strong> {{ profile.employee.firstName }} {{ profile.employee.lastName }}</p>
+                        <p><strong>Position:</strong> {{ profile.employee.position }}</p>
+                        <p><strong>Department:</strong> {{ profile.employee.departmentName || 'Unassigned' }}</p>
+                        <p><strong>Hire date:</strong> {{ profile.employee.hireDate | date:'mediumDate' }}</p>
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
 
-                    <label class="upload-label">
-                        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
-                        <button mat-stroked-button type="button" [disabled]="uploadingPhoto">
-                            <mat-icon>photo_camera</mat-icon>
-                            {{ uploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
-                        </button>
-                    </label>
-                </div>
-                <p><strong>Name:</strong> {{ profile.employee.firstName }} {{ profile.employee.lastName }}</p>
-                <p><strong>Position:</strong> {{ profile.employee.position }}</p>
-                <p><strong>Department:</strong> {{ profile.employee.departmentName || 'Unassigned' }}</p>
-                <p><strong>Hire date:</strong> {{ profile.employee.hireDate | date:'mediumDate' }}</p>
+    @if (profile?.employee?.employmentHistory?.length) {
+        <mat-card class="history-card">
+            <mat-card-content>
+                <h2>Employment History</h2>
+                @for (item of profile?.employee?.employmentHistory; track $index) {
+                    <div class="history-item">
+                        <mat-icon>history</mat-icon>
+                        <div>
+                            <div class="history-title">{{ item.changeType }}: {{ item.oldValue || 'n/a' }} -> {{ item.newValue || 'n/a' }}</div>
+                            <div class="history-date">{{ item.changedAt | date:'medium' }}</div>
+                        </div>
+                    </div>
+                }
             </mat-card-content>
         </mat-card>
-    </div>
+    }
 
-    <mat-card *ngIf="profile?.employee?.employmentHistory?.length" class="history-card">
-        <mat-card-content>
-            <h2>Employment History</h2>
-            <div class="history-item" *ngFor="let item of profile?.employee?.employmentHistory">
-                <mat-icon>history</mat-icon>
-                <div>
-                    <div class="history-title">{{ item.changeType }}: {{ item.oldValue || 'n/a' }} -> {{ item.newValue || 'n/a' }}</div>
-                    <div class="history-date">{{ item.changedAt | date:'medium' }}</div>
-                </div>
-            </div>
-        </mat-card-content>
-    </mat-card>
-
-    <mat-card *ngIf="profile?.employee" class="documents-card">
-        <mat-card-content>
-            <h2>My Documents</h2>
-            <div *ngIf="profile?.employee?.documents?.length === 0" class="empty-text">No documents available yet.</div>
-            <div *ngFor="let document of profile?.employee?.documents || []" class="document-item">
-                <div>
-                    <div class="history-title">{{ document.title }}</div>
-                    <div class="history-date">{{ document.originalFilename }} · {{ document.uploadedAt | date:'medium' }}</div>
-                </div>
-                <button mat-stroked-button type="button" (click)="downloadDocument(document.id, document.originalFilename)">
-                    <mat-icon>download</mat-icon>
-                    Download
-                </button>
-            </div>
-        </mat-card-content>
-    </mat-card>
+    @if (profile?.employee) {
+        <mat-card class="documents-card">
+            <mat-card-content>
+                <h2>My Documents</h2>
+                @if (profile?.employee?.documents?.length === 0) {
+                    <div class="empty-text">No documents available yet.</div>
+                }
+                @for (document of profile?.employee?.documents || []; track $index) {
+                    <div class="document-item">
+                        <div>
+                            <div class="history-title">{{ document.title }}</div>
+                            <div class="history-date">{{ document.originalFilename }} · {{ document.uploadedAt | date:'medium' }}</div>
+                        </div>
+                        <button mat-stroked-button type="button" (click)="downloadDocument(document.id, document.originalFilename)">
+                            <mat-icon>download</mat-icon>
+                            Download
+                        </button>
+                    </div>
+                }
+            </mat-card-content>
+        </mat-card>
+    }
 </div>
