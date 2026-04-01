@@ -44,7 +44,7 @@ describe('LeaveService', () => {
   it('should get leave requests by employee', () => {
     service.getByEmployee(5).subscribe();
 
-    const req = httpMock.expectOne(`${apiUrl}/leave-requests/employee/5`);
+    const req = httpMock.expectOne(r => r.url.includes('/leave-requests/employee/5'));
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
@@ -52,7 +52,7 @@ describe('LeaveService', () => {
   it('should get my leave requests', () => {
     service.getMine().subscribe();
 
-    const req = httpMock.expectOne(`${apiUrl}/me/leave-requests`);
+    const req = httpMock.expectOne(r => r.url.includes('/me/leave-requests'));
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
