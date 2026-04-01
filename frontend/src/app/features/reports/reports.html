@@ -1,0 +1,123 @@
+<div class="reports-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">{{ 'reports.title' | translate }}</h1>
+            <p class="page-subtitle">{{ 'reports.subtitle' | translate }}</p>
+        </div>
+        <button mat-stroked-button (click)="exportEmployeesCsv()">
+            <mat-icon>download</mat-icon>
+            {{ 'reports.exportCsv' | translate }}
+        </button>
+    </div>
+
+    @if (loading) {
+        <div class="spinner-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    }
+
+    @if (error) {
+        <div class="error-banner">
+            <mat-icon>error_outline</mat-icon>
+            {{ error }}
+        </div>
+    }
+
+    @if (!loading && !error && data) {
+        <div class="report-grid">
+            <mat-card>
+                <mat-card-header>
+                    <mat-icon mat-card-avatar>event_available</mat-icon>
+                    <mat-card-title>{{ 'reports.leaveSummary' | translate }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.pending' | translate }}</span>
+                        <strong>{{ data.leaveOverview.pending }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.approved' | translate }}</span>
+                        <strong>{{ data.leaveOverview.approved }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.rejected' | translate }}</span>
+                        <strong>{{ data.leaveOverview.rejected }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.cancelled' | translate }}</span>
+                        <strong>{{ data.leaveOverview.cancelled }}</strong>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card>
+                <mat-card-header>
+                    <mat-icon mat-card-avatar>payments</mat-icon>
+                    <mat-card-title>{{ 'reports.payrollSummary' | translate }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.draft' | translate }}</span>
+                        <strong>{{ data.payrollOverview.draft }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.published' | translate }}</span>
+                        <strong>{{ data.payrollOverview.published }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.paid' | translate }}</span>
+                        <strong>{{ data.payrollOverview.paid }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>{{ 'dashboard.totalNet' | translate }}</span>
+                        <strong>{{ data.payrollOverview.totalNetSalary | number:'1.2-2' }} &euro;</strong>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            @if (data.teamOverview) {
+                <mat-card>
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar>groups</mat-icon>
+                        <mat-card-title>{{ 'reports.teamSummary' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="stat-row">
+                            <span>{{ 'dashboard.managedDepartments' | translate }}</span>
+                            <strong>{{ data.teamOverview.managedDepartments }}</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>{{ 'dashboard.teamMembers' | translate }}</span>
+                            <strong>{{ data.teamOverview.teamMembers }}</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>{{ 'dashboard.pendingLeaveRequests' | translate }}</span>
+                            <strong>{{ data.teamOverview.pendingLeaveRequests }}</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>{{ 'dashboard.paidPayrolls' | translate }}</span>
+                            <strong>{{ data.teamOverview.paidPayrolls }}</strong>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+
+            @if (data.departmentDistribution) {
+                <mat-card>
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar>apartment</mat-icon>
+                        <mat-card-title>{{ 'dashboard.departmentDistribution' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        @for (dept of data.departmentDistribution; track dept.department) {
+                            <div class="stat-row">
+                                <span>{{ dept.department }}</span>
+                                <strong>{{ dept.count }}</strong>
+                            </div>
+                        }
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
+</div>
