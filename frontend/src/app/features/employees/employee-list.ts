@@ -17,7 +17,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCardModule } from "@angular/material/card";
-import { NgIf, NgFor, DecimalPipe } from "@angular/common";
+import { DecimalPipe } from "@angular/common";
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
 import { EmployeeDialog } from "./employee-dialog";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
@@ -29,7 +29,7 @@ import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-di
         MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule,
         MatProgressSpinnerModule, MatIconModule, MatTooltipModule,
         MatFormFieldModule, MatInputModule, MatSelectModule, MatCardModule,
-        NgIf, NgFor, DecimalPipe, ReactiveFormsModule
+        DecimalPipe, ReactiveFormsModule
     ],
     templateUrl: './employee-list.html',
     styleUrl: './employee-list.scss'
@@ -52,6 +52,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     pageIndex = 0;
     loading = false;
     error = '';
+    viewMode: 'table' | 'card' = 'table';
 
     searchControl = new FormControl('');
     departmentControl = new FormControl<number | null>(null);
@@ -94,7 +95,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     }
 
     loadDepartments(): void {
-        this.departmentService.getAll(0, 100).subscribe({
+        this.departmentService.getAll(0, 100).pipe(takeUntil(this.destroy$)).subscribe({
             next: (page) => { this.departments = page.content; }
         });
     }
@@ -109,7 +110,7 @@ export class EmployeeList implements OnInit, OnDestroy {
             position: this.positionControl.value || undefined
         };
 
-        this.employeeService.search(filters, this.pageIndex, this.pageSize).subscribe({
+        this.employeeService.search(filters, this.pageIndex, this.pageSize).pipe(takeUntil(this.destroy$)).subscribe({
             next: (page) => {
                 this.employees = page.content;
                 this.totalElements = page.totalElements;
@@ -141,7 +142,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     }
 
     exportCsv(): void {
-        this.employeeService.exportCsv().subscribe({
+        this.employeeService.exportCsv().pipe(takeUntil(this.destroy$)).subscribe({
             next: (blob) => {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -158,9 +159,9 @@ export class EmployeeList implements OnInit, OnDestroy {
             width: '350px',
             data: { title: 'Delete Employee', message: 'Are you sure you want to delete this employee?' }
         });
-        ref.afterClosed().subscribe(confirmed => {
+        ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(confirmed => {
             if (confirmed) {
-                this.employeeService.deleteEmployee(id).subscribe({
+                this.employeeService.deleteEmployee(id).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => { this.loadEmployees(); }
                 });
             }
@@ -169,9 +170,9 @@ export class EmployeeList implements OnInit, OnDestroy {
 
     openDialog(): void {
         const ref = this.dialog.open(EmployeeDialog, { width: '400px' });
-        ref.afterClosed().subscribe(result => {
+        ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
             if (result) {
-                this.employeeService.createEmployee(result).subscribe({
+                this.employeeService.createEmployee(result).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => { this.loadEmployees(); }
                 });
             }
