@@ -11,3 +11,9 @@ export interface CreateDepartmentRequest {
     managerId: number | null;
     parentDepartmentId: number | null;
 }
+
+export interface UpdateDepartmentRequest {
+    name: string;
+    managerId: number | null;
+    parentDepartmentId: number | null;
+}
