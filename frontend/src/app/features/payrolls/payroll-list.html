@@ -6,158 +6,181 @@
                 {{ canManage ? 'Manage payroll runs, publication, and payment lifecycle' : 'Review your payroll history and download payslips' }}
             </p>
         </div>
-        <button mat-flat-button color="primary" (click)="openDialog()" *ngIf="canManage">
-            <mat-icon>add</mat-icon>
-            Create Payroll Run
-        </button>
+        @if (canManage) {
+            <button mat-flat-button color="primary" (click)="openDialog()">
+                <mat-icon>add</mat-icon>
+                Create Payroll Run
+            </button>
+        }
     </div>
 
-    <div *ngIf="loading" class="spinner-center">
-        <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (loading) {
+        <div class="spinner-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    }
 
-    <div *ngIf="refreshing && !loading" class="spinner-inline">
-        <mat-spinner diameter="24"></mat-spinner>
-        <span>Refreshing payroll data...</span>
-    </div>
+    @if (refreshing && !loading) {
+        <div class="spinner-inline">
+            <mat-spinner diameter="24"></mat-spinner>
+            <span>Refreshing payroll data...</span>
+        </div>
+    }
 
-    <div *ngIf="error" class="error-banner">
-        <mat-icon>error_outline</mat-icon>
-        {{ error }}
-    </div>
+    @if (error) {
+        <div class="error-banner">
+            <mat-icon>error_outline</mat-icon>
+            {{ error }}
+        </div>
+    }
 
-    <mat-card *ngIf="canManage && runs.length > 0" class="runs-card">
-        <mat-card-content>
-            <h2>Payroll Runs</h2>
-            <table mat-table [dataSource]="runs">
-                <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>Name</th>
-                    <td mat-cell *matCellDef="let run">{{ run.name }}</td>
+    @if (canManage && runs.length > 0) {
+        <mat-card class="runs-card">
+            <mat-card-content>
+                <h2>Payroll Runs</h2>
+                <table mat-table [dataSource]="runs">
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef>Name</th>
+                        <td mat-cell *matCellDef="let run">{{ run.name }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="period">
+                        <th mat-header-cell *matHeaderCellDef>Period</th>
+                        <td mat-cell *matCellDef="let run">{{ run.month }}/{{ run.year }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef>Status</th>
+                        <td mat-cell *matCellDef="let run">{{ run.status }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="count">
+                        <th mat-header-cell *matHeaderCellDef>Payrolls</th>
+                        <td mat-cell *matCellDef="let run">{{ run.payrollCount }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                        <td mat-cell *matCellDef="let run">
+                            @if (run.status === 'DRAFT') {
+                                <button mat-icon-button color="primary" matTooltip="Publish run"
+                                        (click)="publishRun(run.id)">
+                                    <mat-icon>publish</mat-icon>
+                                </button>
+                            }
+                            @if (run.status !== 'PAID') {
+                                <button mat-icon-button color="accent" matTooltip="Mark run as paid"
+                                        (click)="payRun(run.id)">
+                                    <mat-icon>paid</mat-icon>
+                                </button>
+                            }
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="runColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: runColumns;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    }
+
+    @if (!loading && !error) {
+        <div class="table-panel">
+            <table mat-table [dataSource]="payrolls">
+                <ng-container matColumnDef="employeeFullName">
+                    <th mat-header-cell *matHeaderCellDef>Employee</th>
+                    <td mat-cell *matCellDef="let payroll">{{ payroll.employeeFullName }}</td>
                 </ng-container>
 
-                <ng-container matColumnDef="period">
-                    <th mat-header-cell *matHeaderCellDef>Period</th>
-                    <td mat-cell *matCellDef="let run">{{ run.month }}/{{ run.year }}</td>
+                <ng-container matColumnDef="year">
+                    <th mat-header-cell *matHeaderCellDef>Year</th>
+                    <td mat-cell *matCellDef="let payroll">{{ payroll.year }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="month">
+                    <th mat-header-cell *matHeaderCellDef>Month</th>
+                    <td mat-cell *matCellDef="let payroll">{{ payroll.month }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="grossSalary">
+                    <th mat-header-cell *matHeaderCellDef>Gross</th>
+                    <td mat-cell *matCellDef="let payroll">{{ payroll.grossSalary | number:'1.2-2' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="netSalary">
+                    <th mat-header-cell *matHeaderCellDef>Net</th>
+                    <td mat-cell *matCellDef="let payroll">{{ payroll.netSalary | number:'1.2-2' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="taxClass">
+                    <th mat-header-cell *matHeaderCellDef>Tax Class</th>
+                    <td mat-cell *matCellDef="let payroll">{{ payroll.taxClass }}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="status">
                     <th mat-header-cell *matHeaderCellDef>Status</th>
-                    <td mat-cell *matCellDef="let run">{{ run.status }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="count">
-                    <th mat-header-cell *matHeaderCellDef>Payrolls</th>
-                    <td mat-cell *matCellDef="let run">{{ run.payrollCount }}</td>
+                    <td mat-cell *matCellDef="let payroll">
+                        <span class="status-badge"
+                              [class.status-draft]="payroll.status === 'DRAFT'"
+                              [class.status-published]="payroll.status === 'PUBLISHED'"
+                              [class.status-paid]="payroll.status === 'PAID'">
+                            {{ payroll.status }}
+                        </span>
+                    </td>
                 </ng-container>
 
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef>Actions</th>
-                    <td mat-cell *matCellDef="let run">
-                        <button mat-icon-button color="primary" matTooltip="Publish run"
-                                (click)="publishRun(run.id)" *ngIf="run.status === 'DRAFT'">
-                            <mat-icon>publish</mat-icon>
+                    <td mat-cell *matCellDef="let payroll">
+                        <button mat-icon-button matTooltip="View components" (click)="toggleComponents(payroll)">
+                            <mat-icon>receipt_long</mat-icon>
                         </button>
-                        <button mat-icon-button color="accent" matTooltip="Mark run as paid"
-                                (click)="payRun(run.id)" *ngIf="run.status !== 'PAID'">
-                            <mat-icon>paid</mat-icon>
-                        </button>
+                        @if (payroll.hasPayslip) {
+                            <button mat-icon-button matTooltip="Download payslip"
+                                    (click)="downloadPayslip(payroll)">
+                                <mat-icon>download</mat-icon>
+                            </button>
+                        }
+                        @if (canManage && payroll.status !== 'PAID') {
+                            <button mat-icon-button color="primary" matTooltip="Mark as paid"
+                                    (click)="markAsPaid(payroll.id)">
+                                <mat-icon>paid</mat-icon>
+                            </button>
+                        }
                     </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="runColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: runColumns;"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-        </mat-card-content>
-    </mat-card>
 
-    <div class="table-panel" *ngIf="!loading && !error">
-        <table mat-table [dataSource]="payrolls">
-            <ng-container matColumnDef="employeeFullName">
-                <th mat-header-cell *matHeaderCellDef>Employee</th>
-                <td mat-cell *matCellDef="let payroll">{{ payroll.employeeFullName }}</td>
-            </ng-container>
+            @if (canManage) {
+                <mat-paginator
+                    [length]="totalElements"
+                    [pageSize]="pageSize"
+                    [pageIndex]="pageIndex"
+                    [pageSizeOptions]="[5, 10, 20, 50]"
+                    (page)="onPageChange($event)"
+                    showFirstLastButtons>
+                </mat-paginator>
+            }
+        </div>
+    }
 
-            <ng-container matColumnDef="year">
-                <th mat-header-cell *matHeaderCellDef>Year</th>
-                <td mat-cell *matCellDef="let payroll">{{ payroll.year }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="month">
-                <th mat-header-cell *matHeaderCellDef>Month</th>
-                <td mat-cell *matCellDef="let payroll">{{ payroll.month }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="grossSalary">
-                <th mat-header-cell *matHeaderCellDef>Gross</th>
-                <td mat-cell *matCellDef="let payroll">{{ payroll.grossSalary | number:'1.2-2' }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="netSalary">
-                <th mat-header-cell *matHeaderCellDef>Net</th>
-                <td mat-cell *matCellDef="let payroll">{{ payroll.netSalary | number:'1.2-2' }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="taxClass">
-                <th mat-header-cell *matHeaderCellDef>Tax Class</th>
-                <td mat-cell *matCellDef="let payroll">{{ payroll.taxClass }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let payroll">
-                    <span class="status-badge"
-                          [class.status-draft]="payroll.status === 'DRAFT'"
-                          [class.status-published]="payroll.status === 'PUBLISHED'"
-                          [class.status-paid]="payroll.status === 'PAID'">
-                        {{ payroll.status }}
-                    </span>
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let payroll">
-                    <button mat-icon-button matTooltip="View components" (click)="toggleComponents(payroll)">
-                        <mat-icon>receipt_long</mat-icon>
-                    </button>
-                    <button mat-icon-button matTooltip="Download payslip"
-                            *ngIf="payroll.hasPayslip"
-                            (click)="downloadPayslip(payroll)">
-                        <mat-icon>download</mat-icon>
-                    </button>
-                    <button mat-icon-button color="primary" matTooltip="Mark as paid"
-                            *ngIf="canManage && payroll.status !== 'PAID'"
-                            (click)="markAsPaid(payroll.id)">
-                        <mat-icon>paid</mat-icon>
-                    </button>
-                </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-        <mat-paginator
-            *ngIf="canManage"
-            [length]="totalElements"
-            [pageSize]="pageSize"
-            [pageIndex]="pageIndex"
-            [pageSizeOptions]="[5, 10, 20, 50]"
-            (page)="onPageChange($event)"
-            showFirstLastButtons>
-        </mat-paginator>
-    </div>
-
-    <mat-card *ngIf="selectedPayroll" class="components-card">
-        <mat-card-content>
-            <h2>Payroll Components</h2>
-            <div class="component-item" *ngFor="let component of selectedPayroll.components">
-                <div>
-                    <div class="component-title">{{ component.label }}</div>
-                    <div class="component-meta">{{ component.componentType }} - {{ component.code }}</div>
-                </div>
-                <div class="component-amount">{{ component.amount | number:'1.2-2' }}</div>
-            </div>
-        </mat-card-content>
-    </mat-card>
+    @if (selectedPayroll) {
+        <mat-card class="components-card">
+            <mat-card-content>
+                <h2>Payroll Components</h2>
+                @for (component of selectedPayroll.components; track $index) {
+                    <div class="component-item">
+                        <div>
+                            <div class="component-title">{{ component.label }}</div>
+                            <div class="component-meta">{{ component.componentType }} - {{ component.code }}</div>
+                        </div>
+                        <div class="component-amount">{{ component.amount | number:'1.2-2' }}</div>
+                    </div>
+                }
+            </mat-card-content>
+        </mat-card>
+    }
 </div>
