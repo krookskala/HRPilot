@@ -1,6 +1,6 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { DecimalPipe, NgFor, NgIf } from "@angular/common";
-import { finalize, forkJoin } from "rxjs";
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
+import { DecimalPipe } from "@angular/common";
+import { Subject, finalize, forkJoin, takeUntil } from "rxjs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
@@ -27,16 +27,16 @@ import { PayrollDialog } from "./payroll-dialog";
         MatProgressSpinnerModule,
         MatTableModule,
         MatTooltipModule,
-        NgFor,
-        NgIf
     ],
     templateUrl: './payroll-list.html',
     styleUrl: './payroll-list.scss'
 })
-export class PayrollList implements OnInit {
+export class PayrollList implements OnInit, OnDestroy {
     private payrollService = inject(PayrollService);
     private authService = inject(AuthService);
     private dialog = inject(MatDialog);
+    private cdr = inject(ChangeDetectorRef);
+    private destroy$ = new Subject<void>();
 
     readonly canManage = this.authService.hasRole('ADMIN', 'HR_MANAGER');
     readonly currentUser = this.authService.getCurrentUserSnapshot();
@@ -57,6 +57,11 @@ export class PayrollList implements OnInit {
         this.loadData();
     }
 
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     loadData(): void {
         this.loading = this.payrolls.length === 0;
         this.refreshing = !this.loading;
@@ -67,35 +72,43 @@ export class PayrollList implements OnInit {
                 payrollPage: this.payrollService.getAllPayrolls(this.pageIndex, this.pageSize),
                 runsPage: this.payrollService.getRuns(0, 20)
             }).pipe(
+                takeUntil(this.destroy$),
                 finalize(() => {
                     this.loading = false;
                     this.refreshing = false;
+                    this.cdr.detectChanges();
                 })
             ).subscribe({
                 next: ({ payrollPage, runsPage }) => {
                     this.payrolls = payrollPage.content;
                     this.totalElements = payrollPage.totalElements;
                     this.runs = runsPage.content;
+                    this.cdr.detectChanges();
                 },
                 error: () => {
                     this.error = 'Failed to load payrolls';
+                    this.cdr.detectChanges();
                 }
             });
             return;
         }
 
-        this.payrollService.getMyPayrolls().pipe(
+        this.payrollService.getMyPayrolls(this.pageIndex, this.pageSize).pipe(
+            takeUntil(this.destroy$),
             finalize(() => {
                 this.loading = false;
                 this.refreshing = false;
+                this.cdr.detectChanges();
             })
         ).subscribe({
-            next: payrolls => {
-                this.payrolls = payrolls;
-                this.totalElements = payrolls.length;
+            next: page => {
+                this.payrolls = page.content;
+                this.totalElements = page.totalElements;
+                this.cdr.detectChanges();
             },
             error: () => {
                 this.error = 'Failed to load payrolls';
+                this.cdr.detectChanges();
             }
         });
     }
@@ -108,7 +121,7 @@ export class PayrollList implements OnInit {
 
     openDialog(): void {
         const ref = this.dialog.open(PayrollDialog, { width: '440px' });
-        ref.afterClosed().subscribe(result => {
+        ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
             if (!result) {
                 return;
             }
@@ -132,19 +145,19 @@ export class PayrollList implements OnInit {
     }
 
     publishRun(runId: number): void {
-        this.payrollService.publishRun(runId).subscribe({
+        this.payrollService.publishRun(runId).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => this.loadData()
         });
     }
 
     payRun(runId: number): void {
-        this.payrollService.payRun(runId).subscribe({
+        this.payrollService.payRun(runId).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => this.loadData()
         });
     }
 
     markAsPaid(id: number): void {
-        this.payrollService.markAsPaid(id).subscribe({
+        this.payrollService.markAsPaid(id).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => this.loadData()
         });
     }
@@ -161,11 +174,12 @@ export class PayrollList implements OnInit {
         }
 
         this.selectedPayroll = payroll;
-        this.payrollService.getComponents(payroll.id).subscribe({
+        this.payrollService.getComponents(payroll.id).pipe(takeUntil(this.destroy$)).subscribe({
             next: components => {
                 const enrichedPayroll = { ...payroll, components };
                 this.selectedPayroll = enrichedPayroll;
                 this.payrolls = this.payrolls.map(item => item.id === payroll.id ? enrichedPayroll : item);
+                this.cdr.detectChanges();
             }
         });
     }
@@ -175,7 +189,7 @@ export class PayrollList implements OnInit {
             ? this.payrollService.downloadPayslip(payroll.id)
             : this.payrollService.downloadMyPayslip(payroll.id);
 
-        request$.subscribe(blob => {
+        request$.pipe(takeUntil(this.destroy$)).subscribe(blob => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
