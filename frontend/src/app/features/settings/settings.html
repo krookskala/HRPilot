@@ -1,0 +1,22 @@
+<div class="settings-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">{{ 'nav.settings' | translate }}</h1>
+            <p class="page-subtitle">{{ 'settings.subtitle' | translate }}</p>
+        </div>
+    </div>
+
+    <mat-card>
+        <mat-card-header>
+            <mat-icon mat-card-avatar>language</mat-icon>
+            <mat-card-title>{{ 'settings.language' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <mat-radio-group [ngModel]="selectedLang" (ngModelChange)="onLangChange($event)" class="lang-group">
+                @for (lang of languages; track lang.code) {
+                    <mat-radio-button [value]="lang.code">{{ lang.label }}</mat-radio-button>
+                }
+            </mat-radio-group>
+        </mat-card-content>
+    </mat-card>
+</div>
