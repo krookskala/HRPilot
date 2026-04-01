@@ -138,7 +138,7 @@ class PayrollControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "HR_MANAGER")
     void getAllPayrolls_returns200() throws Exception {
         Page<PayrollResponse> page = new PageImpl<>(List.of(buildResponse(PayrollStatus.DRAFT)));
         when(payrollService.getAllPayrolls(any(Pageable.class))).thenReturn(page);
