@@ -1,10 +1,6 @@
 @use '@angular/material' as mat;
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 html {
   height: 100%;
@@ -14,30 +10,26 @@ html {
         primary: mat.$cyan-palette,
         tertiary: mat.$orange-palette,
       ),
-      typography: Roboto,
+      typography: Inter,
       density: 0,
     )
   );
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
   margin: 0;
   height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-/* ===== Design Tokens ===== */
+
+/* ===== Design Tokens — Light ===== */
 :root {
   --hr-radius: 12px;
   --hr-radius-sm: 8px;
@@ -45,21 +37,240 @@ body {
   --hr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --hr-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --hr-transition: 0.2s ease;
+
   --hr-bg-page: #f5f7fa;
   --hr-bg-card: #ffffff;
   --hr-border: rgba(0, 0, 0, 0.08);
+  --hr-hover-bg: rgba(15, 23, 42, 0.06);
+
   --hr-primary: #00acc1;
   --hr-primary-light: rgba(0, 188, 212, 0.08);
   --hr-primary-dark: #00838f;
+
+  --hr-text-primary: #0f172a;
   --hr-text-secondary: #64748b;
+  --hr-text-body: #334155;
+
+  --hr-table-header-bg: #f8fafc;
+  --hr-table-border: #e2e8f0;
+  --hr-table-row-hover: #f8fafc;
+
+  --hr-info-card-bg: #ffffff;
+  --hr-info-card-border: rgba(148, 163, 184, 0.18);
+}
+
+/* ===== Design Tokens — Dark ===== */
+.dark-theme {
+  --hr-bg-page: #0f172a;
+  --hr-bg-card: #1e293b;
+  --hr-border: rgba(255, 255, 255, 0.08);
+  --hr-hover-bg: rgba(255, 255, 255, 0.06);
+
+  --hr-primary: #22d3ee;
+  --hr-primary-light: rgba(34, 211, 238, 0.1);
+  --hr-primary-dark: #06b6d4;
+
+  --hr-text-primary: #f1f5f9;
+  --hr-text-secondary: #94a3b8;
+  --hr-text-body: #cbd5e1;
+
+  --hr-table-header-bg: #1e293b;
+  --hr-table-border: #334155;
+  --hr-table-row-hover: #263548;
+
+  --hr-info-card-bg: #1e293b;
+  --hr-info-card-border: rgba(148, 163, 184, 0.12);
+
+  color-scheme: dark;
+
+  body {
+    background-color: var(--hr-bg-page);
+    color: var(--hr-text-primary);
+  }
+
+  // Material overrides
+  mat-card, .mat-mdc-card {
+    background-color: var(--hr-bg-card) !important;
+    border-color: var(--hr-border) !important;
+  }
+
+  .mat-mdc-header-row {
+    background-color: var(--hr-table-header-bg) !important;
+    border-bottom-color: var(--hr-table-border) !important;
+  }
+
+  .mat-mdc-header-cell {
+    color: var(--hr-text-secondary) !important;
+  }
+
+  .mat-mdc-row {
+    border-bottom-color: var(--hr-table-border) !important;
+
+    &:hover {
+      background-color: var(--hr-table-row-hover) !important;
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--hr-text-body) !important;
+  }
+
+  .table-panel {
+    background: var(--hr-bg-card);
+    border-color: var(--hr-border);
+  }
+
+  .table-panel .mat-mdc-paginator {
+    background: var(--hr-bg-card);
+    border-top-color: var(--hr-table-border);
+    color: var(--hr-text-body);
+  }
+
+  .mat-mdc-paginator {
+    color: var(--hr-text-body);
+    background: var(--hr-bg-card);
+  }
+
+  .mat-toolbar, mat-toolbar {
+    background: var(--hr-bg-card) !important;
+    border-bottom-color: var(--hr-border) !important;
+    color: var(--hr-text-primary) !important;
+  }
+
+  // Sidebar
+  app-sidebar :host,
+  .app-sidebar {
+    background: var(--hr-bg-card) !important;
+    border-right-color: var(--hr-border) !important;
+  }
+
+  .nav-item {
+    color: var(--hr-text-body) !important;
+
+    mat-icon {
+      color: var(--hr-text-secondary) !important;
+    }
+  }
+
+  .nav-item.mat-mdc-list-item:hover {
+    background-color: var(--hr-hover-bg) !important;
+  }
+
+  // Form fields
+  .mat-mdc-form-field {
+    .mdc-text-field--outlined .mdc-notched-outline__leading,
+    .mdc-text-field--outlined .mdc-notched-outline__notch,
+    .mdc-text-field--outlined .mdc-notched-outline__trailing {
+      border-color: var(--hr-border) !important;
+    }
+  }
+
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
+    color: var(--hr-text-primary) !important;
+  }
+
+  .mat-mdc-select-value {
+    color: var(--hr-text-primary) !important;
+  }
+
+  .mdc-floating-label {
+    color: var(--hr-text-secondary) !important;
+  }
+
+  // Dialogs
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    background-color: var(--hr-bg-card) !important;
+    color: var(--hr-text-primary) !important;
+  }
+
+  // Menu
+  .mat-mdc-menu-panel {
+    background-color: var(--hr-bg-card) !important;
+  }
+
+  .mat-mdc-menu-item {
+    color: var(--hr-text-body) !important;
+  }
+
+  // Snackbar
+  .mat-mdc-snack-bar-container {
+    .mdc-snackbar__surface {
+      background-color: #334155 !important;
+    }
+  }
+
+  // Page elements
+  .page-title {
+    color: var(--hr-text-primary);
+  }
+
+  .page-subtitle {
+    color: var(--hr-text-secondary);
+  }
+
+  .error-banner {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.2);
+    color: #fca5a5;
+  }
+
+  // Radio buttons / slide toggle
+  .mat-mdc-slide-toggle {
+    --mdc-switch-selected-track-color: var(--hr-primary);
+  }
+
+  // Table background (mat-table sets its own bg)
+  .mat-mdc-table {
+    background: var(--hr-bg-card) !important;
+  }
+
+  .mat-mdc-row {
+    background: var(--hr-bg-card) !important;
+
+    &:hover {
+      background-color: var(--hr-table-row-hover) !important;
+    }
+  }
+
+  // Filter panel (non-card)
+  .filter-panel {
+    background: var(--hr-bg-card) !important;
+    border-color: var(--hr-border) !important;
+  }
+
+  // Status badges in dark
+  .dept-badge {
+    background: var(--hr-primary-light) !important;
+    color: var(--hr-primary) !important;
+  }
+
+  .status-pending {
+    background-color: rgba(251, 191, 36, 0.15) !important;
+    color: #fbbf24 !important;
+  }
+
+  .status-approved, .status-paid {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+    color: #86efac !important;
+  }
+
+  .status-rejected {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    color: #fca5a5 !important;
+  }
+
+  .status-draft {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+    color: #a5b4fc !important;
+  }
 }
 
 /* ===== Mat Card ===== */
 mat-card, .mat-mdc-card {
-  background-color: #ffffff !important;
+  background-color: var(--hr-bg-card) !important;
   border-radius: var(--hr-radius) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--hr-border);
   transition: box-shadow var(--hr-transition), transform var(--hr-transition);
 
   &:hover {
@@ -69,8 +280,8 @@ mat-card, .mat-mdc-card {
 
 /* ===== Mat Table ===== */
 .mat-mdc-header-row {
-  background-color: #f8fafc;
-  border-bottom: 2px solid #e2e8f0 !important;
+  background-color: var(--hr-table-header-bg);
+  border-bottom: 2px solid var(--hr-table-border) !important;
 }
 
 .mat-mdc-header-cell {
@@ -84,17 +295,17 @@ mat-card, .mat-mdc-card {
 
 .mat-mdc-row {
   transition: background-color 0.15s ease;
-  border-bottom: 1px solid #f1f5f9 !important;
+  border-bottom: 1px solid var(--hr-table-border) !important;
 
   &:hover {
-    background-color: #f8fafc;
+    background-color: var(--hr-table-row-hover);
   }
 }
 
 .mat-mdc-cell {
   font-size: 0.875rem;
   padding: 12px 16px !important;
-  color: #334155;
+  color: var(--hr-text-body);
 }
 
 /* ===== Mat Buttons ===== */
@@ -145,8 +356,10 @@ mat-card, .mat-mdc-card {
 
 .page-title {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
+  color: var(--hr-text-primary);
+  letter-spacing: -0.02em;
 }
 
 .page-subtitle {
@@ -157,10 +370,10 @@ mat-card, .mat-mdc-card {
 
 /* ===== Table Panel ===== */
 .table-panel {
-  background: #ffffff;
+  background: var(--hr-bg-card);
   border-radius: var(--hr-radius);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--hr-border);
   overflow: hidden;
 }
 
@@ -169,8 +382,8 @@ mat-card, .mat-mdc-card {
 }
 
 .table-panel .mat-mdc-paginator {
-  border-top: 1px solid #e2e8f0;
-  background: #fafbfc;
+  border-top: 1px solid var(--hr-table-border);
+  background: var(--hr-bg-card);
 }
 
 /* ===== Mat Paginator ===== */
