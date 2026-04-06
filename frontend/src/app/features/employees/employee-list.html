@@ -1,72 +1,81 @@
 <div class="list-page">
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">Employees</h1>
-            <p class="page-subtitle">Manage your organization's workforce</p>
+    <!-- Hero Banner -->
+    <div class="emp-hero">
+        <div class="hero-content">
+            <div class="hero-eyebrow">{{ 'employees.eyebrow' | translate }}</div>
+            <h1 class="hero-title">{{ 'employees.title' | translate }}</h1>
+            <p class="hero-text">{{ 'employees.subtitle' | translate }}</p>
         </div>
-        <div class="header-actions">
-            <div class="view-toggle">
-                <button mat-icon-button [class.active]="viewMode === 'table'" matTooltip="Table view"
-                        (click)="viewMode = 'table'">
-                    <mat-icon>view_list</mat-icon>
-                </button>
-                <button mat-icon-button [class.active]="viewMode === 'card'" matTooltip="Card view"
-                        (click)="viewMode = 'card'">
-                    <mat-icon>view_module</mat-icon>
-                </button>
+        <div class="hero-right">
+            <div class="hero-stat">
+                <span class="hero-stat-value">{{ totalElements }}</span>
+                <span class="hero-stat-label">{{ 'common.total' | translate }}</span>
             </div>
+            <mat-icon class="hero-icon">groups</mat-icon>
+        </div>
+    </div>
+
+    <!-- Toolbar: View Toggle + Actions -->
+    <div class="emp-toolbar">
+        <div class="view-toggle">
+            <button mat-icon-button [class.active]="viewMode === 'table'" [matTooltip]="'employees.tableView' | translate"
+                    (click)="viewMode = 'table'">
+                <mat-icon>view_list</mat-icon>
+            </button>
+            <button mat-icon-button [class.active]="viewMode === 'card'" [matTooltip]="'employees.cardView' | translate"
+                    (click)="viewMode = 'card'">
+                <mat-icon>view_module</mat-icon>
+            </button>
+        </div>
+        <div class="toolbar-actions">
             @if (canManage) {
                 <button mat-stroked-button (click)="exportCsv()">
                     <mat-icon>download</mat-icon>
-                    Export CSV
+                    {{ 'common.exportCsv' | translate }}
                 </button>
-            }
-            @if (canManage) {
                 <button mat-flat-button color="primary" (click)="openDialog()">
                     <mat-icon>add</mat-icon>
-                    Add Employee
+                    {{ 'employees.addEmployee' | translate }}
                 </button>
             }
         </div>
     </div>
 
     <!-- Filter Panel -->
-    <mat-card class="filter-panel">
-        <mat-card-content>
-            <div class="filter-row">
-                <mat-form-field appearance="outline" class="filter-field">
-                    <mat-label>Search by name</mat-label>
-                    <input matInput [formControl]="searchControl" placeholder="First or last name...">
-                    <mat-icon matPrefix>search</mat-icon>
-                </mat-form-field>
+    <div class="filter-panel">
+        <div class="filter-row">
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>{{ 'employees.searchByName' | translate }}</mat-label>
+                <input matInput [formControl]="searchControl" [placeholder]="'employees.searchPlaceholder' | translate">
+                <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
 
-                <mat-form-field appearance="outline" class="filter-field">
-                    <mat-label>Department</mat-label>
-                    <mat-select [formControl]="departmentControl">
-                        <mat-option [value]="null">All Departments</mat-option>
-                        @for (dept of departments; track dept.id) {
-                            <mat-option [value]="dept.id">
-                                {{ dept.name }}
-                            </mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>{{ 'employees.department' | translate }}</mat-label>
+                <mat-select [formControl]="departmentControl">
+                    <mat-option [value]="null">{{ 'employees.allDepartments' | translate }}</mat-option>
+                    @for (dept of departments; track dept.id) {
+                        <mat-option [value]="dept.id">
+                            {{ dept.name }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
 
-                <mat-form-field appearance="outline" class="filter-field">
-                    <mat-label>Position</mat-label>
-                    <input matInput [formControl]="positionControl" placeholder="e.g. Developer">
-                    <mat-icon matPrefix>work</mat-icon>
-                </mat-form-field>
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>{{ 'employees.position' | translate }}</mat-label>
+                <input matInput [formControl]="positionControl" [placeholder]="'employees.positionPlaceholder' | translate">
+                <mat-icon matPrefix>work</mat-icon>
+            </mat-form-field>
 
-                @if (hasActiveFilters()) {
-                    <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
-                        <mat-icon>clear</mat-icon>
-                        Clear
-                    </button>
-                }
-            </div>
-        </mat-card-content>
-    </mat-card>
+            @if (hasActiveFilters()) {
+                <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
+                    <mat-icon>clear</mat-icon>
+                    {{ 'common.clear' | translate }}
+                </button>
+            }
+        </div>
+    </div>
 
     @if (loading) {
         <div class="spinner-center">
@@ -86,44 +95,58 @@
             <div class="table-panel">
                 <table mat-table [dataSource]="employees">
 
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef>ID</th>
-                        <td mat-cell *matCellDef="let emp">{{ emp.id }}</td>
+                    <ng-container matColumnDef="photo">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let emp">
+                            <div class="table-avatar">
+                                @if (photoUrls.get(emp.id)) {
+                                    <img [src]="photoUrls.get(emp.id)" alt="">
+                                } @else {
+                                    <span class="avatar-initials">{{ getInitials(emp) }}</span>
+                                }
+                            </div>
+                        </td>
                     </ng-container>
 
-                    <ng-container matColumnDef="firstName">
-                        <th mat-header-cell *matHeaderCellDef>First Name</th>
-                        <td mat-cell *matCellDef="let emp">{{ emp.firstName }}</td>
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.name' | translate }}</th>
+                        <td mat-cell *matCellDef="let emp">
+                            <div class="table-name">
+                                <span class="name-primary">{{ emp.firstName }} {{ emp.lastName }}</span>
+                                <span class="name-position">{{ emp.position || '—' }}</span>
+                            </div>
+                        </td>
                     </ng-container>
 
-                    <ng-container matColumnDef="lastName">
-                        <th mat-header-cell *matHeaderCellDef>Last Name</th>
-                        <td mat-cell *matCellDef="let emp">{{ emp.lastName }}</td>
+                    <ng-container matColumnDef="email">
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.email' | translate }}</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.email || '—' }}</td>
                     </ng-container>
 
                     <ng-container matColumnDef="department">
-                        <th mat-header-cell *matHeaderCellDef>Department</th>
-                        <td mat-cell *matCellDef="let emp">{{ emp.departmentName || '—' }}</td>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'employees.department' | translate }}</th>
+                        <td mat-cell *matCellDef="let emp">
+                            @if (emp.departmentName) {
+                                <span class="dept-badge">{{ emp.departmentName }}</span>
+                            } @else {
+                                <span>—</span>
+                            }
+                        </td>
                     </ng-container>
 
                     <ng-container matColumnDef="position">
-                        <th mat-header-cell *matHeaderCellDef>Position</th>
-                        <td mat-cell *matCellDef="let emp">{{ emp.position }}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="salary">
-                        <th mat-header-cell *matHeaderCellDef>Salary</th>
-                        <td mat-cell *matCellDef="let emp">{{ emp.salary | number:'1.2-2' }} €</td>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'employees.position' | translate }}</th>
+                        <td mat-cell *matCellDef="let emp">{{ emp.position || '—' }}</td>
                     </ng-container>
 
                     <ng-container matColumnDef="actions">
-                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | translate }}</th>
                         <td mat-cell *matCellDef="let emp">
-                            <button mat-icon-button matTooltip="View detail" (click)="openDetail(emp.id)">
+                            <button mat-icon-button [matTooltip]="'common.viewProfile' | translate" (click)="openDetail(emp.id)">
                                 <mat-icon>visibility</mat-icon>
                             </button>
                             @if (canManage) {
-                                <button mat-icon-button color="warn" matTooltip="Delete"
+                                <button mat-icon-button color="warn" [matTooltip]="'common.delete' | translate"
                                         (click)="delete(emp.id)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
@@ -132,7 +155,7 @@
                     </ng-container>
 
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="openDetail(row.id)"></tr>
                 </table>
             </div>
         }
@@ -140,38 +163,54 @@
         @if (viewMode === 'card') {
             <div class="card-grid">
                 @for (emp of employees; track emp.id) {
-                    <mat-card class="employee-card" (click)="openDetail(emp.id)">
-                        <mat-card-header>
-                            <div mat-card-avatar class="avatar-circle">
-                                {{ emp.firstName?.charAt(0) }}{{ emp.lastName?.charAt(0) }}
-                            </div>
-                            <mat-card-title>{{ emp.firstName }} {{ emp.lastName }}</mat-card-title>
-                            <mat-card-subtitle>{{ emp.position || '—' }}</mat-card-subtitle>
-                        </mat-card-header>
-                        <mat-card-content>
-                            <div class="card-info">
-                                <div class="card-info-row">
+                    <div class="employee-card" (click)="openDetail(emp.id)">
+                        <div class="card-avatar">
+                            @if (photoUrls.get(emp.id)) {
+                                <img [src]="photoUrls.get(emp.id)" alt="">
+                            } @else {
+                                <span class="avatar-initials">{{ getInitials(emp) }}</span>
+                            }
+                        </div>
+                        <div class="card-name">{{ emp.firstName }} {{ emp.lastName }}</div>
+                        <div class="card-position">{{ emp.position || '—' }}</div>
+                        <div class="card-details">
+                            @if (emp.departmentName) {
+                                <div class="card-detail-row">
                                     <mat-icon>apartment</mat-icon>
-                                    <span>{{ emp.departmentName || '—' }}</span>
+                                    <span>{{ emp.departmentName }}</span>
                                 </div>
-                                <div class="card-info-row">
-                                    <mat-icon>payments</mat-icon>
-                                    <span>{{ emp.salary | number:'1.2-2' }} €</span>
+                            }
+                            @if (emp.email) {
+                                <div class="card-detail-row">
+                                    <mat-icon>email</mat-icon>
+                                    <span>{{ emp.email }}</span>
                                 </div>
-                            </div>
-                        </mat-card-content>
-                    </mat-card>
+                            }
+                        </div>
+                    </div>
                 }
             </div>
         }
 
-        <mat-paginator
-            [length]="totalElements"
-            [pageSize]="pageSize"
-            [pageIndex]="pageIndex"
-            [pageSizeOptions]="[5, 10, 20, 50]"
-            (page)="onPageChange($event)"
-            showFirstLastButtons>
-        </mat-paginator>
+        @if (employees.length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon-wrapper">
+                    <mat-icon>person_off</mat-icon>
+                </div>
+                <h3>{{ 'employees.emptyTitle' | translate }}</h3>
+                <p>{{ 'employees.emptyText' | translate }}</p>
+            </div>
+        }
+
+        @if (employees.length > 0) {
+            <mat-paginator
+                [length]="totalElements"
+                [pageSize]="pageSize"
+                [pageIndex]="pageIndex"
+                [pageSizeOptions]="[5, 10, 20, 50]"
+                (page)="onPageChange($event)"
+                showFirstLastButtons>
+            </mat-paginator>
+        }
     }
 </div>
