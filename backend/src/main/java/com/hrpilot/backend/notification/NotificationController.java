@@ -26,6 +26,13 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getForUser(userId, pageable));
     }
 
+    @Operation(summary = "Get unread notification count")
+    @GetMapping("/unread-count")
+    public ResponseEntity<Long> getUnreadCount() {
+        Long userId = currentUserService.getCurrentUser().id();
+        return ResponseEntity.ok(notificationService.countUnread(userId));
+    }
+
     @Operation(summary = "Mark all notifications as read")
     @PutMapping("/read-all")
     public ResponseEntity<Void> markAllAsRead() {
