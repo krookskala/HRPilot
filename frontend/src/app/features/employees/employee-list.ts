@@ -18,6 +18,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCardModule } from "@angular/material/card";
 import { DecimalPipe } from "@angular/common";
+import { TranslateModule } from "@ngx-translate/core";
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
 import { EmployeeDialog } from "./employee-dialog";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
@@ -29,7 +30,7 @@ import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-di
         MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule,
         MatProgressSpinnerModule, MatIconModule, MatTooltipModule,
         MatFormFieldModule, MatInputModule, MatSelectModule, MatCardModule,
-        DecimalPipe, ReactiveFormsModule
+        DecimalPipe, ReactiveFormsModule, TranslateModule
     ],
     templateUrl: './employee-list.html',
     styleUrl: './employee-list.scss'
@@ -45,7 +46,7 @@ export class EmployeeList implements OnInit, OnDestroy {
 
     employees: Employee[] = [];
     departments: Department[] = [];
-    displayedColumns = ['id', 'firstName', 'lastName', 'department', 'position', 'salary', 'actions'];
+    displayedColumns = ['photo', 'name', 'email', 'department', 'position', 'actions'];
     canManage = this.authService.hasRole('ADMIN', 'HR_MANAGER');
     totalElements = 0;
     pageSize = 10;
@@ -53,6 +54,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     loading = false;
     error = '';
     viewMode: 'table' | 'card' = 'table';
+    photoUrls = new Map<number, string>();
 
     searchControl = new FormControl('');
     departmentControl = new FormControl<number | null>(null);
@@ -62,7 +64,6 @@ export class EmployeeList implements OnInit, OnDestroy {
         this.loadDepartments();
         this.loadEmployees();
 
-        // Debounced search — waits 400ms after user stops typing
         this.searchControl.valueChanges.pipe(
             debounceTime(400),
             distinctUntilChanged(),
@@ -92,6 +93,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        this.revokeAllPhotos();
     }
 
     loadDepartments(): void {
@@ -115,6 +117,7 @@ export class EmployeeList implements OnInit, OnDestroy {
                 this.employees = page.content;
                 this.totalElements = page.totalElements;
                 this.loading = false;
+                this.loadPhotos();
                 this.cdr.detectChanges();
             },
             error: () => {
@@ -181,5 +184,27 @@ export class EmployeeList implements OnInit, OnDestroy {
 
     openDetail(id: number): void {
         this.router.navigate(['/employees', id]);
+    }
+
+    getInitials(emp: Employee): string {
+        return (emp.firstName?.charAt(0) || '') + (emp.lastName?.charAt(0) || '');
+    }
+
+    private loadPhotos(): void {
+        this.revokeAllPhotos();
+        for (const emp of this.employees) {
+            this.employeeService.downloadPhoto(emp.id).pipe(takeUntil(this.destroy$)).subscribe({
+                next: blob => {
+                    this.photoUrls.set(emp.id, URL.createObjectURL(blob));
+                    this.cdr.detectChanges();
+                },
+                error: () => {}
+            });
+        }
+    }
+
+    private revokeAllPhotos(): void {
+        this.photoUrls.forEach(url => URL.revokeObjectURL(url));
+        this.photoUrls.clear();
     }
 }
