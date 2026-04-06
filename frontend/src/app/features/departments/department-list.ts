@@ -2,7 +2,6 @@ import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from "@angula
 import { DepartmentService } from "../../core/services/department.service";
 import { AuthService } from "../../core/services/auth.service";
 import { Department } from "../../shared/models/department.model";
-import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
@@ -10,17 +9,17 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { Subject, takeUntil } from "rxjs";
+import { TranslateModule } from "@ngx-translate/core";
 import { DepartmentDialog } from "./department-dialog";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
     selector: 'app-department-list',
     standalone: true,
-    imports: [MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule],
+    imports: [MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, TranslateModule],
     templateUrl: './department-list.html',
     styleUrl: './department-list.scss'
 })
-
 export class DepartmentList implements OnInit, OnDestroy {
     private departmentService = inject(DepartmentService);
     private authService = inject(AuthService);
@@ -29,13 +28,14 @@ export class DepartmentList implements OnInit, OnDestroy {
 
     isAdmin = this.authService.hasRole('ADMIN');
     departments: Department[] = [];
-    displayedColumns = ['id', 'name', 'managerEmail', 'parentDepartmentName', 'actions'];
     totalElements = 0;
     pageSize = 10;
     pageIndex = 0;
     loading = false;
     error = '';
     private destroy$ = new Subject<void>();
+
+    private accentColors = ['cyan', 'orange', 'green', 'indigo', 'slate'];
 
     ngOnInit(): void {
         this.loadDepartments();
@@ -63,6 +63,14 @@ export class DepartmentList implements OnInit, OnDestroy {
         this.pageIndex = event.pageIndex;
         this.pageSize = event.pageSize;
         this.loadDepartments();
+    }
+
+    getDeptAccent(dept: Department): string {
+        return this.accentColors[dept.id % this.accentColors.length];
+    }
+
+    getSubDepartments(parentId: number): Department[] {
+        return this.departments.filter(d => d.parentDepartmentId === parentId);
     }
 
     delete(id: number) {
