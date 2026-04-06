@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from "@angular/core";
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, inject } from "@angular/core";
 import { DatePipe, DecimalPipe } from "@angular/common";
 import { ActivatedRoute } from "@angular/router";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -9,6 +9,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Subject, finalize, takeUntil } from "rxjs";
+import { TranslateModule } from "@ngx-translate/core";
 import { AuthService } from "../../core/services/auth.service";
 import { EmployeeService } from "../../core/services/employee.service";
 import { EmployeeDetail } from "../../shared/models/employee.model";
@@ -25,7 +26,8 @@ import { EmployeeDetail } from "../../shared/models/employee.model";
         MatIconModule,
         MatInputModule,
         MatProgressSpinnerModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        TranslateModule
     ],
     templateUrl: './employee-detail.html',
     styleUrl: './employee-detail.scss'
@@ -35,6 +37,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
     private employeeService = inject(EmployeeService);
     private authService = inject(AuthService);
     private fb = inject(FormBuilder);
+    private cdr = inject(ChangeDetectorRef);
     private destroy$ = new Subject<void>();
 
     employee: EmployeeDetail | null = null;
@@ -75,14 +78,19 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
         this.error = '';
         this.employeeService.getEmployeeDetail(id).pipe(
             takeUntil(this.destroy$),
-            finalize(() => this.loading = false)
+            finalize(() => {
+                this.loading = false;
+                this.cdr.detectChanges();
+            })
         ).subscribe({
             next: employee => {
                 this.employee = employee;
                 this.loadPhotoPreview();
+                this.cdr.detectChanges();
             },
             error: () => {
                 this.error = 'Failed to load employee details';
+                this.cdr.detectChanges();
             }
         });
     }
@@ -103,6 +111,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
             error: () => {
                 this.error = 'Failed to upload photo';
                 this.uploadingPhoto = false;
+                this.cdr.detectChanges();
             }
         });
     }
@@ -134,6 +143,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
             error: () => {
                 this.error = 'Failed to upload document';
                 this.uploadingDocument = false;
+                this.cdr.detectChanges();
             }
         });
     }
@@ -154,10 +164,11 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.employeeService.downloadPhoto(this.employee.id).subscribe({
+        this.employeeService.downloadPhoto(this.employee.id).pipe(takeUntil(this.destroy$)).subscribe({
             next: blob => {
                 this.clearPhotoPreview();
                 this.photoPreviewUrl = URL.createObjectURL(blob);
+                this.cdr.detectChanges();
             },
             error: () => {
                 this.clearPhotoPreview();
