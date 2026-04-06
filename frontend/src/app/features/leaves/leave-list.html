@@ -1,23 +1,23 @@
 <div class="list-page">
     <div class="page-header">
         <div>
-            <h1 class="page-title">Leave Requests</h1>
+            <h1 class="page-title">{{ 'leaves.title' | translate }}</h1>
             <p class="page-subtitle">
-                {{ canApprove ? 'Track and manage leave requests in your scope' : 'Track your leave requests and balances' }}
+                {{ canApprove ? ('leaves.subtitleManager' | translate) : ('leaves.subtitleEmployee' | translate) }}
             </p>
         </div>
         <button mat-flat-button color="primary" (click)="openDialog()">
             <mat-icon>add</mat-icon>
-            New Request
+            {{ 'leaves.newRequest' | translate }}
         </button>
     </div>
 
     @if (canApprove) {
         <div class="filter-row">
             <mat-form-field appearance="outline">
-                <mat-label>Status</mat-label>
+                <mat-label>{{ 'common.status' | translate }}</mat-label>
                 <mat-select [(ngModel)]="statusFilter" (selectionChange)="applyFilters()">
-                    <mat-option value="">All statuses</mat-option>
+                    <mat-option value="">{{ 'common.allStatuses' | translate }}</mat-option>
                     @for (status of leaveStatuses; track status) {
                         <mat-option [value]="status">{{ status }}</mat-option>
                     }
@@ -25,9 +25,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-                <mat-label>Type</mat-label>
+                <mat-label>{{ 'common.type' | translate }}</mat-label>
                 <mat-select [(ngModel)]="typeFilter" (selectionChange)="applyFilters()">
-                    <mat-option value="">All types</mat-option>
+                    <mat-option value="">{{ 'common.allStatuses' | translate }}</mat-option>
                     @for (type of leaveTypes; track type) {
                         <mat-option [value]="type">{{ type }}</mat-option>
                     }
@@ -50,10 +50,10 @@
                         <div class="balance-numbers">
                             <div class="balance-remaining">
                                 <span class="balance-value">{{ balance.remainingDays }}</span>
-                                <span class="balance-label">Remaining</span>
+                                <span class="balance-label">{{ 'leaves.remaining' | translate }}</span>
                             </div>
                             <div class="balance-detail">
-                                <span>{{ balance.usedDays }} / {{ balance.totalDays }} used</span>
+                                <span>{{ balance.usedDays }} / {{ balance.totalDays }} {{ 'leaves.used' | translate }}</span>
                             </div>
                         </div>
                         <div class="balance-bar">
@@ -91,32 +91,32 @@
                 </ng-container>
 
                 <ng-container matColumnDef="employeeFullName">
-                    <th mat-header-cell *matHeaderCellDef>Employee</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ 'leaves.employee' | translate }}</th>
                     <td mat-cell *matCellDef="let leave">{{ leave.employeeFullName }}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="type">
-                    <th mat-header-cell *matHeaderCellDef>Type</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ 'common.type' | translate }}</th>
                     <td mat-cell *matCellDef="let leave">{{ leave.type }}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="startDate">
-                    <th mat-header-cell *matHeaderCellDef>Start Date</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ 'leaves.startDate' | translate }}</th>
                     <td mat-cell *matCellDef="let leave">{{ leave.startDate | date:'mediumDate' }}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="endDate">
-                    <th mat-header-cell *matHeaderCellDef>End Date</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ 'leaves.endDate' | translate }}</th>
                     <td mat-cell *matCellDef="let leave">{{ leave.endDate | date:'mediumDate' }}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="workingDays">
-                    <th mat-header-cell *matHeaderCellDef>Working Days</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ 'leaves.workingDays' | translate }}</th>
                     <td mat-cell *matCellDef="let leave">{{ leave.workingDays }}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ 'common.status' | translate }}</th>
                     <td mat-cell *matCellDef="let leave">
                         <span class="status-badge"
                               [class.status-pending]="leave.status === 'PENDING'"
@@ -134,27 +134,27 @@
                 </ng-container>
 
                 <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | translate }}</th>
                     <td mat-cell *matCellDef="let leave">
                         @if (canApprove && leave.status === 'PENDING') {
-                            <button mat-icon-button color="primary" matTooltip="Approve"
+                            <button mat-icon-button color="primary" [matTooltip]="'leaves.approve' | translate"
                                     (click)="approve(leave.id)">
                                 <mat-icon>check_circle</mat-icon>
                             </button>
                         }
                         @if (canApprove && leave.status === 'PENDING') {
-                            <button mat-icon-button color="warn" matTooltip="Reject"
+                            <button mat-icon-button color="warn" [matTooltip]="'leaves.reject' | translate"
                                     (click)="reject(leave.id)">
                                 <mat-icon>cancel</mat-icon>
                             </button>
                         }
                         @if (canCancel(leave)) {
-                            <button mat-icon-button color="warn" matTooltip="Cancel request"
+                            <button mat-icon-button color="warn" [matTooltip]="'leaves.cancelRequest' | translate"
                                     (click)="cancel(leave)">
                                 <mat-icon>event_busy</mat-icon>
                             </button>
                         }
-                        <button mat-icon-button matTooltip="View history" (click)="toggleHistory(leave)">
+                        <button mat-icon-button [matTooltip]="'leaves.viewHistory' | translate" (click)="toggleHistory(leave)">
                             <mat-icon>history</mat-icon>
                         </button>
                     </td>
@@ -180,11 +180,11 @@
     @if (selectedLeaveId) {
         <mat-card class="history-panel">
             <mat-card-header>
-                <mat-card-title>Leave History</mat-card-title>
+                <mat-card-title>{{ 'leaves.leaveHistory' | translate }}</mat-card-title>
             </mat-card-header>
             <mat-card-content>
                 @if (historyItems.length === 0) {
-                    <div class="history-empty">No history available for this request.</div>
+                    <div class="history-empty">{{ 'leaves.noHistory' | translate }}</div>
                 }
                 @for (item of historyItems; track $index) {
                     <div class="history-item">
@@ -193,7 +193,7 @@
                             <span>{{ item.toStatus }}</span>
                         </div>
                         <div class="history-meta">
-                            {{ item.actorUserEmail || 'System' }} · {{ item.occurredAt | date:'medium' }}
+                            {{ item.actorUserEmail || ('common.system' | translate) }} · {{ item.occurredAt | date:'medium' }}
                         </div>
                         @if (item.note) {
                             <div class="history-note">{{ item.note }}</div>
