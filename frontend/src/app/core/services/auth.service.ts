@@ -95,6 +95,32 @@ export class AuthService {
         return this.http.get<CurrentUserProfile>(`${this.apiUrl}/me/profile`);
     }
 
+    changeLanguage(preferredLang: string): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/me/language`, { preferredLang });
+    }
+
+    changePassword(currentPassword: string, newPassword: string): Observable<AuthResponse> {
+        return this.http.put<AuthResponse>(`${this.apiUrl}/me/password`, { currentPassword, newPassword }).pipe(
+            tap(response => {
+                this.storeSession(response);
+                if (response.user) {
+                    this.currentUserSubject.next(response.user);
+                }
+            })
+        );
+    }
+
+    changeEmail(newEmail: string, password: string): Observable<AuthResponse> {
+        return this.http.put<AuthResponse>(`${this.apiUrl}/me/email`, { newEmail, password }).pipe(
+            tap(response => {
+                this.storeSession(response);
+                if (response.user) {
+                    this.currentUserSubject.next(response.user);
+                }
+            })
+        );
+    }
+
     getToken(): string | null {
         return localStorage.getItem('token');
     }
