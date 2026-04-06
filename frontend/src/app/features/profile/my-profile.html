@@ -1,11 +1,4 @@
 <div class="profile-page">
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">My Profile</h1>
-            <p class="page-subtitle">Your account and employee information</p>
-        </div>
-    </div>
-
     @if (loading) {
         <div class="spinner-center">
             <mat-spinner diameter="40"></mat-spinner>
@@ -16,88 +9,326 @@
     }
 
     @if (profile) {
-        <div class="profile-grid">
-            <mat-card>
-                <mat-card-content>
-                    <h2>Account</h2>
-                    <p><strong>Email:</strong> {{ profile.email }}</p>
-                    <p><strong>Role:</strong> {{ profile.role }}</p>
-                    <p><strong>Language:</strong> {{ profile.preferredLang }}</p>
-                    <p><strong>Activated:</strong> {{ profile.activatedAt | date:'medium' }}</p>
-                    <p><strong>Last login:</strong> {{ profile.lastLoginAt | date:'medium' }}</p>
-                </mat-card-content>
-            </mat-card>
-
-            @if (profile.employee) {
-                <mat-card>
-                    <mat-card-content>
-                        <h2>Employee</h2>
-                        <div class="profile-photo-row">
-                            @if (photoPreviewUrl) {
-                                <div class="profile-photo">
-                                    <img [src]="photoPreviewUrl" [alt]="profile.employee.firstName + ' ' + profile.employee.lastName">
-                                </div>
-                            } @else {
-                                <div class="profile-photo placeholder">
-                                    <mat-icon>account_circle</mat-icon>
-                                </div>
-                            }
-
-                            <label class="upload-label">
-                                <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
-                                <button mat-stroked-button type="button" [disabled]="uploadingPhoto">
-                                    <mat-icon>photo_camera</mat-icon>
-                                    {{ uploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
-                                </button>
-                            </label>
+        <!-- Hero Header -->
+        <div class="profile-hero">
+            <div class="hero-left">
+                <!-- Avatar with photo upload -->
+                <label class="hero-avatar" [class.clickable]="!!profile.employee">
+                    @if (profile.employee) {
+                        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
+                    }
+                    @if (photoPreviewUrl) {
+                        <img [src]="photoPreviewUrl" [alt]="profile.employee?.firstName ?? profile.email">
+                    } @else if (profile.employee) {
+                        <span class="avatar-initials">{{ profile.employee.firstName.charAt(0) }}{{ profile.employee.lastName.charAt(0) }}</span>
+                    } @else {
+                        <mat-icon class="avatar-fallback">person</mat-icon>
+                    }
+                    @if (profile.employee) {
+                        <div class="hero-avatar-overlay">
+                            <mat-icon>photo_camera</mat-icon>
                         </div>
-                        <p><strong>Name:</strong> {{ profile.employee.firstName }} {{ profile.employee.lastName }}</p>
-                        <p><strong>Position:</strong> {{ profile.employee.position }}</p>
-                        <p><strong>Department:</strong> {{ profile.employee.departmentName || 'Unassigned' }}</p>
-                        <p><strong>Hire date:</strong> {{ profile.employee.hireDate | date:'mediumDate' }}</p>
+                    }
+                </label>
+                <div class="hero-info">
+                    <h1 class="hero-name">
+                        @if (profile.employee) {
+                            {{ profile.employee.firstName }} {{ profile.employee.lastName }}
+                        } @else {
+                            {{ profile.email }}
+                        }
+                    </h1>
+                    <div class="hero-meta">
+                        <span class="role-badge" [class]="getRoleBadgeClass()">{{ profile.role }}</span>
+                        @if (profile.employee) {
+                            <span class="hero-email">{{ profile.email }}</span>
+                        }
+                    </div>
+                    @if (profile.employee?.position) {
+                        <span class="hero-position">{{ profile.employee?.position }}
+                            @if (profile.employee?.departmentName) {
+                                · {{ profile.employee?.departmentName }}
+                            }
+                        </span>
+                    }
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-status" [class.active]="profile.isActive" [class.inactive]="!profile.isActive">
+                    <mat-icon>{{ profile.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
+                    {{ profile.isActive ? 'Active' : 'Inactive' }}
+                </div>
+                @if (profile.lastLoginAt) {
+                    <span class="hero-last-login">Last login: {{ profile.lastLoginAt | date:'medium' }}</span>
+                }
+            </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="info-grid">
+            <!-- Email — interactive -->
+            <div class="info-card interactive" (click)="openEmailChangeDialog()">
+                <div class="info-icon cyan">
+                    <mat-icon>mail</mat-icon>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ profile.email }}</span>
+                    <span class="info-label">Account Email <mat-icon class="edit-hint">edit</mat-icon></span>
+                </div>
+            </div>
+
+            <!-- Role — display only -->
+            <div class="info-card" matTooltip="Your system role is assigned by an administrator">
+                <div class="info-icon indigo">
+                    <mat-icon>admin_panel_settings</mat-icon>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ profile.role }}</span>
+                    <span class="info-label">System Role</span>
+                </div>
+            </div>
+
+            <!-- Language — interactive with mat-menu -->
+            <div class="info-card interactive" [matMenuTriggerFor]="langMenu">
+                <div class="info-icon green">
+                    <mat-icon>language</mat-icon>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ getLanguageLabel() }}</span>
+                    <span class="info-label">Preferred Language <mat-icon class="edit-hint">edit</mat-icon></span>
+                </div>
+            </div>
+            <mat-menu #langMenu="matMenu">
+                <button mat-menu-item (click)="onLanguageChange('en')" [class.active-lang]="profile.preferredLang === 'en'">
+                    English
+                </button>
+                <button mat-menu-item (click)="onLanguageChange('de')" [class.active-lang]="profile.preferredLang === 'de'">
+                    Deutsch
+                </button>
+                <button mat-menu-item (click)="onLanguageChange('tr')" [class.active-lang]="profile.preferredLang === 'tr'">
+                    Türkçe
+                </button>
+            </mat-menu>
+
+            <!-- Activated — display only -->
+            <div class="info-card" matTooltip="Date your account was first activated">
+                <div class="info-icon slate">
+                    <mat-icon>verified</mat-icon>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ profile.activatedAt ? (profile.activatedAt | date:'mediumDate') : 'Not activated' }}</span>
+                    <span class="info-label">Account Activated</span>
+                </div>
+            </div>
+
+            <!-- Last Activity — display only -->
+            <div class="info-card" matTooltip="Your most recent login">
+                <div class="info-icon orange">
+                    <mat-icon>login</mat-icon>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ profile.lastLoginAt ? (profile.lastLoginAt | date:'mediumDate') : 'Never' }}</span>
+                    <span class="info-label">Last Activity</span>
+                </div>
+            </div>
+
+            <!-- Notifications — interactive, navigates -->
+            <div class="info-card interactive" routerLink="/notifications">
+                <div class="info-icon" [class.orange]="profile.unreadNotifications > 0" [class.green]="profile.unreadNotifications === 0">
+                    <mat-icon>notifications</mat-icon>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ profile.unreadNotifications }} unread</span>
+                    <span class="info-label">Pending Alerts <mat-icon class="edit-hint">arrow_forward</mat-icon></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Sections -->
+        <div class="profile-bottom-grid" [class.single-column]="!profile.employee">
+            <!-- Employee Details Card -->
+            @if (profile.employee) {
+                <mat-card class="employee-card">
+                    <mat-card-content>
+                        <div class="section-header">
+                            <div class="section-icon cyan">
+                                <mat-icon>badge</mat-icon>
+                            </div>
+                            <h2 class="section-title">Employee Details</h2>
+                        </div>
+
+                        <div class="employee-details-grid">
+                            <div class="employee-photo-section">
+                                <label class="photo-container">
+                                    <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
+                                    @if (photoPreviewUrl) {
+                                        <img [src]="photoPreviewUrl" [alt]="profile.employee.firstName + ' ' + profile.employee.lastName" class="photo-img">
+                                    } @else {
+                                        <div class="photo-placeholder">
+                                            <mat-icon>account_circle</mat-icon>
+                                        </div>
+                                    }
+                                    <div class="photo-overlay">
+                                        <mat-icon>photo_camera</mat-icon>
+                                        <span>{{ uploadingPhoto ? 'Uploading...' : 'Change' }}</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="employee-info-list">
+                                <div class="detail-row">
+                                    <mat-icon class="detail-icon">person</mat-icon>
+                                    <div>
+                                        <span class="detail-label">Full Name</span>
+                                        <span class="detail-value">{{ profile.employee.firstName }} {{ profile.employee.lastName }}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <mat-icon class="detail-icon">work</mat-icon>
+                                    <div>
+                                        <span class="detail-label">Position</span>
+                                        <span class="detail-value">{{ profile.employee.position }}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <mat-icon class="detail-icon">business</mat-icon>
+                                    <div>
+                                        <span class="detail-label">Department</span>
+                                        <span class="detail-value">{{ profile.employee.departmentName || 'Unassigned' }}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <mat-icon class="detail-icon">calendar_today</mat-icon>
+                                    <div>
+                                        <span class="detail-label">Hire Date</span>
+                                        <span class="detail-value">{{ profile.employee.hireDate | date:'mediumDate' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </mat-card-content>
                 </mat-card>
             }
+
+            <!-- Security Card — Collapsible -->
+            <mat-card class="security-card">
+                <mat-card-content>
+                    <div class="section-header clickable" (click)="securityExpanded = !securityExpanded">
+                        <div class="section-icon orange">
+                            <mat-icon>shield</mat-icon>
+                        </div>
+                        <h2 class="section-title">Security</h2>
+                        <span class="section-subtitle">Change your password</span>
+                        <mat-icon class="expand-icon" [class.expanded]="securityExpanded">expand_more</mat-icon>
+                    </div>
+
+                    @if (securityExpanded) {
+                        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="password-form">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Current Password</mat-label>
+                                <input matInput type="password" formControlName="currentPassword" autocomplete="current-password">
+                                <mat-error>Required</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>New Password</mat-label>
+                                <input matInput type="password" formControlName="newPassword" autocomplete="new-password">
+                                @if (passwordForm.get('newPassword')?.hasError('required')) {
+                                    <mat-error>Required</mat-error>
+                                } @else if (passwordForm.get('newPassword')?.hasError('minlength')) {
+                                    <mat-error>Minimum 12 characters</mat-error>
+                                } @else if (passwordForm.get('newPassword')?.hasError('pattern')) {
+                                    <mat-error>Must include upper, lower, digit, and special character</mat-error>
+                                }
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Confirm New Password</mat-label>
+                                <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password">
+                                <mat-error>Passwords do not match</mat-error>
+                            </mat-form-field>
+
+                            <button mat-flat-button color="primary" type="submit"
+                                    [disabled]="passwordForm.invalid || changingPassword">
+                                <mat-icon>lock</mat-icon>
+                                {{ changingPassword ? 'Changing...' : 'Change Password' }}
+                            </button>
+                        </form>
+                    }
+                </mat-card-content>
+            </mat-card>
         </div>
-    }
 
-    @if (profile?.employee?.employmentHistory?.length) {
-        <mat-card class="history-card">
-            <mat-card-content>
-                <h2>Employment History</h2>
-                @for (item of profile?.employee?.employmentHistory; track $index) {
-                    <div class="history-item">
-                        <mat-icon>history</mat-icon>
-                        <div>
-                            <div class="history-title">{{ item.changeType }}: {{ item.oldValue || 'n/a' }} -> {{ item.newValue || 'n/a' }}</div>
-                            <div class="history-date">{{ item.changedAt | date:'medium' }}</div>
+        <!-- Employment History Timeline -->
+        @if (profile?.employee?.employmentHistory?.length) {
+            <mat-card class="timeline-card">
+                <mat-card-content>
+                    <div class="section-header">
+                        <div class="section-icon indigo">
+                            <mat-icon>history</mat-icon>
                         </div>
+                        <h2 class="section-title">Employment History</h2>
                     </div>
-                }
-            </mat-card-content>
-        </mat-card>
-    }
 
-    @if (profile?.employee) {
-        <mat-card class="documents-card">
-            <mat-card-content>
-                <h2>My Documents</h2>
-                @if (profile?.employee?.documents?.length === 0) {
-                    <div class="empty-text">No documents available yet.</div>
-                }
-                @for (document of profile?.employee?.documents || []; track $index) {
-                    <div class="document-item">
-                        <div>
-                            <div class="history-title">{{ document.title }}</div>
-                            <div class="history-date">{{ document.originalFilename }} · {{ document.uploadedAt | date:'medium' }}</div>
-                        </div>
-                        <button mat-stroked-button type="button" (click)="downloadDocument(document.id, document.originalFilename)">
-                            <mat-icon>download</mat-icon>
-                            Download
-                        </button>
+                    <div class="timeline">
+                        @for (item of profile!.employee!.employmentHistory; track $index) {
+                            <div class="timeline-item">
+                                <div class="timeline-marker">
+                                    <div class="timeline-dot"></div>
+                                    @if (!$last) {
+                                        <div class="timeline-line"></div>
+                                    }
+                                </div>
+                                <div class="timeline-content">
+                                    <span class="timeline-badge">{{ item.changeType }}</span>
+                                    <div class="timeline-change">
+                                        <span class="timeline-old">{{ item.oldValue || 'n/a' }}</span>
+                                        <mat-icon class="timeline-arrow">arrow_forward</mat-icon>
+                                        <span class="timeline-new">{{ item.newValue || 'n/a' }}</span>
+                                    </div>
+                                    <span class="timeline-date">{{ item.changedAt | date:'medium' }}</span>
+                                </div>
+                            </div>
+                        }
                     </div>
-                }
-            </mat-card-content>
-        </mat-card>
+                </mat-card-content>
+            </mat-card>
+        }
+
+        <!-- Documents -->
+        @if (profile?.employee) {
+            <mat-card class="documents-card">
+                <mat-card-content>
+                    <div class="section-header">
+                        <div class="section-icon green">
+                            <mat-icon>folder</mat-icon>
+                        </div>
+                        <h2 class="section-title">My Documents</h2>
+                    </div>
+
+                    @if (profile?.employee?.documents?.length === 0) {
+                        <div class="empty-state">
+                            <mat-icon>description</mat-icon>
+                            <p>No documents available yet.</p>
+                        </div>
+                    }
+                    @for (doc of profile?.employee?.documents || []; track $index) {
+                        <div class="doc-item">
+                            <div class="doc-icon">
+                                <mat-icon>{{ getDocIcon(doc.originalFilename) }}</mat-icon>
+                            </div>
+                            <div class="doc-info">
+                                <span class="doc-title">{{ doc.title }}</span>
+                                <span class="doc-meta">{{ doc.originalFilename }} · {{ doc.uploadedAt | date:'medium' }}</span>
+                            </div>
+                            <button mat-flat-button color="primary" (click)="downloadDocument(doc.id, doc.originalFilename)">
+                                <mat-icon>download</mat-icon>
+                                Download
+                            </button>
+                        </div>
+                    }
+                </mat-card-content>
+            </mat-card>
+        }
     }
 </div>
