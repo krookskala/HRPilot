@@ -1,8 +1,8 @@
 <div class="detail-page">
     <div class="page-header">
         <div>
-            <h1 class="page-title">Employee Detail</h1>
-            <p class="page-subtitle">Profile, history, photo, and employee documents</p>
+            <h1 class="page-title">{{ 'employees.detailTitle' | translate }}</h1>
+            <p class="page-subtitle">{{ 'employees.detailSubtitle' | translate }}</p>
         </div>
     </div>
 
@@ -34,28 +34,28 @@
                                 <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
                                 <button mat-stroked-button type="button" [disabled]="uploadingPhoto">
                                     <mat-icon>photo_camera</mat-icon>
-                                    {{ uploadingPhoto ? 'Uploading...' : 'Upload Photo' }}
+                                    {{ uploadingPhoto ? ('employees.uploadPhoto' | translate) + '...' : ('employees.uploadPhoto' | translate) }}
                                 </button>
                             </label>
                         }
                     </div>
 
                     <div class="identity-grid">
-                        <div><strong>Name:</strong> {{ employee.firstName }} {{ employee.lastName }}</div>
-                        <div><strong>Email:</strong> {{ employee.email }}</div>
-                        <div><strong>Position:</strong> {{ employee.position }}</div>
-                        <div><strong>Department:</strong> {{ employee.departmentName || 'Unassigned' }}</div>
-                        <div><strong>Hire date:</strong> {{ employee.hireDate | date:'mediumDate' }}</div>
-                        <div><strong>Salary:</strong> {{ employee.salary | number:'1.2-2' }} EUR</div>
+                        <div><strong>{{ 'common.name' | translate }}:</strong> {{ employee.firstName }} {{ employee.lastName }}</div>
+                        <div><strong>{{ 'common.email' | translate }}:</strong> {{ employee.email }}</div>
+                        <div><strong>{{ 'employees.position' | translate }}:</strong> {{ employee.position }}</div>
+                        <div><strong>{{ 'employees.department' | translate }}:</strong> {{ employee.departmentName || ('common.notAssigned' | translate) }}</div>
+                        <div><strong>{{ 'employees.hireDate' | translate }}:</strong> {{ employee.hireDate | date:'mediumDate' }}</div>
+                        <div><strong>{{ 'employees.salary' | translate }}:</strong> {{ employee.salary | number:'1.2-2' }} EUR</div>
                     </div>
                 </mat-card-content>
             </mat-card>
 
             <mat-card>
                 <mat-card-content>
-                    <h2>Employment History</h2>
+                    <h2>{{ 'employees.employmentHistory' | translate }}</h2>
                     @if (employee.employmentHistory.length === 0) {
-                        <div class="empty-text">No history recorded yet.</div>
+                        <div class="empty-text">{{ 'employees.noHistory' | translate }}</div>
                     }
                     @for (item of employee.employmentHistory; track $index) {
                         <div class="history-item">
@@ -74,33 +74,32 @@
             <mat-card-content>
                 <div class="section-header">
                     <div>
-                        <h2>Employee Documents</h2>
-                        <p class="section-subtitle">Secure HR files available to authorized viewers.</p>
+                        <h2>{{ 'employees.documents' | translate }}</h2>
                     </div>
                 </div>
 
                 @if (canManage) {
                     <form class="document-form" [formGroup]="documentForm">
                         <mat-form-field appearance="outline">
-                            <mat-label>Document title</mat-label>
+                            <mat-label>{{ 'employees.docTitle' | translate }}</mat-label>
                             <input matInput formControlName="title">
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <mat-label>Description</mat-label>
+                            <mat-label>{{ 'employees.docDescription' | translate }}</mat-label>
                             <textarea matInput rows="3" formControlName="description"></textarea>
                         </mat-form-field>
 
                         <input type="file" (change)="onDocumentSelected($event)">
                         <button mat-flat-button color="primary" type="button" (click)="uploadDocument()" [disabled]="uploadingDocument">
                             <mat-icon>upload_file</mat-icon>
-                            {{ uploadingDocument ? 'Uploading...' : 'Upload Document' }}
+                            {{ 'employees.uploadDocument' | translate }}
                         </button>
                     </form>
                 }
 
                 @if (employee.documents.length === 0) {
-                    <div class="empty-text">No documents uploaded yet.</div>
+                    <div class="empty-text">{{ 'employees.noDocuments' | translate }}</div>
                 }
 
                 <div class="document-list">
@@ -117,7 +116,7 @@
                             </div>
                             <button mat-stroked-button type="button" (click)="downloadDocument(document.id, document.originalFilename)">
                                 <mat-icon>download</mat-icon>
-                                Download
+                                {{ 'employees.download' | translate }}
                             </button>
                         </div>
                     }
