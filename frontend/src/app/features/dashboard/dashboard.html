@@ -21,7 +21,19 @@
     }
 
     @if (data) {
-        <div class="metrics-grid">
+        <!-- Quick Actions + Key Metrics — single row -->
+        <div class="top-row">
+            <div class="quick-actions-compact">
+                @for (action of quickActions; track trackAction($index, action)) {
+                    <a routerLink="{{ action.route }}" class="quick-tile">
+                        <div class="quick-tile-icon" [class]="'quick-tile-icon ' + action.accent">
+                            <mat-icon>{{ action.icon }}</mat-icon>
+                        </div>
+                        <span class="quick-tile-label">{{ action.label }}</span>
+                    </a>
+                }
+            </div>
+
             @for (metric of data.keyMetrics; track trackMetric($index, metric)) {
                 <mat-card class="metric-card">
                     <mat-card-content>
@@ -36,9 +48,8 @@
                 </mat-card>
             }
         </div>
-    }
 
-    @if (data) {
+        <!-- Overview Cards — 3 columns -->
         <div class="overview-grid">
             <mat-card class="overview-card">
                 <mat-card-header>
@@ -98,18 +109,35 @@
                 </mat-card-content>
             </mat-card>
 
-            <mat-card class="overview-card">
-                <mat-card-header>
-                    <mat-icon mat-card-avatar class="overview-header-icon slate">notifications</mat-icon>
-                    <mat-card-title>{{ 'dashboard.notificationHealth' | translate }}</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <div class="single-stat">
-                        <div class="single-stat-value">{{ data.notificationOverview.unreadNotifications }}</div>
-                        <div class="single-stat-label">{{ 'dashboard.unreadNotifications' | translate }}</div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
+            <!-- Role-specific 3rd column -->
+            @if (data.personalOverview) {
+                <mat-card class="overview-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar class="overview-header-icon cyan">badge</mat-icon>
+                        <mat-card-title>{{ 'dashboard.mySnapshot' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="summary-list">
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.availableLeaveDays' | translate }}</span>
+                                <strong>{{ data.personalOverview.availableLeaveDays }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.pendingLeaveRequests' | translate }}</span>
+                                <strong>{{ data.personalOverview.pendingLeaveRequests }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.payslipsOnRecord' | translate }}</span>
+                                <strong>{{ data.personalOverview.payrollRecords }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.profileCompletion' | translate }}</span>
+                                <strong>{{ data.personalOverview.profileCompletion }}%</strong>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
 
             @if (data.teamOverview) {
                 <mat-card class="overview-card">
@@ -140,35 +168,6 @@
                 </mat-card>
             }
 
-            @if (data.personalOverview) {
-                <mat-card class="overview-card">
-                    <mat-card-header>
-                        <mat-icon mat-card-avatar class="overview-header-icon cyan">badge</mat-icon>
-                        <mat-card-title>{{ 'dashboard.mySnapshot' | translate }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="summary-list">
-                            <div class="summary-row">
-                                <span>{{ 'dashboard.availableLeaveDays' | translate }}</span>
-                                <strong>{{ data.personalOverview.availableLeaveDays }}</strong>
-                            </div>
-                            <div class="summary-row">
-                                <span>{{ 'dashboard.pendingLeaveRequests' | translate }}</span>
-                                <strong>{{ data.personalOverview.pendingLeaveRequests }}</strong>
-                            </div>
-                            <div class="summary-row">
-                                <span>{{ 'dashboard.payslipsOnRecord' | translate }}</span>
-                                <strong>{{ data.personalOverview.payrollRecords }}</strong>
-                            </div>
-                            <div class="summary-row">
-                                <span>{{ 'dashboard.profileCompletion' | translate }}</span>
-                                <strong>{{ data.personalOverview.profileCompletion }}%</strong>
-                            </div>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-            }
-
             @if (data.auditOverview) {
                 <mat-card class="overview-card">
                     <mat-card-header>
@@ -185,122 +184,112 @@
                                 <span>{{ 'dashboard.recentTrackedActions' | translate }}</span>
                                 <strong>{{ data.auditOverview.recentEvents }}</strong>
                             </div>
+                            <div class="summary-row">
+                                <span>{{ 'dashboard.unreadNotifications' | translate }}</span>
+                                <strong>{{ data.notificationOverview.unreadNotifications }}</strong>
+                            </div>
                         </div>
                     </mat-card-content>
                 </mat-card>
             }
         </div>
-    }
 
-    @if (data && (leaveChartConfig || payrollChartConfig || departmentChartConfig)) {
-        <div class="charts-grid">
-            @if (leaveChartConfig) {
-                <mat-card class="chart-card">
-                    <mat-card-header>
-                        <mat-icon mat-card-avatar class="overview-header-icon green">pie_chart</mat-icon>
-                        <mat-card-title>{{ 'dashboard.leaveStatus' | translate }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="chart-container">
-                            <canvas baseChart
-                                [type]="leaveChartConfig.type"
-                                [data]="leaveChartConfig.data"
-                                [options]="leaveChartConfig.options">
-                            </canvas>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-            }
-
-            @if (payrollChartConfig) {
-                <mat-card class="chart-card">
-                    <mat-card-header>
-                        <mat-icon mat-card-avatar class="overview-header-icon indigo">bar_chart</mat-icon>
-                        <mat-card-title>{{ 'dashboard.payrollStatus' | translate }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="chart-container">
-                            <canvas baseChart
-                                [type]="payrollChartConfig.type"
-                                [data]="payrollChartConfig.data"
-                                [options]="payrollChartConfig.options">
-                            </canvas>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-            }
-
-            @if (departmentChartConfig) {
-                <mat-card class="chart-card">
-                    <mat-card-header>
-                        <mat-icon mat-card-avatar class="overview-header-icon orange">donut_large</mat-icon>
-                        <mat-card-title>{{ 'dashboard.departmentDistribution' | translate }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="chart-container">
-                            <canvas baseChart
-                                [type]="departmentChartConfig.type"
-                                [data]="departmentChartConfig.data"
-                                [options]="departmentChartConfig.options">
-                            </canvas>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-            }
-        </div>
-    }
-
-    @if (data) {
-        <div class="activity-section">
-            @if (data.recentActivities.length > 0) {
-                <mat-card class="activity-card">
-                    <mat-card-header>
-                        <mat-icon mat-card-avatar class="overview-header-icon cyan">history</mat-icon>
-                        <mat-card-title>{{ 'dashboard.recentActivity' | translate }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="activity-list">
-                            @for (activity of data.recentActivities; track activity.timestamp) {
-                                <div class="activity-item">
-                                    <div class="activity-type-icon" [class]="'activity-type-icon ' + activityAccent(activity.type)">
-                                        <mat-icon>{{ activityIcon(activity.type) }}</mat-icon>
+        <!-- Charts + Activity — side by side -->
+        @if (leaveChartConfig || payrollChartConfig || departmentChartConfig || data.recentActivities.length > 0) {
+            <div class="bottom-grid">
+                @if (leaveChartConfig || payrollChartConfig || departmentChartConfig) {
+                    <div class="charts-column">
+                        @if (leaveChartConfig) {
+                            <mat-card class="chart-card">
+                                <mat-card-header>
+                                    <mat-icon mat-card-avatar class="overview-header-icon green">pie_chart</mat-icon>
+                                    <mat-card-title>{{ 'dashboard.leaveStatus' | translate }}</mat-card-title>
+                                </mat-card-header>
+                                <mat-card-content>
+                                    <div class="chart-container">
+                                        <canvas baseChart
+                                            [type]="leaveChartConfig.type"
+                                            [data]="leaveChartConfig.data"
+                                            [options]="leaveChartConfig.options">
+                                        </canvas>
                                     </div>
-                                    <div class="activity-copy">
-                                        <div class="activity-description">{{ activity.description }}</div>
-                                        <div class="activity-time">{{ activity.timestamp | date:'medium' }}</div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-            } @else {
-                <mat-card class="activity-card empty-card">
-                    <mat-card-content>
-                        <div class="empty-state">
-                            <mat-icon>inbox</mat-icon>
-                            <p>{{ 'dashboard.noActivity' | translate }}</p>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-            }
-        </div>
-    }
+                                </mat-card-content>
+                            </mat-card>
+                        }
 
-    @if (data) {
-        <div class="quick-section">
-            <h2 class="section-title">{{ 'dashboard.quickActions' | translate }}</h2>
-            <div class="quick-grid">
-                @for (action of quickActions; track trackAction($index, action)) {
-                    <a routerLink="{{ action.route }}" class="quick-card">
-                        <div class="quick-icon" [class]="'quick-icon ' + action.accent">
-                            <mat-icon>{{ action.icon }}</mat-icon>
-                        </div>
-                        <div class="quick-label">{{ action.label }}</div>
-                        <mat-icon class="quick-arrow">arrow_forward</mat-icon>
-                    </a>
+                        @if (payrollChartConfig) {
+                            <mat-card class="chart-card">
+                                <mat-card-header>
+                                    <mat-icon mat-card-avatar class="overview-header-icon indigo">bar_chart</mat-icon>
+                                    <mat-card-title>{{ 'dashboard.payrollStatus' | translate }}</mat-card-title>
+                                </mat-card-header>
+                                <mat-card-content>
+                                    <div class="chart-container">
+                                        <canvas baseChart
+                                            [type]="payrollChartConfig.type"
+                                            [data]="payrollChartConfig.data"
+                                            [options]="payrollChartConfig.options">
+                                        </canvas>
+                                    </div>
+                                </mat-card-content>
+                            </mat-card>
+                        }
+
+                        @if (departmentChartConfig) {
+                            <mat-card class="chart-card">
+                                <mat-card-header>
+                                    <mat-icon mat-card-avatar class="overview-header-icon orange">donut_large</mat-icon>
+                                    <mat-card-title>{{ 'dashboard.departmentDistribution' | translate }}</mat-card-title>
+                                </mat-card-header>
+                                <mat-card-content>
+                                    <div class="chart-container">
+                                        <canvas baseChart
+                                            [type]="departmentChartConfig.type"
+                                            [data]="departmentChartConfig.data"
+                                            [options]="departmentChartConfig.options">
+                                        </canvas>
+                                    </div>
+                                </mat-card-content>
+                            </mat-card>
+                        }
+                    </div>
                 }
+
+                <div class="activity-column">
+                    @if (data.recentActivities.length > 0) {
+                        <mat-card class="activity-card">
+                            <mat-card-header>
+                                <mat-icon mat-card-avatar class="overview-header-icon cyan">history</mat-icon>
+                                <mat-card-title>{{ 'dashboard.recentActivity' | translate }}</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="activity-list">
+                                    @for (activity of data.recentActivities; track activity.timestamp) {
+                                        <div class="activity-item">
+                                            <div class="activity-type-icon" [class]="'activity-type-icon ' + activityAccent(activity.type)">
+                                                <mat-icon>{{ activityIcon(activity.type) }}</mat-icon>
+                                            </div>
+                                            <div class="activity-copy">
+                                                <div class="activity-description">{{ activity.description }}</div>
+                                                <div class="activity-time">{{ activity.timestamp | date:'medium' }}</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    } @else {
+                        <mat-card class="activity-card empty-card">
+                            <mat-card-content>
+                                <div class="empty-state">
+                                    <mat-icon>inbox</mat-icon>
+                                    <p>{{ 'dashboard.noActivity' | translate }}</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    }
+                </div>
             </div>
-        </div>
+        }
     }
 </div>
