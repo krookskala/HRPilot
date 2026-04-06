@@ -39,14 +39,15 @@ const mockDeptPage = {
 describe('EmployeeList Component', () => {
   let component: EmployeeList;
   let fixture: ComponentFixture<EmployeeList>;
-  let employeeService: { search: ReturnType<typeof vi.fn>; exportCsv: ReturnType<typeof vi.fn> };
+  let employeeService: any;
 
   beforeEach(async () => {
     ensureTestBed();
     employeeService = {
       search: vi.fn().mockReturnValue(of(mockPage)),
-      exportCsv: vi.fn().mockReturnValue(of(new Blob(['csv'])))
-    };
+      exportCsv: vi.fn().mockReturnValue(of(new Blob(['csv']))),
+      downloadPhoto: vi.fn().mockReturnValue(throwError(() => new Error('no photo')))
+    } as any;
     const departmentService = { getAll: vi.fn().mockReturnValue(of(mockDeptPage)) };
     const authService = { hasRole: vi.fn().mockReturnValue(true) };
 
