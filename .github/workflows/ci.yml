@@ -44,9 +44,10 @@ jobs:
       - name: Run tests
         run: mvn verify -B
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/hrpilot_test
-          SPRING_DATASOURCE_USERNAME: hrpilot
-          SPRING_DATASOURCE_PASSWORD: hrpilot123
+          DB_URL: jdbc:postgresql://localhost:5432/hrpilot_test
+          DB_USERNAME: hrpilot
+          DB_PASSWORD: hrpilot123
+          JWT_SECRET: ci-test-secret-key-that-is-at-least-256-bits-long-for-hmac-sha
           APP_STORAGE_PROVIDER: local
           APP_STORAGE_LOCAL_UPLOAD_DIR: target/test-uploads
 
