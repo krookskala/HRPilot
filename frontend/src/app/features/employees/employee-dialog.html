@@ -1,51 +1,51 @@
 <div class="dialog-header">
     <mat-icon>person_add</mat-icon>
-    <h2>Add Employee</h2>
+    <h2>{{ 'employees.addEmployee' | translate }}</h2>
 </div>
 
 <mat-dialog-content>
     <form [formGroup]="form" class="dialog-form">
 
         <mat-form-field appearance="outline">
-            <mat-label>User ID</mat-label>
+            <mat-label>{{ 'employees.userId' | translate }}</mat-label>
             <input matInput type="number" formControlName="userId" />
-            <mat-error>User ID is required and must be greater than 0</mat-error>
+            <mat-error>{{ 'employees.userIdRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>First Name</mat-label>
+            <mat-label>{{ 'common.firstName' | translate }}</mat-label>
             <input matInput formControlName="firstName" />
-            <mat-error>First name is required (min 2 characters)</mat-error>
+            <mat-error>{{ 'employees.firstNameRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Last Name</mat-label>
+            <mat-label>{{ 'common.lastName' | translate }}</mat-label>
             <input matInput formControlName="lastName" />
-            <mat-error>Last name is required (min 2 characters)</mat-error>
+            <mat-error>{{ 'employees.lastNameRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Position</mat-label>
+            <mat-label>{{ 'employees.position' | translate }}</mat-label>
             <input matInput formControlName="position" />
-            <mat-error>Position is required</mat-error>
+            <mat-error>{{ 'employees.positionRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Salary</mat-label>
+            <mat-label>{{ 'employees.salary' | translate }}</mat-label>
             <input matInput type="number" formControlName="salary" />
-            <mat-error>Salary is required and must be greater than 0</mat-error>
+            <mat-error>{{ 'employees.salaryRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Hire Date</mat-label>
+            <mat-label>{{ 'employees.hireDate' | translate }}</mat-label>
             <input matInput type="date" formControlName="hireDate" />
-            <mat-error>Hire date is required</mat-error>
+            <mat-error>{{ 'employees.hireDateRequired' | translate }}</mat-error>
         </mat-form-field>
 
     </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button (click)="cancel()">Cancel</button>
-    <button mat-flat-button color="primary" (click)="save()">Save</button>
+    <button mat-button (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button mat-flat-button color="primary" (click)="save()">{{ 'common.save' | translate }}</button>
 </mat-dialog-actions>
