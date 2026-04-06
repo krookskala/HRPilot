@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { NotificationItem } from "../../shared/models/notification.model";
 import { Page } from "../../shared/models/page.model";
@@ -8,6 +8,8 @@ import { Page } from "../../shared/models/page.model";
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
     private apiUrl = environment.apiUrl;
+    private _unreadCount$ = new BehaviorSubject<number>(0);
+    unreadCount$ = this._unreadCount$.asObservable();
 
     constructor(private http: HttpClient) {}
 
@@ -15,11 +17,26 @@ export class NotificationService {
         return this.http.get<Page<NotificationItem>>(`${this.apiUrl}/notifications?page=${page}&size=${size}`);
     }
 
+    getUnreadCount(): Observable<number> {
+        return this.http.get<number>(`${this.apiUrl}/notifications/unread-count`);
+    }
+
+    refreshUnreadCount(): void {
+        this.getUnreadCount().subscribe({
+            next: count => this._unreadCount$.next(count),
+            error: () => {}
+        });
+    }
+
     markAsRead(id: number): Observable<NotificationItem> {
-        return this.http.put<NotificationItem>(`${this.apiUrl}/notifications/${id}/read`, {});
+        return this.http.put<NotificationItem>(`${this.apiUrl}/notifications/${id}/read`, {}).pipe(
+            tap(() => this.refreshUnreadCount())
+        );
     }
 
     markAllAsRead(): Observable<void> {
-        return this.http.put<void>(`${this.apiUrl}/notifications/read-all`, {});
+        return this.http.put<void>(`${this.apiUrl}/notifications/read-all`, {}).pipe(
+            tap(() => this._unreadCount$.next(0))
+        );
     }
 }
