@@ -41,6 +41,10 @@ describe('NotificationService', () => {
     const req = httpTesting.expectOne(r => r.url.includes('/notifications/1/read'));
     expect(req.request.method).toBe('PUT');
     req.flush(mockNotification);
+
+    // markAsRead triggers refreshUnreadCount
+    const countReq = httpTesting.expectOne(r => r.url.includes('/unread-count'));
+    countReq.flush(0);
   });
 
   it('should mark all notifications as read', () => {
