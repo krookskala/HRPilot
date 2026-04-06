@@ -5,12 +5,13 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatIconModule } from "@angular/material/icon";
+import { TranslateModule } from "@ngx-translate/core";
 
 @Component({
     selector: 'app-employee-dialog',
     standalone: true,
     imports: [MatDialogModule, ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule],
+    MatInputModule, MatButtonModule, MatIconModule, TranslateModule],
     templateUrl: './employee-dialog.html',
     styleUrl: './employee-dialog.scss'
 })
