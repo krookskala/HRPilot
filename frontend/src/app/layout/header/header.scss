@@ -3,7 +3,7 @@
 }
 
 mat-toolbar {
-  background: #ffffff;
+  background: var(--hr-bg-card);
   border-bottom: 1px solid var(--hr-border);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   height: 64px;
@@ -28,7 +28,7 @@ mat-toolbar {
 .logo-text {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--hr-text-primary);
   letter-spacing: -0.02em;
 }
 
@@ -39,7 +39,7 @@ mat-toolbar {
 .user-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .user-icon {
@@ -49,10 +49,33 @@ mat-toolbar {
   height: 28px;
 }
 
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .user-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #334155;
+  color: var(--hr-text-primary);
+}
+
+.user-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background-color var(--hr-transition);
+
+  &:hover {
+    background-color: var(--hr-hover-bg);
+  }
 }
 
 .divider {
@@ -66,8 +89,8 @@ button[mat-icon-button] {
   transition: color var(--hr-transition), background-color var(--hr-transition);
 
   &:hover {
-    color: #ef4444;
-    background-color: rgba(239, 68, 68, 0.08);
+    color: var(--hr-primary);
+    background-color: var(--hr-primary-light);
   }
 }
 
