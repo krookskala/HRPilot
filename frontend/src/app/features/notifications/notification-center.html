@@ -1,11 +1,26 @@
 <div class="notification-page">
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">Notifications</h1>
-            <p class="page-subtitle">Your recent activity and system alerts</p>
+    <!-- Hero Banner -->
+    <div class="notif-hero">
+        <div class="hero-content">
+            <div class="hero-eyebrow">NOTIFICATION CENTER</div>
+            <h1 class="hero-title">Notifications</h1>
+            <p class="hero-text">Stay up to date with your activity and system alerts</p>
+        </div>
+        <mat-icon class="hero-icon">notifications_active</mat-icon>
+    </div>
+
+    <!-- Toolbar: Filter Chips + Mark All -->
+    <div class="notif-toolbar">
+        <div class="filter-chips">
+            @for (f of filters; track f.type) {
+                <button class="filter-chip" [class.active]="activeFilter === f.type" (click)="setFilter(f.type)">
+                    <mat-icon>{{ f.icon }}</mat-icon>
+                    <span>{{ f.label }}</span>
+                </button>
+            }
         </div>
         @if (hasUnread) {
-            <button mat-stroked-button (click)="markAllAsRead()">
+            <button mat-stroked-button class="mark-all-btn" (click)="markAllAsRead()">
                 <mat-icon>done_all</mat-icon>
                 Mark all read
             </button>
@@ -17,30 +32,60 @@
             <mat-spinner diameter="40"></mat-spinner>
         </div>
     }
+
     @if (error) {
-        <div class="error-banner">{{ error }}</div>
+        <div class="error-banner">
+            <mat-icon>error_outline</mat-icon>
+            {{ error }}
+        </div>
     }
 
     @if (!loading && !error) {
-        <div class="notification-list">
-            @for (notification of notifications; track notification.id) {
-                <mat-card [class.unread]="!notification.read">
-                    <mat-card-content>
-                        <div class="notification-row">
-                            <div>
-                                <div class="notification-title">{{ notification.title }}</div>
-                                <div class="notification-message">{{ notification.message }}</div>
-                                <div class="notification-date">{{ notification.createdAt | date:'medium' }}</div>
+        @if (filteredNotifications.length > 0) {
+            <div class="notification-list">
+                @for (n of filteredNotifications; track n.id) {
+                    <div class="notif-item" [class.unread]="!n.read">
+                        <div class="notif-type-icon" [class]="'notif-type-icon ' + typeAccent(n.type)">
+                            <mat-icon>{{ typeIcon(n.type) }}</mat-icon>
+                        </div>
+                        <div class="notif-body">
+                            <div class="notif-header">
+                                <span class="notif-type-badge" [class]="'notif-type-badge ' + typeAccent(n.type)">{{ typeLabel(n.type) }}</span>
+                                <span class="notif-date">{{ n.createdAt | date:'medium' }}</span>
                             </div>
-                            @if (!notification.read) {
-                                <button mat-stroked-button (click)="markAsRead(notification.id)">
-                                    Mark read
+                            <div class="notif-title">{{ n.title }}</div>
+                            <div class="notif-message">{{ n.message }}</div>
+                        </div>
+                        <div class="notif-actions">
+                            @if (n.actionUrl) {
+                                <a [routerLink]="n.actionUrl" mat-icon-button matTooltip="Go to">
+                                    <mat-icon>open_in_new</mat-icon>
+                                </a>
+                            }
+                            @if (!n.read) {
+                                <button mat-icon-button matTooltip="Mark as read" (click)="markAsRead(n.id)">
+                                    <mat-icon>check_circle_outline</mat-icon>
                                 </button>
+                            } @else {
+                                <mat-icon class="read-check">check_circle</mat-icon>
                             }
                         </div>
-                    </mat-card-content>
-                </mat-card>
-            }
-        </div>
+                    </div>
+                }
+            </div>
+        } @else {
+            <div class="empty-state">
+                <div class="empty-icon-wrapper">
+                    <mat-icon>notifications_off</mat-icon>
+                </div>
+                @if (activeFilter === 'ALL') {
+                    <h3>No notifications yet</h3>
+                    <p>When something happens, you'll see it here</p>
+                } @else {
+                    <h3>No {{ activeFilter | lowercase }} notifications</h3>
+                    <p>Try selecting a different filter</p>
+                }
+            </div>
+        }
     }
 </div>
