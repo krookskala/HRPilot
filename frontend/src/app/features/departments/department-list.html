@@ -1,16 +1,30 @@
 <div class="list-page">
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">Departments</h1>
-            <p class="page-subtitle">Organizational structure and department management</p>
+    <!-- Hero Banner -->
+    <div class="dept-hero">
+        <div class="hero-content">
+            <div class="hero-eyebrow">{{ 'departments.eyebrow' | translate }}</div>
+            <h1 class="hero-title">{{ 'departments.title' | translate }}</h1>
+            <p class="hero-text">{{ 'departments.subtitle' | translate }}</p>
         </div>
-        @if (isAdmin) {
+        <div class="hero-right">
+            <div class="hero-stat">
+                <span class="hero-stat-value">{{ totalElements }}</span>
+                <span class="hero-stat-label">{{ 'common.total' | translate }}</span>
+            </div>
+            <mat-icon class="hero-icon">account_tree</mat-icon>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    @if (isAdmin) {
+        <div class="dept-toolbar">
+            <div class="toolbar-spacer"></div>
             <button mat-flat-button color="primary" (click)="openDialog()">
                 <mat-icon>add</mat-icon>
-                Add Department
+                {{ 'departments.addDepartment' | translate }}
             </button>
-        }
-    </div>
+        </div>
+    }
 
     @if (loading) {
         <div class="spinner-center">
@@ -26,49 +40,71 @@
     }
 
     @if (!loading && !error) {
-        <div class="table-panel">
-            <table mat-table [dataSource]="departments">
-
-                <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let dept">{{ dept.id }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>Name</th>
-                    <td mat-cell *matCellDef="let dept">{{ dept.name }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="managerEmail">
-                    <th mat-header-cell *matHeaderCellDef>Manager</th>
-                    <td mat-cell *matCellDef="let dept">{{ dept.managerEmail }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="parentDepartmentName">
-                    <th mat-header-cell *matHeaderCellDef>Parent Department</th>
-                    <td mat-cell *matCellDef="let dept">{{ dept.parentDepartmentName || '—' }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Actions</th>
-                    <td mat-cell *matCellDef="let dept">
+        <div class="dept-grid">
+            @for (dept of departments; track dept.id) {
+                <div class="dept-card" [class.has-parent]="dept.parentDepartmentName">
+                    <div class="dept-card-header">
+                        <div class="dept-icon" [class]="'dept-icon ' + getDeptAccent(dept)">
+                            <mat-icon>{{ dept.parentDepartmentName ? 'subdirectory_arrow_right' : 'apartment' }}</mat-icon>
+                        </div>
+                        <div class="dept-card-info">
+                            <div class="dept-name">{{ dept.name }}</div>
+                            @if (dept.parentDepartmentName) {
+                                <div class="dept-parent">
+                                    <mat-icon>account_tree</mat-icon>
+                                    {{ dept.parentDepartmentName }}
+                                </div>
+                            }
+                        </div>
                         @if (isAdmin) {
-                            <button mat-icon-button matTooltip="Edit"
-                                    (click)="edit(dept)">
-                                <mat-icon>edit</mat-icon>
-                            </button>
-                            <button mat-icon-button color="warn" matTooltip="Delete"
-                                    (click)="delete(dept.id)">
-                                <mat-icon>delete</mat-icon>
-                            </button>
+                            <div class="dept-card-actions">
+                                <button mat-icon-button [matTooltip]="'common.edit' | translate" (click)="edit(dept)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-icon-button [matTooltip]="'common.delete' | translate" (click)="delete(dept.id)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
                         }
-                    </td>
-                </ng-container>
+                    </div>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
+                    <div class="dept-card-body">
+                        <div class="dept-detail-row">
+                            <mat-icon>person</mat-icon>
+                            <span class="dept-detail-label">{{ 'departments.manager' | translate }}</span>
+                            <span class="dept-detail-value">{{ dept.managerEmail || ('common.notAssigned' | translate) }}</span>
+                        </div>
+                        @if (getSubDepartments(dept.id).length > 0) {
+                            <div class="dept-detail-row">
+                                <mat-icon>subdirectory_arrow_right</mat-icon>
+                                <span class="dept-detail-label">{{ 'departments.subDepartments' | translate }}</span>
+                                <span class="dept-detail-value">{{ getSubDepartments(dept.id).length }}</span>
+                            </div>
+                        }
+                    </div>
 
+                    @if (getSubDepartments(dept.id).length > 0) {
+                        <div class="dept-sub-list">
+                            @for (sub of getSubDepartments(dept.id); track sub.id) {
+                                <span class="sub-badge">{{ sub.name }}</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (departments.length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon-wrapper">
+                    <mat-icon>domain_disabled</mat-icon>
+                </div>
+                <h3>{{ 'departments.emptyTitle' | translate }}</h3>
+                <p>{{ 'departments.emptyText' | translate }}</p>
+            </div>
+        }
+
+        @if (departments.length > 0) {
             <mat-paginator
                 [length]="totalElements"
                 [pageSize]="pageSize"
@@ -77,6 +113,6 @@
                 (page)="onPageChange($event)"
                 showFirstLastButtons>
             </mat-paginator>
-        </div>
+        }
     }
 </div>
