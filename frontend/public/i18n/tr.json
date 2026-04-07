@@ -84,7 +84,13 @@
     "createNewPassword": "Yeni Şifre Oluştur",
     "validatingToken": "Sıfırlama kodu doğrulanıyor...",
     "newPassword": "Yeni Şifre",
-    "updatePassword": "Şifreyi Güncelle"
+    "updatePassword": "Şifreyi Güncelle",
+    "invalidToken": "Sıfırlama kodu geçersiz",
+    "passwordsDoNotMatch": "Şifreler eşleşmiyor",
+    "failedReset": "Şifre sıfırlanamadı",
+    "failedLoadInvitation": "Davet yüklenemedi",
+    "failedAcceptInvitation": "Davet kabul edilemedi",
+    "resetLinkSent": "Bu e-posta ile bir hesap varsa, şifre sıfırlama bağlantısı gönderildi."
   },
   "dashboard": {
     "leaveOverview": "İzin Özeti",
@@ -168,7 +174,9 @@
     "failedLoadDetail": "Çalışan detayları yüklenemedi",
     "failedUploadPhoto": "Fotoğraf yüklenemedi",
     "failedUploadDoc": "Belge yüklenemedi",
-    "failedDownloadDoc": "Belge indirilemedi"
+    "failedDownloadDoc": "Belge indirilemedi",
+    "deleteEmployee": "Çalışanı Sil",
+    "confirmDelete": "Bu çalışanı silmek istediğinizden emin misiniz?"
   },
   "departments": {
     "eyebrow": "ORGANİZASYON",
@@ -217,7 +225,9 @@
     "remaining": "Kalan",
     "used": "kullanıldı",
     "invited": "DAVETLİ",
-    "failedLoad": "İzin verileri yüklenemedi"
+    "failedLoad": "İzin verileri yüklenemedi",
+    "failedCreate": "İzin talebi oluşturulamadı",
+    "notLinked": "Mevcut hesap bir çalışan kaydıyla ilişkilendirilmemiş"
   },
   "payrolls": {
     "titleManager": "Bordro İşlemleri",
@@ -247,7 +257,8 @@
     "downloadPayslip": "Bordro belgesi indir",
     "markAsPaid": "Ödendi olarak işaretle",
     "refreshing": "Bordro verileri yenileniyor...",
-    "failedLoad": "Bordro verileri yüklenemedi"
+    "failedLoad": "Bordro verileri yüklenemedi",
+    "failedCreate": "Bordro çalıştırması oluşturulamadı"
   },
   "users": {
     "title": "Kullanıcılar",
@@ -259,7 +270,11 @@
     "resendInvite": "Daveti yeniden gönder",
     "toggleActive": "Aktif/Pasif değiştir",
     "latestInviteLink": "Son davet bağlantısı:",
-    "failedLoad": "Kullanıcılar yüklenemedi"
+    "failedLoad": "Kullanıcılar yüklenemedi",
+    "failedInvite": "Kullanıcı davet edilemedi",
+    "failedResend": "Davet yeniden gönderilemedi",
+    "failedUpdate": "Kullanıcı güncellenemedi",
+    "failedDelete": "Kullanıcı silinemedi"
   },
   "auditLogs": {
     "title": "Denetim Kayıtları",
@@ -318,7 +333,23 @@
     "passwordForConfirmation": "Şifre (onay için)",
     "passwordChanged": "Şifre başarıyla değiştirildi",
     "emailChanged": "E-posta başarıyla değiştirildi",
-    "langChanged": "Dil değiştirildi"
+    "langChanged": "Dil değiştirildi",
+    "roleTooltip": "Sistem rolünüz bir yönetici tarafından atanır",
+    "activatedTooltip": "Hesabınızın ilk etkinleştirilme tarihi",
+    "lastLoginTooltip": "En son giriş tarihiniz",
+    "uploading": "Yükleniyor...",
+    "change": "Değiştir",
+    "required": "Gerekli",
+    "minChars12": "En az 12 karakter",
+    "passwordPattern": "Büyük, küçük harf, rakam ve özel karakter içermelidir",
+    "passwordsDoNotMatch": "Şifreler eşleşmiyor",
+    "failedLoadProfile": "Profil yüklenemedi",
+    "failedUpdateLang": "Dil güncellenemedi",
+    "failedUpdateEmail": "E-posta güncellenemedi",
+    "failedChangePassword": "Şifre değiştirilemedi. Mevcut şifrenizi kontrol edin.",
+    "changeEmailTitle": "E-posta Değiştir",
+    "enterValidEmail": "Geçerli bir e-posta girin",
+    "passwordRequired": "Şifre gereklidir"
   },
   "reports": {
     "title": "Raporlar",
@@ -326,7 +357,9 @@
     "leaveSummary": "İzin Özeti",
     "payrollSummary": "Bordro Özeti",
     "teamSummary": "Ekip Özeti",
-    "exportCsv": "Çalışan CSV Dışa Aktar"
+    "exportCsv": "Çalışan CSV Dışa Aktar",
+    "failedLoad": "Rapor verileri yüklenemedi",
+    "failedExport": "CSV dışa aktarılamadı"
   },
   "settings": {
     "subtitle": "Tercihlerinizi yönetin",
