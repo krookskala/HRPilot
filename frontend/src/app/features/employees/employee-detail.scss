@@ -92,6 +92,65 @@
   margin-bottom: 10px;
 }
 
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px;
+  border: 2px dashed var(--hr-border);
+  border-radius: var(--hr-radius);
+  background: var(--hr-hover-bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  color: var(--hr-text-secondary);
+
+  &:hover, &.dragging {
+    border-color: var(--hr-primary);
+    background: var(--hr-primary-light);
+    color: var(--hr-primary);
+  }
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .drop-hint {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--hr-text-primary);
+}
+
+.file-error {
+  color: #ef4444;
+  font-size: 0.8rem;
+  padding: 4px 0;
+}
+
+.doc-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
