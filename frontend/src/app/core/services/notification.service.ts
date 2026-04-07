@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject, Observable, tap } from "rxjs";
+import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { NotificationItem } from "../../shared/models/notification.model";
-import { Page } from "../../shared/models/page.model";
+import { normalizePage, Page, RawPageResponse } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -14,7 +14,9 @@ export class NotificationService {
     constructor(private http: HttpClient) {}
 
     getNotifications(page = 0, size = 20): Observable<Page<NotificationItem>> {
-        return this.http.get<Page<NotificationItem>>(`${this.apiUrl}/notifications?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<NotificationItem>>(`${this.apiUrl}/notifications?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     getUnreadCount(): Observable<number> {
