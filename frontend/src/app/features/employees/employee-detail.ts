@@ -8,11 +8,14 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatTooltipModule } from "@angular/material/tooltip";
 import { Subject, finalize, takeUntil } from "rxjs";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { AuthService } from "../../core/services/auth.service";
 import { EmployeeService } from "../../core/services/employee.service";
 import { EmployeeDetail } from "../../shared/models/employee.model";
+import { FilePreviewDialog, FilePreviewData } from "../../shared/components/file-preview-dialog/file-preview-dialog";
 
 @Component({
     selector: 'app-employee-detail',
@@ -27,7 +30,9 @@ import { EmployeeDetail } from "../../shared/models/employee.model";
         MatInputModule,
         MatProgressSpinnerModule,
         ReactiveFormsModule,
-        TranslateModule
+        TranslateModule,
+        MatDialogModule,
+        MatTooltipModule,
     ],
     templateUrl: './employee-detail.html',
     styleUrl: './employee-detail.scss'
@@ -39,9 +44,21 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
     private fb = inject(FormBuilder);
     private cdr = inject(ChangeDetectorRef);
     private translateService = inject(TranslateService);
+    private dialog = inject(MatDialog);
     private destroy$ = new Subject<void>();
 
+    private static readonly MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    private static readonly ALLOWED_TYPES = [
+        'application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ];
+
     employee: EmployeeDetail | null = null;
+    dragging = false;
+    fileError = '';
     photoPreviewUrl: string | null = null;
     loading = true;
     uploadingPhoto = false;
@@ -54,7 +71,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
         description: ['']
     });
 
-    private selectedDocumentFile: File | null = null;
+    selectedDocumentFile: File | null = null;
 
     ngOnInit(): void {
         const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -119,7 +136,61 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
 
     onDocumentSelected(event: Event): void {
         const input = event.target as HTMLInputElement;
-        this.selectedDocumentFile = input.files?.[0] ?? null;
+        const file = input.files?.[0] ?? null;
+        if (file && this.validateFile(file)) {
+            this.selectedDocumentFile = file;
+        }
+    }
+
+    onDragOver(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.dragging = true;
+    }
+
+    onDragLeave(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.dragging = false;
+    }
+
+    onDrop(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.dragging = false;
+        const file = event.dataTransfer?.files?.[0] ?? null;
+        if (file && this.validateFile(file)) {
+            this.selectedDocumentFile = file;
+        }
+    }
+
+    previewDocument(documentId: number, filename: string, contentType: string): void {
+        if (!this.employee) return;
+        this.employeeService.downloadDocument(this.employee.id, documentId).pipe(takeUntil(this.destroy$)).subscribe({
+            next: blob => {
+                this.dialog.open(FilePreviewDialog, {
+                    width: contentType.startsWith('image/') ? '600px' : '900px',
+                    maxHeight: '90vh',
+                    data: { blob, filename, contentType } as FilePreviewData
+                });
+            },
+            error: () => {
+                this.error = this.translateService.instant('employees.failedDownloadDoc');
+            }
+        });
+    }
+
+    private validateFile(file: File): boolean {
+        this.fileError = '';
+        if (file.size > EmployeeDetailPage.MAX_FILE_SIZE) {
+            this.fileError = this.translateService.instant('fileUpload.tooLarge');
+            return false;
+        }
+        if (!EmployeeDetailPage.ALLOWED_TYPES.includes(file.type)) {
+            this.fileError = this.translateService.instant('fileUpload.invalidType');
+            return false;
+        }
+        return true;
     }
 
     uploadDocument(): void {
@@ -165,6 +236,13 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
             return;
         }
 
+        if (this.employeeService.isFrontendAssetPhoto(this.employee.photoUrl)) {
+            this.clearPhotoPreview();
+            this.photoPreviewUrl = this.employeeService.resolvePhotoUrl(this.employee.photoUrl);
+            this.cdr.detectChanges();
+            return;
+        }
+
         this.employeeService.downloadPhoto(this.employee.id).pipe(takeUntil(this.destroy$)).subscribe({
             next: blob => {
                 this.clearPhotoPreview();
@@ -178,10 +256,10 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
     }
 
     private clearPhotoPreview(): void {
-        if (this.photoPreviewUrl) {
+        if (this.photoPreviewUrl?.startsWith('blob:')) {
             URL.revokeObjectURL(this.photoPreviewUrl);
-            this.photoPreviewUrl = null;
         }
+        this.photoPreviewUrl = null;
     }
 
     private saveBlob(blob: Blob, filename: string): void {
