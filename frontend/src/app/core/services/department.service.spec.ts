@@ -24,7 +24,15 @@ describe('DepartmentService', () => {
   it('should fetch all departments', () => {
     const mockPage = { content: [], totalElements: 0 };
     service.getAll(0, 10).subscribe(result => {
-      expect(result).toEqual(mockPage);
+      expect(result).toEqual({
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size: 0,
+        number: 0,
+        first: true,
+        last: true
+      });
     });
 
     const req = httpTesting.expectOne(r => r.url.includes('/departments'));
