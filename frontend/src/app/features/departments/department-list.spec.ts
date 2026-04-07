@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DepartmentList } from './department-list';
 import { DepartmentService } from '../../core/services/department.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -36,6 +36,11 @@ describe('DepartmentList Component', () => {
     updateDepartment: ReturnType<typeof vi.fn>;
     deleteDepartment: ReturnType<typeof vi.fn>;
   };
+  const translateService = {
+    instant: vi.fn((key: string) => ({
+      'departments.failedLoad': 'Failed to load departments'
+    }[key] ?? key))
+  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -55,7 +60,8 @@ describe('DepartmentList Component', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: DepartmentService, useValue: departmentService },
-        { provide: AuthService, useValue: authService }
+        { provide: AuthService, useValue: authService },
+        { provide: TranslateService, useValue: translateService }
       ]
     }).compileComponents();
 
