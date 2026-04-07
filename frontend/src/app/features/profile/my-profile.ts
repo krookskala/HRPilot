@@ -12,7 +12,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { TranslateService } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { finalize, Subject, takeUntil } from "rxjs";
 import { AuthService } from "../../core/services/auth.service";
 import { EmployeeService } from "../../core/services/employee.service";
@@ -26,7 +26,7 @@ import { ChangeEmailDialog } from "./change-email-dialog";
         DatePipe, RouterLink, ReactiveFormsModule,
         MatCardModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule,
         MatMenuModule, MatFormFieldModule, MatInputModule, MatTooltipModule,
-        MatSnackBarModule, MatDialogModule
+        MatSnackBarModule, MatDialogModule, TranslateModule
     ],
     templateUrl: './my-profile.html',
     styleUrl: './my-profile.scss'
@@ -75,7 +75,7 @@ export class MyProfile implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load profile';
+                this.error = this.translate.instant('profile.failedLoadProfile');
                 this.cdr.detectChanges();
             }
         });
@@ -102,7 +102,7 @@ export class MyProfile implements OnInit, OnDestroy {
                 this.ngOnInit();
             },
             error: () => {
-                this.error = 'Failed to upload photo';
+                this.error = this.translate.instant('employees.failedUploadPhoto');
                 this.uploadingPhoto = false;
                 this.cdr.detectChanges();
             }
@@ -123,7 +123,7 @@ export class MyProfile implements OnInit, OnDestroy {
                 URL.revokeObjectURL(url);
             },
             error: () => {
-                this.error = 'Failed to download document';
+                this.error = this.translate.instant('employees.failedDownloadDoc');
                 this.cdr.detectChanges();
             }
         });
@@ -136,11 +136,11 @@ export class MyProfile implements OnInit, OnDestroy {
                 this.profile!.preferredLang = lang;
                 this.translate.use(lang);
                 localStorage.setItem('lang', lang);
-                this.snackBar.open('Language updated', 'Close', { duration: 3000 });
+                this.snackBar.open(this.translate.instant('profile.langChanged'), 'OK', { duration: 3000 });
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.snackBar.open('Failed to update language', 'Close', { duration: 3000 });
+                this.snackBar.open(this.translate.instant('profile.failedUpdateLang'), 'OK', { duration: 3000 });
                 this.cdr.detectChanges();
             }
         });
@@ -156,11 +156,11 @@ export class MyProfile implements OnInit, OnDestroy {
             if (result) {
                 this.authService.changeEmail(result.newEmail, result.password).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
-                        this.snackBar.open('Email updated successfully', 'Close', { duration: 3000 });
+                        this.snackBar.open(this.translate.instant('profile.emailChanged'), 'OK', { duration: 3000 });
                         this.ngOnInit();
                     },
                     error: () => {
-                        this.snackBar.open('Failed to update email', 'Close', { duration: 3000 });
+                        this.snackBar.open(this.translate.instant('profile.failedUpdateEmail'), 'OK', { duration: 3000 });
                     }
                 });
             }
@@ -177,11 +177,11 @@ export class MyProfile implements OnInit, OnDestroy {
             finalize(() => { this.changingPassword = false; this.cdr.detectChanges(); })
         ).subscribe({
             next: () => {
-                this.snackBar.open('Password changed successfully', 'Close', { duration: 3000 });
+                this.snackBar.open(this.translate.instant('profile.passwordChanged'), 'OK', { duration: 3000 });
                 this.passwordForm.reset();
             },
             error: () => {
-                this.snackBar.open('Failed to change password. Check your current password.', 'Close', { duration: 4000 });
+                this.snackBar.open(this.translate.instant('profile.failedChangePassword'), 'OK', { duration: 4000 });
             }
         });
     }
