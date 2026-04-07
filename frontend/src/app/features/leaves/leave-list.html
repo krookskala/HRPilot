@@ -69,6 +69,18 @@
         </div>
     }
 
+    <!-- View toggle -->
+    <div class="view-toggle">
+        <button mat-icon-button [class.active-view]="viewMode === 'table'" (click)="viewMode = 'table'"
+                [matTooltip]="'leaves.tableView' | translate">
+            <mat-icon>table_rows</mat-icon>
+        </button>
+        <button mat-icon-button [class.active-view]="viewMode === 'calendar'" (click)="viewMode = 'calendar'"
+                [matTooltip]="'leaves.calendarView' | translate">
+            <mat-icon>calendar_month</mat-icon>
+        </button>
+    </div>
+
     @if (loading) {
         <div class="spinner-center">
             <mat-spinner diameter="40"></mat-spinner>
@@ -82,7 +94,11 @@
         </div>
     }
 
-    @if (!loading && !error) {
+    @if (!loading && !error && viewMode === 'calendar') {
+        <app-leave-calendar [leaves]="allLeaves"></app-leave-calendar>
+    }
+
+    @if (!loading && !error && viewMode === 'table') {
         <div class="table-panel">
             <table mat-table [dataSource]="leaves">
                 <ng-container matColumnDef="id">
