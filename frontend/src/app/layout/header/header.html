@@ -6,10 +6,10 @@
     <span class="flex-1"></span>
     @if (currentUser$ | async; as currentUser) {
     <div class="user-section">
-        <button mat-icon-button (click)="toggleDarkMode()" [matTooltip]="darkMode ? 'Light Mode' : 'Dark Mode'">
+        <button mat-icon-button (click)="toggleDarkMode()" [matTooltip]="darkMode ? ('header.lightMode' | translate) : ('header.darkMode' | translate)">
             <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
-        <button mat-icon-button [matMenuTriggerFor]="langMenu" matTooltip="Language">
+        <button mat-icon-button [matMenuTriggerFor]="langMenu" [matTooltip]="'header.language' | translate">
             <mat-icon>language</mat-icon>
         </button>
         <mat-menu #langMenu="matMenu">
@@ -18,6 +18,9 @@
             </button>
             <button mat-menu-item (click)="switchLang('de')" [class.active-lang]="currentLang === 'de'">
                 Deutsch
+            </button>
+            <button mat-menu-item (click)="switchLang('tr')" [class.active-lang]="currentLang === 'tr'">
+                Türkçe
             </button>
         </mat-menu>
         <button mat-icon-button [routerLink]="'/notifications'" [matTooltip]="'header.notificationsTooltip' | translate">
