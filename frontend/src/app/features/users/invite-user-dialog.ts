@@ -5,12 +5,13 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { MatSelectModule } from "@angular/material/select";
+import { TranslateModule } from "@ngx-translate/core";
 import { Role } from "../../shared/models/user.model";
 
 @Component({
     selector: 'app-invite-user-dialog',
     standalone: true,
-    imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule],
+    imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, TranslateModule],
     templateUrl: './invite-user-dialog.html',
     styleUrl: './invite-user-dialog.scss'
 })
