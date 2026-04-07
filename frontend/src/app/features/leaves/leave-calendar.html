@@ -1,0 +1,51 @@
+<div class="calendar-container">
+    <div class="calendar-header">
+        <button mat-icon-button (click)="prevMonth()" [matTooltip]="'leaves.prevMonth' | translate">
+            <mat-icon>chevron_left</mat-icon>
+        </button>
+        <h3 class="month-label">{{ getMonthLabel() }}</h3>
+        <button mat-icon-button (click)="nextMonth()" [matTooltip]="'leaves.nextMonth' | translate">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button mat-stroked-button class="today-btn" (click)="goToday()">
+            {{ 'leaves.today' | translate }}
+        </button>
+    </div>
+
+    <div class="calendar-grid">
+        <div class="weekday-header">
+            @for (day of weekDays; track day) {
+                <div class="weekday-cell">{{ day }}</div>
+            }
+        </div>
+
+        @for (week of weeks; track $index) {
+            <div class="week-row">
+                @for (day of week; track day.date) {
+                    <div class="day-cell"
+                         [class.other-month]="!day.isCurrentMonth"
+                         [class.today]="day.isToday"
+                         [class.has-leave]="day.leaves.length > 0">
+                        <span class="day-number">{{ day.day }}</span>
+                        @for (leave of day.leaves; track leave.id) {
+                            <div class="leave-dot" [class]="getStatusClass(leave.status)"
+                                 [matTooltip]="leave.type + ' (' + leave.status + ')'">
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="calendar-legend">
+        <div class="legend-item">
+            <span class="legend-dot leave-approved"></span>
+            {{ 'dashboard.approved' | translate }}
+        </div>
+        <div class="legend-item">
+            <span class="legend-dot leave-pending"></span>
+            {{ 'dashboard.pending' | translate }}
+        </div>
+    </div>
+</div>
