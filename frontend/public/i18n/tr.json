@@ -227,7 +227,16 @@
     "invited": "DAVETLİ",
     "failedLoad": "İzin verileri yüklenemedi",
     "failedCreate": "İzin talebi oluşturulamadı",
-    "notLinked": "Mevcut hesap bir çalışan kaydıyla ilişkilendirilmemiş"
+    "notLinked": "Mevcut hesap bir çalışan kaydıyla ilişkilendirilmemiş",
+    "tableView": "Tablo görünümü",
+    "calendarView": "Takvim görünümü",
+    "prevMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "today": "Bugün",
+    "rejectRequest": "İzin talebini reddet",
+    "rejectionReason": "Red nedeni",
+    "cancelTitle": "İzin talebini iptal et",
+    "cancellationReason": "İptal nedeni"
   },
   "payrolls": {
     "titleManager": "Bordro İşlemleri",
@@ -258,7 +267,10 @@
     "markAsPaid": "Ödendi olarak işaretle",
     "refreshing": "Bordro verileri yenileniyor...",
     "failedLoad": "Bordro verileri yüklenemedi",
-    "failedCreate": "Bordro çalıştırması oluşturulamadı"
+    "failedCreate": "Bordro çalıştırması oluşturulamadı",
+    "netSalaryTrend": "Net Maaş Trendi",
+    "salaryBreakdown": "Maaş Dağılımı",
+    "deductionsLabel": "Kesintiler"
   },
   "users": {
     "title": "Kullanıcılar",
@@ -349,7 +361,14 @@
     "failedChangePassword": "Şifre değiştirilemedi. Mevcut şifrenizi kontrol edin.",
     "changeEmailTitle": "E-posta Değiştir",
     "enterValidEmail": "Geçerli bir e-posta girin",
-    "passwordRequired": "Şifre gereklidir"
+    "passwordRequired": "Şifre gereklidir",
+    "phone": "Telefon",
+    "address": "Adres",
+    "emergencyContactName": "Acil Durum Kişisi Adı",
+    "emergencyContactPhone": "Acil Durum Kişisi Telefonu",
+    "editPersonalInfo": "Kişisel Bilgileri Düzenle",
+    "personalInfoSaved": "Kişisel bilgiler başarıyla kaydedildi",
+    "failedUpdatePersonalInfo": "Kişisel bilgiler güncellenemedi"
   },
   "reports": {
     "title": "Raporlar",
@@ -379,5 +398,15 @@
     "myLeave": "İzinlerim",
     "myPayroll": "Bordrom",
     "notifications": "Bildirimler"
+  },
+  "fileUpload": {
+    "dragDrop": "Dosyayı buraya sürükleyin veya göz atmak için tıklayın",
+    "maxSize": "Maks 10MB — PDF, resimler, Word, Excel",
+    "tooLarge": "Dosya çok büyük. Maksimum boyut: 10MB.",
+    "invalidType": "Dosya türüne izin verilmiyor. Kabul edilen: PDF, resimler, Word, Excel."
+  },
+  "filePreview": {
+    "preview": "Önizleme",
+    "noPreview": "Bu dosya türü için önizleme mevcut değil."
   }
 }
