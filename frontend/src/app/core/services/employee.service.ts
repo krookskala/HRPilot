@@ -1,17 +1,37 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { CreateEmployeeRequest, Employee, EmployeeDetail, EmployeeDocument } from "../../shared/models/employee.model";
-import { Page } from "../../shared/models/page.model";
+import { normalizePage, Page, RawPageResponse } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
+    private readonly seededAssetVersion = '2026-04-07-photos';
     private apiUrl = environment.apiUrl;
     constructor(private http: HttpClient) {}
 
+    isFrontendAssetPhoto(photoUrl?: string | null): boolean {
+        return !!photoUrl && photoUrl.startsWith('/assets/');
+    }
+
+    resolvePhotoUrl(photoUrl?: string | null): string | null {
+        if (!photoUrl) {
+            return null;
+        }
+
+        if (this.isFrontendAssetPhoto(photoUrl)) {
+            const separator = photoUrl.includes('?') ? '&' : '?';
+            return `${photoUrl}${separator}v=${this.seededAssetVersion}`;
+        }
+
+        return photoUrl;
+    }
+
     getAll(page = 0, size = 20): Observable<Page<Employee>> {
-        return this.http.get<Page<Employee>>(`${this.apiUrl}/employees?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<Employee>>(`${this.apiUrl}/employees?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     search(filters: { search?: string; departmentId?: number; position?: string },
@@ -24,7 +44,9 @@ export class EmployeeService {
         if (filters.departmentId) params = params.set('departmentId', filters.departmentId.toString());
         if (filters.position) params = params.set('position', filters.position);
 
-        return this.http.get<Page<Employee>>(`${this.apiUrl}/employees`, { params });
+        return this.http
+            .get<RawPageResponse<Employee>>(`${this.apiUrl}/employees`, { params })
+            .pipe(map(normalizePage));
     }
 
     deleteEmployee(id: number): Observable<void> {
