@@ -13,5 +13,9 @@ public record EmployeeResponse(
     LocalDate hireDate,
     String photoUrl,
     Long departmentId,
-    String departmentName
+    String departmentName,
+    String phone,
+    String address,
+    String emergencyContactName,
+    String emergencyContactPhone
 ) {}
