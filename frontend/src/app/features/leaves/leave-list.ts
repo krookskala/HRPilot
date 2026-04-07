@@ -17,6 +17,7 @@ import { LeaveBalance, LeaveRequest, LeaveRequestHistory, LeaveStatus, LeaveType
 import { Role } from "../../shared/models/user.model";
 import { Page } from "../../shared/models/page.model";
 import { Subject, takeUntil } from "rxjs";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { LeaveActionDialog } from "./leave-action-dialog";
 import { LeaveDialog } from "./leave-dialog";
 
@@ -36,6 +37,7 @@ import { LeaveDialog } from "./leave-dialog";
         MatSelectModule,
         MatTableModule,
         MatTooltipModule,
+        TranslateModule,
     ],
     templateUrl: './leave-list.html',
     styleUrl: './leave-list.scss'
@@ -45,6 +47,7 @@ export class LeaveList implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     private dialog = inject(MatDialog);
     private cdr = inject(ChangeDetectorRef);
+    private translateService = inject(TranslateService);
     private destroy$ = new Subject<void>();
 
     readonly currentUser = this.authService.getCurrentUserSnapshot();
@@ -105,7 +108,7 @@ export class LeaveList implements OnInit, OnDestroy {
                     this.cdr.detectChanges();
                 },
                 error: () => {
-                    this.error = 'Failed to load leave requests';
+                    this.error = this.translateService.instant('leaves.failedLoad');
                     this.loading = false;
                     this.cdr.detectChanges();
                 }
@@ -124,7 +127,7 @@ export class LeaveList implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load leave requests';
+                this.error = this.translateService.instant('leaves.failedLoad');
                 this.loading = false;
                 this.cdr.detectChanges();
             }
@@ -210,7 +213,7 @@ export class LeaveList implements OnInit, OnDestroy {
             },
             error: () => {
                 this.historyItems = [];
-                this.error = 'Failed to load leave history';
+                this.error = this.translateService.instant('leaves.failedLoad');
                 this.cdr.detectChanges();
             }
         });
@@ -228,7 +231,7 @@ export class LeaveList implements OnInit, OnDestroy {
     openDialog(): void {
         const currentUser = this.currentUser;
         if (!currentUser?.employeeId) {
-            this.error = 'Current account is not linked to an employee record';
+            this.error = this.translateService.instant('leaves.notLinked');
             return;
         }
 
@@ -244,7 +247,7 @@ export class LeaveList implements OnInit, OnDestroy {
             }).subscribe({
                 next: () => this.loadLeaves(),
                 error: (err) => {
-                    this.error = err?.error?.message ?? 'Failed to create leave request';
+                    this.error = err?.error?.message ?? this.translateService.instant('leaves.failedCreate');
                 }
             });
         });
