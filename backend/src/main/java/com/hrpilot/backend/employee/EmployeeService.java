@@ -31,17 +31,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+    private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
+        "application/pdf",
+        "image/jpeg", "image/png", "image/gif", "image/webp",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
@@ -203,7 +218,7 @@ public class EmployeeService {
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", id));
         assertCanManagePhoto(employee);
 
-        if (employee.getPhotoUrl() != null) {
+        if (hasManagedStoredPhoto(employee.getPhotoUrl())) {
             fileStorageService.delete(employee.getPhotoUrl());
         }
 
@@ -231,6 +246,9 @@ public class EmployeeService {
         if (employee.getPhotoUrl() == null || employee.getPhotoUrl().isBlank()) {
             throw new ResourceNotFoundException("EmployeePhoto", "employeeId", id);
         }
+        if (isFrontendAssetPhoto(employee.getPhotoUrl())) {
+            return loadFrontendAssetPhoto(employee.getPhotoUrl(), employee.getFirstName() + "-" + employee.getLastName());
+        }
         return fileStorageService.load(employee.getPhotoUrl(), employee.getFirstName() + "-" + employee.getLastName() + ".jpg");
     }
 
@@ -239,6 +257,7 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(employeeId)
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", employeeId));
         assertCanManageDocuments(employee);
+        validateFile(file);
 
         User actorUser = currentUserService.getCurrentUserEntity();
         StoredFileMetadata storedFile = fileStorageService.store(file, "employee-documents/" + employeeId, file.getOriginalFilename());
@@ -309,7 +328,7 @@ public class EmployeeService {
             .orElseThrow(() -> new ResourceNotFoundException("Employee", "id", id));
 
         // 1. Delete file storage artifacts
-        if (employee.getPhotoUrl() != null) {
+        if (hasManagedStoredPhoto(employee.getPhotoUrl())) {
             fileStorageService.delete(employee.getPhotoUrl());
         }
         employeeDocumentRepository.findByEmployeeIdOrderByCreatedAtDesc(id)
@@ -327,6 +346,19 @@ public class EmployeeService {
         // 3. Delete the employee itself
         employeeRepository.delete(employee);
         log.info("Employee deleted successfully with id: {}", id);
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new BusinessRuleException("File is empty");
+        }
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new BusinessRuleException("File size exceeds maximum allowed size of 10MB");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+            throw new BusinessRuleException("File type not allowed. Accepted: PDF, images (JPEG/PNG/GIF/WebP), Word, Excel");
+        }
     }
 
     private void assertCanViewEmployee(Employee employee) {
@@ -407,6 +439,54 @@ public class EmployeeService {
         return value;
     }
 
+    private boolean hasManagedStoredPhoto(String photoUrl) {
+        return photoUrl != null && !photoUrl.isBlank() && !isFrontendAssetPhoto(photoUrl);
+    }
+
+    private boolean isFrontendAssetPhoto(String photoUrl) {
+        return photoUrl != null && photoUrl.startsWith("/assets/");
+    }
+
+    private StoredFileContent loadFrontendAssetPhoto(String photoUrl, String fallbackFilename) {
+        Path assetPath = resolveFrontendAssetPath(photoUrl);
+        if (assetPath == null || !Files.isRegularFile(assetPath)) {
+            throw new ResourceNotFoundException("EmployeePhoto", "photoUrl", photoUrl);
+        }
+
+        try {
+            byte[] content = Files.readAllBytes(assetPath);
+            String contentType = Files.probeContentType(assetPath);
+            String filename = assetPath.getFileName() != null ? assetPath.getFileName().toString() : fallbackFilename + ".jpg";
+            return new StoredFileContent(
+                new InputStreamResource(new ByteArrayInputStream(content)),
+                contentType != null ? contentType : "image/jpeg",
+                content.length,
+                filename
+            );
+        } catch (IOException exception) {
+            throw new BusinessRuleException("Unable to load seeded employee photo from local assets");
+        }
+    }
+
+    private Path resolveFrontendAssetPath(String photoUrl) {
+        String normalizedPhotoUrl = photoUrl.startsWith("/") ? photoUrl.substring(1) : photoUrl;
+        Path[] candidates = {
+            Path.of("frontend").resolve(normalizedPhotoUrl),
+            Path.of("..", "frontend").resolve(normalizedPhotoUrl),
+            Path.of(normalizedPhotoUrl),
+            Path.of("..").resolve(normalizedPhotoUrl)
+        };
+
+        for (Path candidate : candidates) {
+            Path absolute = candidate.toAbsolutePath().normalize();
+            if (Files.isRegularFile(absolute)) {
+                return absolute;
+            }
+        }
+
+        return null;
+    }
+
     private EmployeeDetailResponse toDetailResponse(Employee employee) {
         List<EmploymentHistoryResponse> history = historyRepository.findByEmployeeIdOrderByChangedAtDesc(employee.getId()).stream()
             .map(h -> new EmploymentHistoryResponse(h.getId(), h.getChangeType(), h.getOldValue(), h.getNewValue(), h.getChangedAt()))
@@ -427,6 +507,10 @@ public class EmployeeService {
             employee.getPhotoUrl(),
             employee.getDepartment() != null ? employee.getDepartment().getId() : null,
             employee.getDepartment() != null ? employee.getDepartment().getName() : null,
+            employee.getPhone(),
+            employee.getAddress(),
+            employee.getEmergencyContactName(),
+            employee.getEmergencyContactPhone(),
             history,
             documents
         );
@@ -458,7 +542,11 @@ public class EmployeeService {
             employee.getHireDate(),
             employee.getPhotoUrl(),
             employee.getDepartment() != null ? employee.getDepartment().getId() : null,
-            employee.getDepartment() != null ? employee.getDepartment().getName() : null
+            employee.getDepartment() != null ? employee.getDepartment().getName() : null,
+            employee.getPhone(),
+            employee.getAddress(),
+            employee.getEmergencyContactName(),
+            employee.getEmergencyContactPhone()
         );
     }
 }
