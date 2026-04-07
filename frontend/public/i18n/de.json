@@ -227,7 +227,16 @@
     "invited": "EINGELADEN",
     "failedLoad": "Urlaubsdaten konnten nicht geladen werden",
     "failedCreate": "Urlaubsantrag konnte nicht erstellt werden",
-    "notLinked": "Das aktuelle Konto ist nicht mit einem Mitarbeiterdatensatz verknüpft"
+    "notLinked": "Das aktuelle Konto ist nicht mit einem Mitarbeiterdatensatz verknüpft",
+    "tableView": "Tabellenansicht",
+    "calendarView": "Kalenderansicht",
+    "prevMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "today": "Heute",
+    "rejectRequest": "Urlaubsantrag ablehnen",
+    "rejectionReason": "Ablehnungsgrund",
+    "cancelTitle": "Urlaubsantrag stornieren",
+    "cancellationReason": "Stornierungsgrund"
   },
   "payrolls": {
     "titleManager": "Gehaltsabrechnung",
@@ -258,7 +267,10 @@
     "markAsPaid": "Als bezahlt markieren",
     "refreshing": "Gehaltsdaten werden aktualisiert...",
     "failedLoad": "Gehaltsdaten konnten nicht geladen werden",
-    "failedCreate": "Gehaltslauf konnte nicht erstellt werden"
+    "failedCreate": "Gehaltslauf konnte nicht erstellt werden",
+    "netSalaryTrend": "Netto-Gehaltstrend",
+    "salaryBreakdown": "Gehaltsaufschlüsselung",
+    "deductionsLabel": "Abzüge"
   },
   "users": {
     "title": "Benutzer",
@@ -349,7 +361,14 @@
     "failedChangePassword": "Passwort konnte nicht geändert werden. Überprüfen Sie Ihr aktuelles Passwort.",
     "changeEmailTitle": "E-Mail ändern",
     "enterValidEmail": "Geben Sie eine gültige E-Mail ein",
-    "passwordRequired": "Passwort ist erforderlich"
+    "passwordRequired": "Passwort ist erforderlich",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "emergencyContactName": "Notfallkontakt Name",
+    "emergencyContactPhone": "Notfallkontakt Telefon",
+    "editPersonalInfo": "Persönliche Daten bearbeiten",
+    "personalInfoSaved": "Persönliche Daten erfolgreich gespeichert",
+    "failedUpdatePersonalInfo": "Persönliche Daten konnten nicht aktualisiert werden"
   },
   "reports": {
     "title": "Berichte",
@@ -379,5 +398,15 @@
     "myLeave": "Mein Urlaub",
     "myPayroll": "Meine Gehaltsabrechnung",
     "notifications": "Benachrichtigungen"
+  },
+  "fileUpload": {
+    "dragDrop": "Datei hierher ziehen oder klicken zum Durchsuchen",
+    "maxSize": "Max 10MB — PDF, Bilder, Word, Excel",
+    "tooLarge": "Datei ist zu groß. Maximale Größe: 10MB.",
+    "invalidType": "Dateityp nicht erlaubt. Akzeptiert: PDF, Bilder, Word, Excel."
+  },
+  "filePreview": {
+    "preview": "Vorschau",
+    "noPreview": "Vorschau für diesen Dateityp nicht verfügbar."
   }
 }
