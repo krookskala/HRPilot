@@ -84,7 +84,13 @@
     "createNewPassword": "Neues Passwort erstellen",
     "validatingToken": "Rücksetztoken wird überprüft...",
     "newPassword": "Neues Passwort",
-    "updatePassword": "Passwort aktualisieren"
+    "updatePassword": "Passwort aktualisieren",
+    "invalidToken": "Rücksetztoken ist ungültig",
+    "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+    "failedReset": "Passwort konnte nicht zurückgesetzt werden",
+    "failedLoadInvitation": "Einladung konnte nicht geladen werden",
+    "failedAcceptInvitation": "Einladung konnte nicht angenommen werden",
+    "resetLinkSent": "Wenn ein Konto mit dieser E-Mail existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet."
   },
   "dashboard": {
     "leaveOverview": "Urlaubsübersicht",
@@ -168,7 +174,9 @@
     "failedLoadDetail": "Mitarbeiterdetails konnten nicht geladen werden",
     "failedUploadPhoto": "Foto konnte nicht hochgeladen werden",
     "failedUploadDoc": "Dokument konnte nicht hochgeladen werden",
-    "failedDownloadDoc": "Dokument konnte nicht heruntergeladen werden"
+    "failedDownloadDoc": "Dokument konnte nicht heruntergeladen werden",
+    "deleteEmployee": "Mitarbeiter löschen",
+    "confirmDelete": "Möchten Sie diesen Mitarbeiter wirklich löschen?"
   },
   "departments": {
     "eyebrow": "ORGANISATION",
@@ -217,7 +225,9 @@
     "remaining": "Verbleibend",
     "used": "verwendet",
     "invited": "EINGELADEN",
-    "failedLoad": "Urlaubsdaten konnten nicht geladen werden"
+    "failedLoad": "Urlaubsdaten konnten nicht geladen werden",
+    "failedCreate": "Urlaubsantrag konnte nicht erstellt werden",
+    "notLinked": "Das aktuelle Konto ist nicht mit einem Mitarbeiterdatensatz verknüpft"
   },
   "payrolls": {
     "titleManager": "Gehaltsabrechnung",
@@ -247,7 +257,8 @@
     "downloadPayslip": "Abrechnung herunterladen",
     "markAsPaid": "Als bezahlt markieren",
     "refreshing": "Gehaltsdaten werden aktualisiert...",
-    "failedLoad": "Gehaltsdaten konnten nicht geladen werden"
+    "failedLoad": "Gehaltsdaten konnten nicht geladen werden",
+    "failedCreate": "Gehaltslauf konnte nicht erstellt werden"
   },
   "users": {
     "title": "Benutzer",
@@ -259,7 +270,11 @@
     "resendInvite": "Einladung erneut senden",
     "toggleActive": "Aktiv umschalten",
     "latestInviteLink": "Neuester Einladungslink:",
-    "failedLoad": "Benutzer konnten nicht geladen werden"
+    "failedLoad": "Benutzer konnten nicht geladen werden",
+    "failedInvite": "Benutzer konnte nicht eingeladen werden",
+    "failedResend": "Einladung konnte nicht erneut gesendet werden",
+    "failedUpdate": "Benutzer konnte nicht aktualisiert werden",
+    "failedDelete": "Benutzer konnte nicht gelöscht werden"
   },
   "auditLogs": {
     "title": "Audit-Protokolle",
@@ -318,7 +333,23 @@
     "passwordForConfirmation": "Passwort (zur Bestätigung)",
     "passwordChanged": "Passwort erfolgreich geändert",
     "emailChanged": "E-Mail erfolgreich geändert",
-    "langChanged": "Sprache geändert"
+    "langChanged": "Sprache geändert",
+    "roleTooltip": "Ihre Systemrolle wird von einem Administrator zugewiesen",
+    "activatedTooltip": "Datum der erstmaligen Kontoaktivierung",
+    "lastLoginTooltip": "Ihre letzte Anmeldung",
+    "uploading": "Wird hochgeladen...",
+    "change": "Ändern",
+    "required": "Erforderlich",
+    "minChars12": "Mindestens 12 Zeichen",
+    "passwordPattern": "Muss Groß-, Kleinbuchstaben, Ziffer und Sonderzeichen enthalten",
+    "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+    "failedLoadProfile": "Profil konnte nicht geladen werden",
+    "failedUpdateLang": "Sprache konnte nicht aktualisiert werden",
+    "failedUpdateEmail": "E-Mail konnte nicht aktualisiert werden",
+    "failedChangePassword": "Passwort konnte nicht geändert werden. Überprüfen Sie Ihr aktuelles Passwort.",
+    "changeEmailTitle": "E-Mail ändern",
+    "enterValidEmail": "Geben Sie eine gültige E-Mail ein",
+    "passwordRequired": "Passwort ist erforderlich"
   },
   "reports": {
     "title": "Berichte",
@@ -326,7 +357,9 @@
     "leaveSummary": "Urlaubsübersicht",
     "payrollSummary": "Gehaltsübersicht",
     "teamSummary": "Teamübersicht",
-    "exportCsv": "Mitarbeiter CSV exportieren"
+    "exportCsv": "Mitarbeiter CSV exportieren",
+    "failedLoad": "Berichtsdaten konnten nicht geladen werden",
+    "failedExport": "CSV-Export fehlgeschlagen"
   },
   "settings": {
     "subtitle": "Verwalten Sie Ihre Einstellungen",
