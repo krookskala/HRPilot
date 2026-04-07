@@ -186,6 +186,7 @@ public class AuthController {
             user.getRole(),
             user.isActive(),
             user.getPreferredLang(),
+            user.isDarkMode(),
             employee != null ? employee.getId() : null,
             employee != null ? employee.getFirstName() : null,
             employee != null ? employee.getLastName() : null,
