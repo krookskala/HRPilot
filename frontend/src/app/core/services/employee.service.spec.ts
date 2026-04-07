@@ -26,15 +26,24 @@ describe('EmployeeService', () => {
   });
 
   it('should fetch all employees with default pagination', () => {
-    const mockPage = { content: [], totalElements: 0, totalPages: 0 };
+    const apiPage = { content: [], totalElements: 0, totalPages: 0 };
+    const normalizedPage = {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: 0,
+      number: 0,
+      first: true,
+      last: true
+    };
 
     service.getAll().subscribe(data => {
-      expect(data).toEqual(mockPage);
+      expect(data).toEqual(normalizedPage);
     });
 
     const req = httpMock.expectOne(`${apiUrl}/employees?page=0&size=20`);
     expect(req.request.method).toBe('GET');
-    req.flush(mockPage);
+    req.flush(apiPage);
   });
 
   it('should fetch employees with custom pagination', () => {
