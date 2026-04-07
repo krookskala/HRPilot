@@ -346,3 +346,27 @@ GitHub Actions pipeline runs on push/PR to `main` or `master`:
 - The `DataLoader` seeds demo data automatically when running with the `dev` profile on an empty database.
 - Seeded demo employee photos are served from `frontend/assets/...` for demo convenience.
 - Real uploaded employee photos and documents continue to use the backend storage layer (`local` or `s3`).
+
+## Contributing
+
+Contributions are welcome!
+
+If you find any issues or have ideas for improvements, feel free to open an issue or submit a pull request.
+
+Please make sure to follow the project's code of conduct.
+
+1. **Fork the repository**
+2. **Create your feature branch (git checkout -b feature/YourFeature)**
+3. **Commit your changes (git commit -am 'Add some feature')**
+4. **Push to the branch (git push origin feature/YourFeature)**
+5. **Open a pull request**
+
+
+
+## Links
+
+[![Gmail](https://img.shields.io/badge/ismailsariarslan7@gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](ismailsariarslan7@gmail.com)
+
+[![instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/ismailsariarslan/)
+
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ismailsariarslan/)
