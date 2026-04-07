@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotificationCenter } from './notification-center';
 import { NotificationService } from '../../core/services/notification.service';
 import { NotificationItem } from '../../shared/models/notification.model';
@@ -34,6 +34,11 @@ describe('NotificationCenter Component', () => {
     markAsRead: ReturnType<typeof vi.fn>;
     markAllAsRead: ReturnType<typeof vi.fn>;
   };
+  const translateService = {
+    instant: vi.fn((key: string) => ({
+      'notifications.failedLoad': 'Failed to load notifications'
+    }[key] ?? key))
+  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -49,7 +54,8 @@ describe('NotificationCenter Component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        { provide: NotificationService, useValue: notificationService }
+        { provide: NotificationService, useValue: notificationService },
+        { provide: TranslateService, useValue: translateService }
       ]
     }).compileComponents();
 
