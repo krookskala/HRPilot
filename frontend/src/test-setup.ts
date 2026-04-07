@@ -1,33 +1,35 @@
 // Shared test environment setup.
 // TestBed init is still done per-file to avoid module isolation issues in Vitest v4.
 
+const noop = () => {};
+
 Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
   configurable: true,
-  value: vi.fn(() => ({
+  value: () => ({
     canvas: document.createElement('canvas'),
-    fillRect: vi.fn(),
-    clearRect: vi.fn(),
-    getImageData: vi.fn(),
-    putImageData: vi.fn(),
-    createImageData: vi.fn(),
-    setTransform: vi.fn(),
-    drawImage: vi.fn(),
-    save: vi.fn(),
-    fillText: vi.fn(),
-    restore: vi.fn(),
-    beginPath: vi.fn(),
-    moveTo: vi.fn(),
-    lineTo: vi.fn(),
-    closePath: vi.fn(),
-    stroke: vi.fn(),
-    translate: vi.fn(),
-    scale: vi.fn(),
-    rotate: vi.fn(),
-    arc: vi.fn(),
-    fill: vi.fn(),
-    measureText: vi.fn(() => ({ width: 0 })),
-    transform: vi.fn(),
-    rect: vi.fn(),
-    clip: vi.fn()
-  }))
+    fillRect: noop,
+    clearRect: noop,
+    getImageData: noop,
+    putImageData: noop,
+    createImageData: noop,
+    setTransform: noop,
+    drawImage: noop,
+    save: noop,
+    fillText: noop,
+    restore: noop,
+    beginPath: noop,
+    moveTo: noop,
+    lineTo: noop,
+    closePath: noop,
+    stroke: noop,
+    translate: noop,
+    scale: noop,
+    rotate: noop,
+    arc: noop,
+    fill: noop,
+    measureText: () => ({ width: 0 }),
+    transform: noop,
+    rect: noop,
+    clip: noop
+  })
 });
