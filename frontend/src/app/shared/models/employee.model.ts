@@ -9,6 +9,10 @@ export interface Employee {
     photoUrl: string;
     departmentId: number;
     departmentName: string;
+    phone: string | null;
+    address: string | null;
+    emergencyContactName: string | null;
+    emergencyContactPhone: string | null;
 }
 
 export interface EmployeeDocument {
@@ -35,6 +39,15 @@ export interface EmploymentHistoryItem {
 export interface EmployeeDetail extends Employee {
     employmentHistory: EmploymentHistoryItem[];
     documents: EmployeeDocument[];
+}
+
+export interface UpdatePersonalInfoRequest {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    address?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
 }
 
 export interface CreateEmployeeRequest {
