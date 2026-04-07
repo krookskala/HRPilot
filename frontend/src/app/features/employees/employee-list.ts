@@ -194,6 +194,14 @@ export class EmployeeList implements OnInit, OnDestroy {
     private loadPhotos(): void {
         this.revokeAllPhotos();
         for (const emp of this.employees) {
+            if (this.employeeService.isFrontendAssetPhoto(emp.photoUrl)) {
+                const photoUrl = this.employeeService.resolvePhotoUrl(emp.photoUrl);
+                if (photoUrl) {
+                    this.photoUrls.set(emp.id, photoUrl);
+                }
+                continue;
+            }
+
             this.employeeService.downloadPhoto(emp.id).pipe(takeUntil(this.destroy$)).subscribe({
                 next: blob => {
                     this.photoUrls.set(emp.id, URL.createObjectURL(blob));
@@ -205,7 +213,11 @@ export class EmployeeList implements OnInit, OnDestroy {
     }
 
     private revokeAllPhotos(): void {
-        this.photoUrls.forEach(url => URL.revokeObjectURL(url));
+        this.photoUrls.forEach(url => {
+            if (url.startsWith('blob:')) {
+                URL.revokeObjectURL(url);
+            }
+        });
         this.photoUrls.clear();
     }
 }
