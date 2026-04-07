@@ -1,35 +1,35 @@
 <div class="dialog-header">
     <mat-icon>event_available</mat-icon>
-    <h2>Add Leave Request</h2>
+    <h2>{{ 'leaves.addLeaveRequest' | translate }}</h2>
 </div>
 
 <mat-dialog-content>
     <form [formGroup]="form" class="dialog-form">
 
         <mat-form-field appearance="outline">
-            <mat-label>Leave Type</mat-label>
+            <mat-label>{{ 'leaves.leaveType' | translate }}</mat-label>
             <mat-select formControlName="type">
                 @for (t of leaveTypes; track t) {
                     <mat-option [value]="t">{{ t }}</mat-option>
                 }
             </mat-select>
-            <mat-error>Leave type is required</mat-error>
+            <mat-error>{{ 'leaves.leaveTypeRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Start Date</mat-label>
+            <mat-label>{{ 'leaves.startDate' | translate }}</mat-label>
             <input matInput type="date" formControlName="startDate" />
-            <mat-error>Start date is required</mat-error>
+            <mat-error>{{ 'leaves.startDateRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>End Date</mat-label>
+            <mat-label>{{ 'leaves.endDate' | translate }}</mat-label>
             <input matInput type="date" formControlName="endDate" />
-            <mat-error>End date is required</mat-error>
+            <mat-error>{{ 'leaves.endDateRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Reason (optional)</mat-label>
+            <mat-label>{{ 'leaves.reason' | translate }}</mat-label>
             <input matInput formControlName="reason" />
         </mat-form-field>
 
@@ -37,6 +37,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button (click)="cancel()">Cancel</button>
-    <button mat-flat-button color="primary" (click)="save()">Save</button>
+    <button mat-button (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button mat-flat-button color="primary" (click)="save()">{{ 'common.save' | translate }}</button>
 </mat-dialog-actions>
