@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { CreateLeaveRequest, LeaveBalance, LeaveRequest, LeaveRequestHistory, LeaveStatus, LeaveType } from "../../shared/models/leave.model";
-import { Page } from "../../shared/models/page.model";
+import { normalizePage, Page, RawPageResponse } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class LeaveService {
@@ -33,15 +33,21 @@ export class LeaveService {
             params = params.set('departmentId', String(filters.departmentId));
         }
 
-        return this.http.get<Page<LeaveRequest>>(`${this.apiUrl}/leave-requests`, { params });
+        return this.http
+            .get<RawPageResponse<LeaveRequest>>(`${this.apiUrl}/leave-requests`, { params })
+            .pipe(map(normalizePage));
     }
 
     getByEmployee(employeeId: number, page = 0, size = 20): Observable<Page<LeaveRequest>> {
-        return this.http.get<Page<LeaveRequest>>(`${this.apiUrl}/leave-requests/employee/${employeeId}?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<LeaveRequest>>(`${this.apiUrl}/leave-requests/employee/${employeeId}?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     getMine(page = 0, size = 20): Observable<Page<LeaveRequest>> {
-        return this.http.get<Page<LeaveRequest>>(`${this.apiUrl}/me/leave-requests?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<LeaveRequest>>(`${this.apiUrl}/me/leave-requests?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     create(request: CreateLeaveRequest): Observable<LeaveRequest> {
