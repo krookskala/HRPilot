@@ -18,7 +18,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCardModule } from "@angular/material/card";
 import { DecimalPipe } from "@angular/common";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
 import { EmployeeDialog } from "./employee-dialog";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
@@ -42,6 +42,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     private cdr = inject(ChangeDetectorRef);
     private dialog = inject(MatDialog);
     private router = inject(Router);
+    private translateService = inject(TranslateService);
     private destroy$ = new Subject<void>();
 
     employees: Employee[] = [];
@@ -121,7 +122,7 @@ export class EmployeeList implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load employees';
+                this.error = this.translateService.instant('employees.failedLoad');
                 this.loading = false;
                 this.cdr.detectChanges();
             }
@@ -160,7 +161,7 @@ export class EmployeeList implements OnInit, OnDestroy {
     delete(id: number): void {
         const ref = this.dialog.open(ConfirmDialog, {
             width: '350px',
-            data: { title: 'Delete Employee', message: 'Are you sure you want to delete this employee?' }
+            data: { title: this.translateService.instant('employees.deleteEmployee'), message: this.translateService.instant('employees.confirmDelete') }
         });
         ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(confirmed => {
             if (confirmed) {
