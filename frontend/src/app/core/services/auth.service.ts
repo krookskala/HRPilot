@@ -11,6 +11,7 @@ import {
     TokenValidationResponse
 } from "../../shared/models/auth.model";
 import { CurrentUser, CurrentUserProfile } from "../../shared/models/user.model";
+import { UpdatePersonalInfoRequest } from "../../shared/models/employee.model";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -93,6 +94,14 @@ export class AuthService {
 
     getMyProfile(): Observable<CurrentUserProfile> {
         return this.http.get<CurrentUserProfile>(`${this.apiUrl}/me/profile`);
+    }
+
+    updatePersonalInfo(request: UpdatePersonalInfoRequest): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/me/personal-info`, request);
+    }
+
+    changeDarkMode(darkMode: boolean): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/me/dark-mode`, { darkMode });
     }
 
     changeLanguage(preferredLang: string): Observable<void> {
