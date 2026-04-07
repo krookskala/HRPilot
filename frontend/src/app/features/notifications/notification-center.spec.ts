@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotificationCenter } from './notification-center';
 import { NotificationService } from '../../core/services/notification.service';
@@ -34,10 +34,20 @@ describe('NotificationCenter Component', () => {
     markAsRead: ReturnType<typeof vi.fn>;
     markAllAsRead: ReturnType<typeof vi.fn>;
   };
+  const translateEvents$ = new Subject<any>();
   const translateService = {
     instant: vi.fn((key: string) => ({
       'notifications.failedLoad': 'Failed to load notifications'
-    }[key] ?? key))
+    }[key] ?? key)),
+    get: vi.fn((key: string) => of(({
+      'notifications.failedLoad': 'Failed to load notifications'
+    } as Record<string, string>)[key] ?? key)),
+    stream: vi.fn((key: string) => of(({
+      'notifications.failedLoad': 'Failed to load notifications'
+    } as Record<string, string>)[key] ?? key)),
+    onTranslationChange: translateEvents$,
+    onLangChange: translateEvents$,
+    onDefaultLangChange: translateEvents$
   };
 
   beforeEach(async () => {
