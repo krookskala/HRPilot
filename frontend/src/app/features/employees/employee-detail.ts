@@ -9,7 +9,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Subject, finalize, takeUntil } from "rxjs";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { AuthService } from "../../core/services/auth.service";
 import { EmployeeService } from "../../core/services/employee.service";
 import { EmployeeDetail } from "../../shared/models/employee.model";
@@ -38,6 +38,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     private fb = inject(FormBuilder);
     private cdr = inject(ChangeDetectorRef);
+    private translateService = inject(TranslateService);
     private destroy$ = new Subject<void>();
 
     employee: EmployeeDetail | null = null;
@@ -89,7 +90,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load employee details';
+                this.error = this.translateService.instant('employees.failedLoadDetail');
                 this.cdr.detectChanges();
             }
         });
@@ -109,7 +110,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
                 this.loadEmployee(this.employee!.id);
             },
             error: () => {
-                this.error = 'Failed to upload photo';
+                this.error = this.translateService.instant('employees.failedUploadPhoto');
                 this.uploadingPhoto = false;
                 this.cdr.detectChanges();
             }
@@ -141,7 +142,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
                 this.loadEmployee(this.employee!.id);
             },
             error: () => {
-                this.error = 'Failed to upload document';
+                this.error = this.translateService.instant('employees.failedUploadDoc');
                 this.uploadingDocument = false;
                 this.cdr.detectChanges();
             }
@@ -154,7 +155,7 @@ export class EmployeeDetailPage implements OnInit, OnDestroy {
         }
         this.employeeService.downloadDocument(this.employee.id, documentId).pipe(takeUntil(this.destroy$)).subscribe({
             next: blob => { this.saveBlob(blob, filename); },
-            error: () => { this.error = 'Failed to download document'; }
+            error: () => { this.error = this.translateService.instant('employees.failedDownloadDoc'); }
         });
     }
 
