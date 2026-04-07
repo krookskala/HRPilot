@@ -15,6 +15,10 @@ public record EmployeeDetailResponse(
     String photoUrl,
     Long departmentId,
     String departmentName,
+    String phone,
+    String address,
+    String emergencyContactName,
+    String emergencyContactPhone,
     List<EmploymentHistoryResponse> employmentHistory,
     List<EmployeeDocumentResponse> documents
 ) {
