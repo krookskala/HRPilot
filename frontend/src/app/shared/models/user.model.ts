@@ -42,6 +42,7 @@ export interface CurrentUser {
     role: Role;
     isActive: boolean;
     preferredLang: string;
+    darkMode: boolean;
     employeeId: number | null;
     firstName: string | null;
     lastName: string | null;
@@ -58,6 +59,7 @@ export interface CurrentUserProfile {
     role: Role;
     isActive: boolean;
     preferredLang: string;
+    darkMode: boolean;
     activatedAt: string | null;
     lastLoginAt: string | null;
     unreadNotifications: number;
@@ -70,6 +72,10 @@ export interface CurrentUserProfile {
         photoUrl: string | null;
         departmentId: number | null;
         departmentName: string | null;
+        phone: string | null;
+        address: string | null;
+        emergencyContactName: string | null;
+        emergencyContactPhone: string | null;
         employmentHistory: import("./employee.model").EmploymentHistoryItem[];
         documents: import("./employee.model").EmployeeDocument[];
     } | null;
