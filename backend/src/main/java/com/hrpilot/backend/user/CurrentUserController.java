@@ -1,6 +1,8 @@
 package com.hrpilot.backend.user;
 
 import com.hrpilot.backend.auth.dto.AuthResponse;
+import com.hrpilot.backend.employee.dto.UpdatePersonalInfoRequest;
+import com.hrpilot.backend.user.dto.ChangeDarkModeRequest;
 import com.hrpilot.backend.user.dto.ChangeEmailRequest;
 import com.hrpilot.backend.user.dto.ChangeLanguageRequest;
 import com.hrpilot.backend.user.dto.ChangePasswordRequest;
@@ -31,6 +33,20 @@ public class CurrentUserController {
     @GetMapping("/profile")
     public ResponseEntity<CurrentUserProfileResponse> getCurrentUserProfile() {
         return ResponseEntity.ok(currentUserService.getCurrentUserProfile());
+    }
+
+    @Operation(summary = "Update personal info (self-service)")
+    @PutMapping("/personal-info")
+    public ResponseEntity<Void> updatePersonalInfo(@Valid @RequestBody UpdatePersonalInfoRequest request) {
+        currentUserService.updatePersonalInfo(request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Change dark mode preference")
+    @PutMapping("/dark-mode")
+    public ResponseEntity<Void> changeDarkMode(@Valid @RequestBody ChangeDarkModeRequest request) {
+        currentUserService.changeDarkMode(request);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Change preferred language")
