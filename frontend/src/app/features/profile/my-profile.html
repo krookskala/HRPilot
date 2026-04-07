@@ -56,10 +56,10 @@
             <div class="hero-right">
                 <div class="hero-status" [class.active]="profile.isActive" [class.inactive]="!profile.isActive">
                     <mat-icon>{{ profile.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
-                    {{ profile.isActive ? 'Active' : 'Inactive' }}
+                    {{ profile.isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
                 </div>
                 @if (profile.lastLoginAt) {
-                    <span class="hero-last-login">Last login: {{ profile.lastLoginAt | date:'medium' }}</span>
+                    <span class="hero-last-login">{{ 'profile.lastActivity' | translate }}: {{ profile.lastLoginAt | date:'medium' }}</span>
                 }
             </div>
         </div>
@@ -73,18 +73,18 @@
                 </div>
                 <div class="info-content">
                     <span class="info-value">{{ profile.email }}</span>
-                    <span class="info-label">Account Email <mat-icon class="edit-hint">edit</mat-icon></span>
+                    <span class="info-label">{{ 'profile.accountEmail' | translate }} <mat-icon class="edit-hint">edit</mat-icon></span>
                 </div>
             </div>
 
             <!-- Role — display only -->
-            <div class="info-card" matTooltip="Your system role is assigned by an administrator">
+            <div class="info-card" [matTooltip]="'profile.roleTooltip' | translate">
                 <div class="info-icon indigo">
                     <mat-icon>admin_panel_settings</mat-icon>
                 </div>
                 <div class="info-content">
                     <span class="info-value">{{ profile.role }}</span>
-                    <span class="info-label">System Role</span>
+                    <span class="info-label">{{ 'profile.role' | translate }}</span>
                 </div>
             </div>
 
@@ -95,7 +95,7 @@
                 </div>
                 <div class="info-content">
                     <span class="info-value">{{ getLanguageLabel() }}</span>
-                    <span class="info-label">Preferred Language <mat-icon class="edit-hint">edit</mat-icon></span>
+                    <span class="info-label">{{ 'profile.language' | translate }} <mat-icon class="edit-hint">edit</mat-icon></span>
                 </div>
             </div>
             <mat-menu #langMenu="matMenu">
@@ -111,24 +111,24 @@
             </mat-menu>
 
             <!-- Activated — display only -->
-            <div class="info-card" matTooltip="Date your account was first activated">
+            <div class="info-card" [matTooltip]="'profile.activatedTooltip' | translate">
                 <div class="info-icon slate">
                     <mat-icon>verified</mat-icon>
                 </div>
                 <div class="info-content">
-                    <span class="info-value">{{ profile.activatedAt ? (profile.activatedAt | date:'mediumDate') : 'Not activated' }}</span>
-                    <span class="info-label">Account Activated</span>
+                    <span class="info-value">{{ profile.activatedAt ? (profile.activatedAt | date:'mediumDate') : '—' }}</span>
+                    <span class="info-label">{{ 'profile.activated' | translate }}</span>
                 </div>
             </div>
 
             <!-- Last Activity — display only -->
-            <div class="info-card" matTooltip="Your most recent login">
+            <div class="info-card" [matTooltip]="'profile.lastLoginTooltip' | translate">
                 <div class="info-icon orange">
                     <mat-icon>login</mat-icon>
                 </div>
                 <div class="info-content">
-                    <span class="info-value">{{ profile.lastLoginAt ? (profile.lastLoginAt | date:'mediumDate') : 'Never' }}</span>
-                    <span class="info-label">Last Activity</span>
+                    <span class="info-value">{{ profile.lastLoginAt ? (profile.lastLoginAt | date:'mediumDate') : ('common.never' | translate) }}</span>
+                    <span class="info-label">{{ 'profile.lastActivity' | translate }}</span>
                 </div>
             </div>
 
@@ -138,8 +138,8 @@
                     <mat-icon>notifications</mat-icon>
                 </div>
                 <div class="info-content">
-                    <span class="info-value">{{ profile.unreadNotifications }} unread</span>
-                    <span class="info-label">Pending Alerts <mat-icon class="edit-hint">arrow_forward</mat-icon></span>
+                    <span class="info-value">{{ profile.unreadNotifications }}</span>
+                    <span class="info-label">{{ 'profile.unreadNotifications' | translate }} <mat-icon class="edit-hint">arrow_forward</mat-icon></span>
                 </div>
             </div>
         </div>
@@ -154,7 +154,7 @@
                             <div class="section-icon cyan">
                                 <mat-icon>badge</mat-icon>
                             </div>
-                            <h2 class="section-title">Employee Details</h2>
+                            <h2 class="section-title">{{ 'profile.employeeDetails' | translate }}</h2>
                         </div>
 
                         <div class="employee-details-grid">
@@ -170,7 +170,7 @@
                                     }
                                     <div class="photo-overlay">
                                         <mat-icon>photo_camera</mat-icon>
-                                        <span>{{ uploadingPhoto ? 'Uploading...' : 'Change' }}</span>
+                                        <span>{{ uploadingPhoto ? ('profile.uploading' | translate) : ('profile.change' | translate) }}</span>
                                     </div>
                                 </label>
                             </div>
@@ -179,28 +179,28 @@
                                 <div class="detail-row">
                                     <mat-icon class="detail-icon">person</mat-icon>
                                     <div>
-                                        <span class="detail-label">Full Name</span>
+                                        <span class="detail-label">{{ 'common.name' | translate }}</span>
                                         <span class="detail-value">{{ profile.employee.firstName }} {{ profile.employee.lastName }}</span>
                                     </div>
                                 </div>
                                 <div class="detail-row">
                                     <mat-icon class="detail-icon">work</mat-icon>
                                     <div>
-                                        <span class="detail-label">Position</span>
+                                        <span class="detail-label">{{ 'employees.position' | translate }}</span>
                                         <span class="detail-value">{{ profile.employee.position }}</span>
                                     </div>
                                 </div>
                                 <div class="detail-row">
                                     <mat-icon class="detail-icon">business</mat-icon>
                                     <div>
-                                        <span class="detail-label">Department</span>
-                                        <span class="detail-value">{{ profile.employee.departmentName || 'Unassigned' }}</span>
+                                        <span class="detail-label">{{ 'employees.department' | translate }}</span>
+                                        <span class="detail-value">{{ profile.employee.departmentName || ('common.notAssigned' | translate) }}</span>
                                     </div>
                                 </div>
                                 <div class="detail-row">
                                     <mat-icon class="detail-icon">calendar_today</mat-icon>
                                     <div>
-                                        <span class="detail-label">Hire Date</span>
+                                        <span class="detail-label">{{ 'employees.hireDate' | translate }}</span>
                                         <span class="detail-value">{{ profile.employee.hireDate | date:'mediumDate' }}</span>
                                     </div>
                                 </div>
@@ -217,41 +217,41 @@
                         <div class="section-icon orange">
                             <mat-icon>shield</mat-icon>
                         </div>
-                        <h2 class="section-title">Security</h2>
-                        <span class="section-subtitle">Change your password</span>
+                        <h2 class="section-title">{{ 'profile.security' | translate }}</h2>
+                        <span class="section-subtitle">{{ 'profile.changePassword' | translate }}</span>
                         <mat-icon class="expand-icon" [class.expanded]="securityExpanded">expand_more</mat-icon>
                     </div>
 
                     @if (securityExpanded) {
                         <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="password-form">
                             <mat-form-field appearance="outline">
-                                <mat-label>Current Password</mat-label>
+                                <mat-label>{{ 'profile.currentPassword' | translate }}</mat-label>
                                 <input matInput type="password" formControlName="currentPassword" autocomplete="current-password">
-                                <mat-error>Required</mat-error>
+                                <mat-error>{{ 'profile.required' | translate }}</mat-error>
                             </mat-form-field>
 
                             <mat-form-field appearance="outline">
-                                <mat-label>New Password</mat-label>
+                                <mat-label>{{ 'profile.newPassword' | translate }}</mat-label>
                                 <input matInput type="password" formControlName="newPassword" autocomplete="new-password">
                                 @if (passwordForm.get('newPassword')?.hasError('required')) {
-                                    <mat-error>Required</mat-error>
+                                    <mat-error>{{ 'profile.required' | translate }}</mat-error>
                                 } @else if (passwordForm.get('newPassword')?.hasError('minlength')) {
-                                    <mat-error>Minimum 12 characters</mat-error>
+                                    <mat-error>{{ 'profile.minChars12' | translate }}</mat-error>
                                 } @else if (passwordForm.get('newPassword')?.hasError('pattern')) {
-                                    <mat-error>Must include upper, lower, digit, and special character</mat-error>
+                                    <mat-error>{{ 'profile.passwordPattern' | translate }}</mat-error>
                                 }
                             </mat-form-field>
 
                             <mat-form-field appearance="outline">
-                                <mat-label>Confirm New Password</mat-label>
+                                <mat-label>{{ 'profile.confirmNewPassword' | translate }}</mat-label>
                                 <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password">
-                                <mat-error>Passwords do not match</mat-error>
+                                <mat-error>{{ 'profile.passwordsDoNotMatch' | translate }}</mat-error>
                             </mat-form-field>
 
                             <button mat-flat-button color="primary" type="submit"
                                     [disabled]="passwordForm.invalid || changingPassword">
                                 <mat-icon>lock</mat-icon>
-                                {{ changingPassword ? 'Changing...' : 'Change Password' }}
+                                {{ 'profile.changePassword' | translate }}
                             </button>
                         </form>
                     }
@@ -267,7 +267,7 @@
                         <div class="section-icon indigo">
                             <mat-icon>history</mat-icon>
                         </div>
-                        <h2 class="section-title">Employment History</h2>
+                        <h2 class="section-title">{{ 'employees.employmentHistory' | translate }}</h2>
                     </div>
 
                     <div class="timeline">
@@ -303,13 +303,13 @@
                         <div class="section-icon green">
                             <mat-icon>folder</mat-icon>
                         </div>
-                        <h2 class="section-title">My Documents</h2>
+                        <h2 class="section-title">{{ 'profile.documents' | translate }}</h2>
                     </div>
 
                     @if (profile?.employee?.documents?.length === 0) {
                         <div class="empty-state">
                             <mat-icon>description</mat-icon>
-                            <p>No documents available yet.</p>
+                            <p>{{ 'profile.noDocuments' | translate }}</p>
                         </div>
                     }
                     @for (doc of profile?.employee?.documents || []; track $index) {
@@ -323,7 +323,7 @@
                             </div>
                             <button mat-flat-button color="primary" (click)="downloadDocument(doc.id, doc.originalFilename)">
                                 <mat-icon>download</mat-icon>
-                                Download
+                                {{ 'employees.download' | translate }}
                             </button>
                         </div>
                     }
