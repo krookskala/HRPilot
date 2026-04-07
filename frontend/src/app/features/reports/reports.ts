@@ -5,7 +5,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatButtonModule } from "@angular/material/button";
 import { Subject, takeUntil } from "rxjs";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { DashboardService, DashboardData } from "../../core/services/dashboard.service";
 import { EmployeeService } from "../../core/services/employee.service";
 
@@ -20,6 +20,7 @@ export class Reports implements OnInit, OnDestroy {
     private dashboardService = inject(DashboardService);
     private employeeService = inject(EmployeeService);
     private cdr = inject(ChangeDetectorRef);
+    private translate = inject(TranslateService);
     private destroy$ = new Subject<void>();
 
     data: DashboardData | null = null;
@@ -40,7 +41,7 @@ export class Reports implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load report data';
+                this.error = this.translate.instant('reports.failedLoad');
                 this.loading = false;
                 this.cdr.detectChanges();
             }
@@ -58,7 +59,7 @@ export class Reports implements OnInit, OnDestroy {
                 URL.revokeObjectURL(url);
             },
             error: () => {
-                this.error = 'Failed to export CSV';
+                this.error = this.translate.instant('reports.failedExport');
                 this.cdr.detectChanges();
             }
         });
