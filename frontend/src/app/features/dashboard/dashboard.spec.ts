@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Dashboard } from './dashboard';
 import { DashboardData, DashboardService } from '../../core/services/dashboard.service';
 import { ensureTestBed } from '../../testing/test-init';
@@ -39,6 +39,13 @@ describe('Dashboard Component', () => {
   let component: Dashboard;
   let fixture: ComponentFixture<Dashboard>;
   let dashboardService: { getDashboardData: ReturnType<typeof vi.fn> };
+  const translateService = {
+    instant: vi.fn((key: string) => ({
+      'dashboard.failedToLoad': 'Failed to load dashboard data',
+      'actions.manageEmployees': 'Manage Employees',
+      'actions.myProfile': 'My Profile'
+    }[key] ?? key))
+  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -50,7 +57,8 @@ describe('Dashboard Component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        { provide: DashboardService, useValue: dashboardService }
+        { provide: DashboardService, useValue: dashboardService },
+        { provide: TranslateService, useValue: translateService }
       ]
     }).compileComponents();
 
