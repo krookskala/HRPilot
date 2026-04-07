@@ -84,7 +84,13 @@
     "createNewPassword": "Create New Password",
     "validatingToken": "Validating reset token...",
     "newPassword": "New Password",
-    "updatePassword": "Update Password"
+    "updatePassword": "Update Password",
+    "invalidToken": "Reset token is invalid",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "failedReset": "Password could not be reset",
+    "failedLoadInvitation": "Invitation could not be loaded",
+    "failedAcceptInvitation": "Invitation could not be accepted",
+    "resetLinkSent": "If an account with this email exists, a password reset link has been sent."
   },
   "dashboard": {
     "leaveOverview": "Leave Overview",
@@ -168,7 +174,9 @@
     "failedLoadDetail": "Failed to load employee details",
     "failedUploadPhoto": "Failed to upload photo",
     "failedUploadDoc": "Failed to upload document",
-    "failedDownloadDoc": "Failed to download document"
+    "failedDownloadDoc": "Failed to download document",
+    "deleteEmployee": "Delete Employee",
+    "confirmDelete": "Are you sure you want to delete this employee?"
   },
   "departments": {
     "eyebrow": "ORGANIZATION",
@@ -217,7 +225,9 @@
     "remaining": "Remaining",
     "used": "used",
     "invited": "INVITED",
-    "failedLoad": "Failed to load leave data"
+    "failedLoad": "Failed to load leave data",
+    "failedCreate": "Failed to create leave request",
+    "notLinked": "Current account is not linked to an employee record"
   },
   "payrolls": {
     "titleManager": "Payroll Operations",
@@ -247,7 +257,8 @@
     "downloadPayslip": "Download payslip",
     "markAsPaid": "Mark as paid",
     "refreshing": "Refreshing payroll data...",
-    "failedLoad": "Failed to load payroll data"
+    "failedLoad": "Failed to load payroll data",
+    "failedCreate": "Failed to create payroll run"
   },
   "users": {
     "title": "Users",
@@ -259,7 +270,11 @@
     "resendInvite": "Resend invite",
     "toggleActive": "Toggle active",
     "latestInviteLink": "Latest invite link:",
-    "failedLoad": "Failed to load users"
+    "failedLoad": "Failed to load users",
+    "failedInvite": "Failed to invite user",
+    "failedResend": "Failed to resend invite",
+    "failedUpdate": "Failed to update user",
+    "failedDelete": "Failed to delete user"
   },
   "auditLogs": {
     "title": "Audit Logs",
@@ -318,7 +333,23 @@
     "passwordForConfirmation": "Password (for confirmation)",
     "passwordChanged": "Password changed successfully",
     "emailChanged": "Email changed successfully",
-    "langChanged": "Language changed"
+    "langChanged": "Language changed",
+    "roleTooltip": "Your system role is assigned by an administrator",
+    "activatedTooltip": "Date your account was first activated",
+    "lastLoginTooltip": "Your most recent login",
+    "uploading": "Uploading...",
+    "change": "Change",
+    "required": "Required",
+    "minChars12": "Minimum 12 characters",
+    "passwordPattern": "Must include upper, lower, digit, and special character",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "failedLoadProfile": "Failed to load profile",
+    "failedUpdateLang": "Failed to update language",
+    "failedUpdateEmail": "Failed to update email",
+    "failedChangePassword": "Failed to change password. Check your current password.",
+    "changeEmailTitle": "Change Email",
+    "enterValidEmail": "Enter a valid email",
+    "passwordRequired": "Password is required"
   },
   "reports": {
     "title": "Reports",
@@ -326,7 +357,9 @@
     "leaveSummary": "Leave Summary",
     "payrollSummary": "Payroll Summary",
     "teamSummary": "Team Summary",
-    "exportCsv": "Export Employees CSV"
+    "exportCsv": "Export Employees CSV",
+    "failedLoad": "Failed to load report data",
+    "failedExport": "Failed to export CSV"
   },
   "settings": {
     "subtitle": "Manage your preferences",
