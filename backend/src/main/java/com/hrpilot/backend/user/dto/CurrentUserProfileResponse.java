@@ -14,6 +14,7 @@ public record CurrentUserProfileResponse(
     Role role,
     boolean isActive,
     String preferredLang,
+    boolean darkMode,
     LocalDateTime activatedAt,
     LocalDateTime lastLoginAt,
     EmployeeProfile employee,
@@ -28,6 +29,10 @@ public record CurrentUserProfileResponse(
         String photoUrl,
         Long departmentId,
         String departmentName,
+        String phone,
+        String address,
+        String emergencyContactName,
+        String emergencyContactPhone,
         List<EmploymentHistoryResponse> employmentHistory,
         List<EmployeeDocumentResponse> documents
     ) {}
