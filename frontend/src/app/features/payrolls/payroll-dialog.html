@@ -1,37 +1,37 @@
 <div class="dialog-header">
     <mat-icon>payments</mat-icon>
-    <h2>Create Payroll Run</h2>
+    <h2>{{ 'payrolls.createRun' | translate }}</h2>
 </div>
 
 <mat-dialog-content>
     <form [formGroup]="form" class="dialog-form">
 
         <mat-form-field appearance="outline">
-            <mat-label>Run Name</mat-label>
+            <mat-label>{{ 'payrolls.runName' | translate }}</mat-label>
             <input matInput formControlName="name" />
-            <mat-error>Name is required</mat-error>
+            <mat-error>{{ 'payrolls.runNameRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Employee ID</mat-label>
+            <mat-label>{{ 'payrolls.employeeId' | translate }}</mat-label>
             <input matInput type="number" formControlName="employeeId" />
-            <mat-error>Employee ID is required</mat-error>
+            <mat-error>{{ 'payrolls.employeeIdRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Year</mat-label>
+            <mat-label>{{ 'common.year' | translate }}</mat-label>
             <input matInput type="number" formControlName="year" />
-            <mat-error>Year is required (min 2020)</mat-error>
+            <mat-error>{{ 'payrolls.yearRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Month</mat-label>
+            <mat-label>{{ 'common.month' | translate }}</mat-label>
             <input matInput type="number" formControlName="month" />
-            <mat-error>Month must be between 1 and 12</mat-error>
+            <mat-error>{{ 'payrolls.monthRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Tax Class</mat-label>
+            <mat-label>{{ 'payrolls.taxClass' | translate }}</mat-label>
             <mat-select formControlName="taxClass">
                 <mat-option value="I">I</mat-option>
                 <mat-option value="II">II</mat-option>
@@ -43,21 +43,21 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Bonus</mat-label>
+            <mat-label>{{ 'payrolls.bonus' | translate }}</mat-label>
             <input matInput type="number" formControlName="bonus" />
-            <mat-error>Bonus is required</mat-error>
+            <mat-error>{{ 'payrolls.bonusRequired' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Additional Deduction</mat-label>
+            <mat-label>{{ 'payrolls.additionalDeduction' | translate }}</mat-label>
             <input matInput type="number" formControlName="additionalDeduction" />
-            <mat-error>Additional deduction is required</mat-error>
+            <mat-error>{{ 'payrolls.additionalDeductionRequired' | translate }}</mat-error>
         </mat-form-field>
 
     </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button (click)="cancel()">Cancel</button>
-    <button mat-flat-button color="primary" (click)="save()">Save</button>
+    <button mat-button (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button mat-flat-button color="primary" (click)="save()">{{ 'common.save' | translate }}</button>
 </mat-dialog-actions>
