@@ -2,14 +2,14 @@
     <mat-card class="auth-card">
         <div class="auth-header">
             <mat-icon>mail</mat-icon>
-            <h1>Accept Invitation</h1>
+            <h1>{{ 'auth.acceptInvitation' | translate }}</h1>
             @if (email) {
             <p>{{ email }}</p>
             }
         </div>
 
         @if (loading) {
-        <div class="auth-message">Validating invitation...</div>
+        <div class="auth-message">{{ 'auth.validatingInvitation' | translate }}</div>
         }
         @if (error) {
         <div class="auth-error">{{ error }}</div>
@@ -18,19 +18,19 @@
         @if (!loading && !error) {
         <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()">
             <mat-form-field appearance="outline">
-                <mat-label>Password</mat-label>
+                <mat-label>{{ 'common.password' | translate }}</mat-label>
                 <input matInput type="password" formControlName="password" />
-                <mat-error>Password must be at least 8 characters</mat-error>
+                <mat-error>{{ 'auth.passwordMinLength' | translate }}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-                <mat-label>Confirm Password</mat-label>
+                <mat-label>{{ 'common.confirmPassword' | translate }}</mat-label>
                 <input matInput type="password" formControlName="confirmPassword" />
-                <mat-error>Confirm your password</mat-error>
+                <mat-error>{{ 'auth.confirmYourPassword' | translate }}</mat-error>
             </mat-form-field>
 
             <button mat-flat-button color="primary" type="submit" [disabled]="submitting">
-                Activate Account
+                {{ 'auth.activateAccount' | translate }}
             </button>
         </form>
         }
