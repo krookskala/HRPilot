@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { Subject, takeUntil } from "rxjs";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { DepartmentDialog } from "./department-dialog";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-dialog";
 
@@ -25,6 +25,7 @@ export class DepartmentList implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     private cdr = inject(ChangeDetectorRef);
     private dialog = inject(MatDialog);
+    private translateService = inject(TranslateService);
 
     isAdmin = this.authService.hasRole('ADMIN');
     departments: Department[] = [];
@@ -52,7 +53,7 @@ export class DepartmentList implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load departments';
+                this.error = this.translateService.instant('departments.failedLoad');
                 this.loading = false;
                 this.cdr.detectChanges();
             }
@@ -76,14 +77,14 @@ export class DepartmentList implements OnInit, OnDestroy {
     delete(id: number) {
         const ref = this.dialog.open(ConfirmDialog, {
             width: '350px',
-            data: { title: 'Delete Department', message: 'Are you sure you want to delete this department?' }
+            data: { title: this.translateService.instant('departments.deleteDepartment'), message: this.translateService.instant('departments.confirmDelete') }
         });
         ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(confirmed => {
             if (confirmed) {
                 this.departmentService.deleteDepartment(id).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => { this.loadDepartments(); },
                     error: () => {
-                        this.error = 'Failed to delete department';
+                        this.error = this.translateService.instant('departments.failedDelete');
                         this.cdr.detectChanges();
                     }
                 });
@@ -98,7 +99,7 @@ export class DepartmentList implements OnInit, OnDestroy {
                 this.departmentService.updateDepartment(dept.id, result).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => { this.loadDepartments(); },
                     error: () => {
-                        this.error = 'Failed to update department';
+                        this.error = this.translateService.instant('departments.failedUpdate');
                         this.cdr.detectChanges();
                     }
                 });
@@ -113,7 +114,7 @@ export class DepartmentList implements OnInit, OnDestroy {
                 this.departmentService.createDepartment(result).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => { this.loadDepartments(); },
                     error: () => {
-                        this.error = 'Failed to create department';
+                        this.error = this.translateService.instant('departments.failedCreate');
                         this.cdr.detectChanges();
                     }
                 });
