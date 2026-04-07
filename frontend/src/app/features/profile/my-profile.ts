@@ -46,8 +46,19 @@ export class MyProfile implements OnInit, OnDestroy {
     uploadingPhoto = false;
     error = '';
     changingPassword = false;
+    savingPersonalInfo = false;
+    personalInfoExpanded = false;
     securityExpanded = false;
     private destroy$ = new Subject<void>();
+
+    personalInfoForm = this.fb.group({
+        firstName: ['', [Validators.required, Validators.minLength(2)]],
+        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        phone: [''],
+        address: [''],
+        emergencyContactName: [''],
+        emergencyContactPhone: ['']
+    });
 
     passwordForm = this.fb.group({
         currentPassword: ['', Validators.required],
@@ -84,7 +95,7 @@ export class MyProfile implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
-        if (this.photoPreviewUrl) {
+        if (this.photoPreviewUrl?.startsWith('blob:')) {
             URL.revokeObjectURL(this.photoPreviewUrl);
         }
     }
@@ -127,6 +138,42 @@ export class MyProfile implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             }
         });
+    }
+
+    // --- Personal info ---
+    togglePersonalInfo(): void {
+        this.personalInfoExpanded = !this.personalInfoExpanded;
+        if (this.personalInfoExpanded && this.profile?.employee) {
+            const emp = this.profile.employee;
+            this.personalInfoForm.patchValue({
+                firstName: emp.firstName,
+                lastName: emp.lastName,
+                phone: emp.phone ?? '',
+                address: emp.address ?? '',
+                emergencyContactName: emp.emergencyContactName ?? '',
+                emergencyContactPhone: emp.emergencyContactPhone ?? ''
+            });
+        }
+    }
+
+    onSavePersonalInfo(): void {
+        if (this.personalInfoForm.invalid) return;
+        this.savingPersonalInfo = true;
+        this.authService.updatePersonalInfo(this.personalInfoForm.value as import("../../shared/models/employee.model").UpdatePersonalInfoRequest)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => { this.savingPersonalInfo = false; this.cdr.detectChanges(); })
+            )
+            .subscribe({
+                next: () => {
+                    this.snackBar.open(this.translate.instant('profile.personalInfoSaved'), 'OK', { duration: 3000 });
+                    this.personalInfoExpanded = false;
+                    this.ngOnInit();
+                },
+                error: () => {
+                    this.snackBar.open(this.translate.instant('profile.failedUpdatePersonalInfo'), 'OK', { duration: 3000 });
+                }
+            });
     }
 
     // --- Language change ---
@@ -221,11 +268,27 @@ export class MyProfile implements OnInit, OnDestroy {
 
     private loadPhotoPreview(): void {
         const employee = this.profile?.employee;
-        if (!employee?.photoUrl) return;
+        if (!employee?.photoUrl) {
+            if (this.photoPreviewUrl?.startsWith('blob:')) {
+                URL.revokeObjectURL(this.photoPreviewUrl);
+            }
+            this.photoPreviewUrl = null;
+            this.cdr.detectChanges();
+            return;
+        }
+
+        if (this.employeeService.isFrontendAssetPhoto(employee.photoUrl)) {
+            if (this.photoPreviewUrl?.startsWith('blob:')) {
+                URL.revokeObjectURL(this.photoPreviewUrl);
+            }
+            this.photoPreviewUrl = this.employeeService.resolvePhotoUrl(employee.photoUrl);
+            this.cdr.detectChanges();
+            return;
+        }
 
         this.employeeService.downloadPhoto(employee.employeeId).pipe(takeUntil(this.destroy$)).subscribe({
             next: blob => {
-                if (this.photoPreviewUrl) {
+                if (this.photoPreviewUrl?.startsWith('blob:')) {
                     URL.revokeObjectURL(this.photoPreviewUrl);
                 }
                 this.photoPreviewUrl = URL.createObjectURL(blob);
