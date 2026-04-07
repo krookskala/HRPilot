@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { InviteUserRequest, UpdateUserRequest, User, UserInvitationResponse } from "../../shared/models/user.model";
-import { Page } from "../../shared/models/page.model";
+import { normalizePage, Page, RawPageResponse } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -22,7 +22,9 @@ export class UserService {
             params = params.set('isActive', String(filters.isActive));
         }
 
-        return this.http.get<Page<User>>(`${this.apiUrl}/users`, { params });
+        return this.http
+            .get<RawPageResponse<User>>(`${this.apiUrl}/users`, { params })
+            .pipe(map(normalizePage));
     }
 
     inviteUser(request: InviteUserRequest): Observable<UserInvitationResponse> {
