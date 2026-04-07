@@ -8,6 +8,25 @@
 
 HRPilot is a single-company HR platform built with Spring Boot and Angular. It includes invite-based onboarding, employee self-service, scoped leave approvals, payroll runs with payslips, notifications, audit logging, role-aware dashboards, and multi-language support.
 
+---
+
+![Image](https://github.com/user-attachments/assets/419346ad-1dc7-4d1e-963e-7ab6cb54ed2a)
+
+![Image](https://github.com/user-attachments/assets/aee85853-d3c6-4d82-beb9-138c5e098b7f)
+
+![Image](https://github.com/user-attachments/assets/4004b206-aa3f-47e4-bff0-fc735db712c5)
+
+![Image](https://github.com/user-attachments/assets/464bbad2-b1be-4990-b667-5d9bce3c54e2)
+
+![Image](https://github.com/user-attachments/assets/1c685984-bd3b-4190-b85a-98db867f89dc)
+
+![Image](https://github.com/user-attachments/assets/b0ec2b7c-bf4b-4990-b8b6-a02c2c7319ac)
+
+![Image](https://github.com/user-attachments/assets/22552340-38b9-4f81-a941-8be18f5f9ea7)
+
+
+---
+
 ## Product Scope
 
 - Invite-only account setup with password reset, refresh-token rotation, logout revocation, and `/api/me` as the canonical current-user source
@@ -93,7 +112,7 @@ graph TB
 - `GET /api/users`
 - `POST /api/users/invite`
 - `PUT /api/users/{id}`
-- `POST /api/users/{id}/reinvite`
+- `POST /api/users/{id}/resend-invite`
 - `GET /api/employees`
 - `GET /api/employees/{id}/detail`
 - `POST /api/employees/{id}/photo`
@@ -183,7 +202,7 @@ docker-compose up --build
 Available services:
 
 - Frontend: `http://localhost`
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html` (dev profile only)
+- Swagger UI: `http://localhost/swagger-ui/index.html` (dev profile only, via Nginx proxy)
 
 ### Run Locally
 
@@ -217,10 +236,11 @@ npm run start
 | Email | Password | Role |
 | --- | --- | --- |
 | admin@hrpilot.com | admin123 | ADMIN |
-| hr@hrpilot.com | hr1234 | HR_MANAGER |
-| john.doe@hrpilot.com | pass1234 | DEPARTMENT_MANAGER |
-| jane.smith@hrpilot.com | pass1234 | DEPARTMENT_MANAGER |
-| alice.johnson@hrpilot.com | pass1234 | EMPLOYEE |
+| lena.hoffmann@novacore-systems.de | demo1234 | HR_MANAGER |
+| marco.weber@novacore-systems.de | demo1234 | DEPARTMENT_MANAGER |
+| anna.peters@novacore-systems.de | demo1234 | EMPLOYEE |
+
+All seeded employee accounts use the password `demo1234`.
 
 ## Configuration
 
@@ -234,6 +254,8 @@ npm run start
 | `DB_PASSWORD` | Database password | `hrpilot123` |
 | `JWT_SECRET` | JWT signing key (min 256-bit) | dev-only fallback |
 | `APP_FRONTEND_BASE_URL` | Frontend URL for invite/reset links | `http://localhost:4200` |
+
+When running with Docker Compose, set `APP_FRONTEND_BASE_URL=http://localhost` if you want generated invite/reset links to point to the Nginx-served frontend. Keep `http://localhost:4200` when using the Angular dev server directly.
 
 ### Storage Configuration
 
@@ -276,7 +298,7 @@ npm run e2e
 
 | Suite | Count | Framework |
 | --- | --- | --- |
-| Backend unit/integration | 93 tests | JUnit 5 + Mockito |
+| Backend unit/integration | 94 tests | JUnit 5 + Mockito |
 | Frontend unit | 82 tests (12 spec files) | Vitest + jsdom |
 | Frontend e2e | 2 spec files | Playwright |
 | Flyway migrations | V1 through V9 | Flyway |
@@ -322,3 +344,5 @@ GitHub Actions pipeline runs on push/PR to `main` or `master`:
 - Email delivery is not part of v1; invite and reset links are generated and shared manually.
 - In-app notifications are implemented; outbound email notifications are left for a future iteration.
 - The `DataLoader` seeds demo data automatically when running with the `dev` profile on an empty database.
+- Seeded demo employee photos are served from `frontend/assets/...` for demo convenience.
+- Real uploaded employee photos and documents continue to use the backend storage layer (`local` or `s3`).
