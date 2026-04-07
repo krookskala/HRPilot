@@ -34,6 +34,10 @@
         </div>
     }
 
+    @if (!canManage && payrolls.length > 1) {
+        <app-payroll-chart [payrolls]="payrolls"></app-payroll-chart>
+    }
+
     @if (canManage && runs.length > 0) {
         <mat-card class="runs-card">
             <mat-card-content>
