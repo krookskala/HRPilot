@@ -227,7 +227,16 @@
     "invited": "INVITED",
     "failedLoad": "Failed to load leave data",
     "failedCreate": "Failed to create leave request",
-    "notLinked": "Current account is not linked to an employee record"
+    "notLinked": "Current account is not linked to an employee record",
+    "tableView": "Table view",
+    "calendarView": "Calendar view",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "rejectRequest": "Reject leave request",
+    "rejectionReason": "Rejection reason",
+    "cancelTitle": "Cancel leave request",
+    "cancellationReason": "Cancellation reason"
   },
   "payrolls": {
     "titleManager": "Payroll Operations",
@@ -258,7 +267,10 @@
     "markAsPaid": "Mark as paid",
     "refreshing": "Refreshing payroll data...",
     "failedLoad": "Failed to load payroll data",
-    "failedCreate": "Failed to create payroll run"
+    "failedCreate": "Failed to create payroll run",
+    "netSalaryTrend": "Net Salary Trend",
+    "salaryBreakdown": "Salary Breakdown",
+    "deductionsLabel": "Deductions"
   },
   "users": {
     "title": "Users",
@@ -349,7 +361,14 @@
     "failedChangePassword": "Failed to change password. Check your current password.",
     "changeEmailTitle": "Change Email",
     "enterValidEmail": "Enter a valid email",
-    "passwordRequired": "Password is required"
+    "passwordRequired": "Password is required",
+    "phone": "Phone",
+    "address": "Address",
+    "emergencyContactName": "Emergency Contact Name",
+    "emergencyContactPhone": "Emergency Contact Phone",
+    "editPersonalInfo": "Edit Personal Info",
+    "personalInfoSaved": "Personal info saved successfully",
+    "failedUpdatePersonalInfo": "Failed to update personal info"
   },
   "reports": {
     "title": "Reports",
@@ -379,5 +398,15 @@
     "myLeave": "My Leave",
     "myPayroll": "My Payroll",
     "notifications": "Notifications"
+  },
+  "fileUpload": {
+    "dragDrop": "Drag & drop a file here, or click to browse",
+    "maxSize": "Max 10MB — PDF, images, Word, Excel",
+    "tooLarge": "File is too large. Maximum size is 10MB.",
+    "invalidType": "File type not allowed. Accepted: PDF, images, Word, Excel."
+  },
+  "filePreview": {
+    "preview": "Preview",
+    "noPreview": "Preview not available for this file type."
   }
 }
