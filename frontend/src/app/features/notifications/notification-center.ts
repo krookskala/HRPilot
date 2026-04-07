@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { Subject, takeUntil, finalize } from "rxjs";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { NotificationService } from "../../core/services/notification.service";
 import { NotificationItem } from "../../shared/models/notification.model";
 
@@ -23,6 +23,7 @@ type FilterType = 'ALL' | 'LEAVE' | 'PAYROLL' | 'SECURITY' | 'SYSTEM';
 })
 export class NotificationCenter implements OnInit, OnDestroy {
     private notificationService = inject(NotificationService);
+    private translateService = inject(TranslateService);
     private cdr = inject(ChangeDetectorRef);
     private destroy$ = new Subject<void>();
 
@@ -31,13 +32,15 @@ export class NotificationCenter implements OnInit, OnDestroy {
     error = '';
     activeFilter: FilterType = 'ALL';
 
-    filters: { type: FilterType; label: string; icon: string }[] = [
-        { type: 'ALL', label: 'All', icon: 'notifications' },
-        { type: 'LEAVE', label: 'Leave', icon: 'event_available' },
-        { type: 'PAYROLL', label: 'Payroll', icon: 'payments' },
-        { type: 'SECURITY', label: 'Security', icon: 'shield' },
-        { type: 'SYSTEM', label: 'System', icon: 'info' }
-    ];
+    get filters(): { type: FilterType; label: string; icon: string }[] {
+        return [
+            { type: 'ALL', label: this.translateService.instant('notifications.filterAll'), icon: 'notifications' },
+            { type: 'LEAVE', label: this.translateService.instant('notifications.filterLeave'), icon: 'event_available' },
+            { type: 'PAYROLL', label: this.translateService.instant('notifications.filterPayroll'), icon: 'payments' },
+            { type: 'SECURITY', label: this.translateService.instant('notifications.filterSecurity'), icon: 'shield' },
+            { type: 'SYSTEM', label: this.translateService.instant('notifications.filterSystem'), icon: 'info' }
+        ];
+    }
 
     get hasUnread(): boolean {
         return this.notifications.some(n => !n.read);
@@ -67,7 +70,7 @@ export class NotificationCenter implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load notifications';
+                this.error = this.translateService.instant('notifications.failedLoad');
                 this.cdr.detectChanges();
             }
         });
@@ -81,7 +84,7 @@ export class NotificationCenter implements OnInit, OnDestroy {
         this.notificationService.markAsRead(id).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => this.loadNotifications(),
             error: () => {
-                this.error = 'Failed to mark notification as read';
+                this.error = this.translateService.instant('notifications.failedMarkRead');
                 this.cdr.detectChanges();
             }
         });
@@ -91,7 +94,7 @@ export class NotificationCenter implements OnInit, OnDestroy {
         this.notificationService.markAllAsRead().pipe(takeUntil(this.destroy$)).subscribe({
             next: () => this.loadNotifications(),
             error: () => {
-                this.error = 'Failed to mark all notifications as read';
+                this.error = this.translateService.instant('notifications.failedMarkAllRead');
                 this.cdr.detectChanges();
             }
         });
@@ -123,13 +126,13 @@ export class NotificationCenter implements OnInit, OnDestroy {
 
     typeLabel(type: string): string {
         switch (type) {
-            case 'LEAVE_EVENT': return 'Leave';
-            case 'PAYROLL_EVENT': return 'Payroll';
-            case 'SECURITY_EVENT': return 'Security';
-            case 'PASSWORD_RESET': return 'Password';
-            case 'INVITATION_CREATED': return 'Invitation';
-            case 'ACCOUNT_ACTIVATED': return 'Account';
-            default: return 'System';
+            case 'LEAVE_EVENT': return this.translateService.instant('notifications.typeLeave');
+            case 'PAYROLL_EVENT': return this.translateService.instant('notifications.typePayroll');
+            case 'SECURITY_EVENT': return this.translateService.instant('notifications.typeSecurity');
+            case 'PASSWORD_RESET': return this.translateService.instant('notifications.typePassword');
+            case 'INVITATION_CREATED': return this.translateService.instant('notifications.typeInvitation');
+            case 'ACCOUNT_ACTIVATED': return this.translateService.instant('notifications.typeAccount');
+            default: return this.translateService.instant('notifications.typeSystem');
         }
     }
 
