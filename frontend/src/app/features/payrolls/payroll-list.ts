@@ -12,6 +12,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { AuthService } from "../../core/services/auth.service";
 import { PayrollService } from "../../core/services/payroll.service";
 import { PayrollRecord, PayrollRun } from "../../shared/models/payroll.model";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { PayrollDialog } from "./payroll-dialog";
 
 @Component({
@@ -27,6 +28,7 @@ import { PayrollDialog } from "./payroll-dialog";
         MatProgressSpinnerModule,
         MatTableModule,
         MatTooltipModule,
+        TranslateModule,
     ],
     templateUrl: './payroll-list.html',
     styleUrl: './payroll-list.scss'
@@ -36,6 +38,7 @@ export class PayrollList implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     private dialog = inject(MatDialog);
     private cdr = inject(ChangeDetectorRef);
+    private translate = inject(TranslateService);
     private destroy$ = new Subject<void>();
 
     readonly canManage = this.authService.hasRole('ADMIN', 'HR_MANAGER');
@@ -86,7 +89,7 @@ export class PayrollList implements OnInit, OnDestroy {
                     this.cdr.detectChanges();
                 },
                 error: () => {
-                    this.error = 'Failed to load payrolls';
+                    this.error = this.translate.instant('payrolls.failedLoad');
                     this.cdr.detectChanges();
                 }
             });
@@ -107,7 +110,7 @@ export class PayrollList implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load payrolls';
+                this.error = this.translate.instant('payrolls.failedLoad');
                 this.cdr.detectChanges();
             }
         });
@@ -138,7 +141,7 @@ export class PayrollList implements OnInit, OnDestroy {
             }).subscribe({
                 next: () => this.loadData(),
                 error: err => {
-                    this.error = err?.error?.message ?? 'Failed to create payroll run';
+                    this.error = err?.error?.message ?? this.translate.instant('payrolls.failedCreate');
                 }
             });
         });
