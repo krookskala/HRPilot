@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { CreatePayrollRequest, CreatePayrollRunRequest, PayrollComponent, PayrollPreviewRequest, PayrollRecord, PayrollRun } from "../../shared/models/payroll.model";
-import { Page } from "../../shared/models/page.model";
+import { normalizePage, Page, RawPageResponse } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class PayrollService {
@@ -12,11 +12,15 @@ export class PayrollService {
     constructor(private http: HttpClient) {}
 
     getAllPayrolls(page = 0, size = 20): Observable<Page<PayrollRecord>> {
-        return this.http.get<Page<PayrollRecord>>(`${this.apiUrl}/payrolls?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<PayrollRecord>>(`${this.apiUrl}/payrolls?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     getByEmployee(employeeId: number, page = 0, size = 20): Observable<Page<PayrollRecord>> {
-        return this.http.get<Page<PayrollRecord>>(`${this.apiUrl}/payrolls/employee/${employeeId}?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<PayrollRecord>>(`${this.apiUrl}/payrolls/employee/${employeeId}?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     create(request: CreatePayrollRequest): Observable<PayrollRecord> {
@@ -32,7 +36,9 @@ export class PayrollService {
     }
 
     getRuns(page = 0, size = 20): Observable<Page<PayrollRun>> {
-        return this.http.get<Page<PayrollRun>>(`${this.apiUrl}/payrolls/runs?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<PayrollRun>>(`${this.apiUrl}/payrolls/runs?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     markAsPaid(id: number): Observable<PayrollRecord> {
@@ -52,7 +58,9 @@ export class PayrollService {
     }
 
     getMyPayrolls(page = 0, size = 20): Observable<Page<PayrollRecord>> {
-        return this.http.get<Page<PayrollRecord>>(`${this.apiUrl}/me/payrolls?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<PayrollRecord>>(`${this.apiUrl}/me/payrolls?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     downloadPayslip(id: number): Observable<Blob> {
