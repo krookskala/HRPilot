@@ -2,6 +2,17 @@
   max-width: 1200px;
 }
 
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+
+  .active-view {
+    color: var(--hr-primary);
+    background: var(--hr-primary-light);
+  }
+}
+
 .filter-row {
   display: flex;
   gap: 16px;
