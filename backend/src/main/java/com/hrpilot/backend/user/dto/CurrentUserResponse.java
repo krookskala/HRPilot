@@ -10,6 +10,7 @@ public record CurrentUserResponse(
     Role role,
     boolean isActive,
     String preferredLang,
+    boolean darkMode,
     Long employeeId,
     String firstName,
     String lastName,
