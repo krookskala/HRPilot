@@ -63,7 +63,7 @@ class EmployeeControllerTest {
     private EmployeeResponse buildResponse() {
         return new EmployeeResponse(1L, "emp@test.com", "John", "Doe",
                 "Developer", new BigDecimal("5000"), LocalDate.of(2024, 1, 15), null,
-                1L, "Engineering");
+                1L, "Engineering", null, null, null, null);
     }
 
     @Test
