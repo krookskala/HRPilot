@@ -40,6 +40,10 @@ public class User extends BaseEntity {
     @Builder.Default
     private String preferredLang = "en";
 
+    @Column(name = "dark_mode", nullable = false)
+    @Builder.Default
+    private boolean darkMode = false;
+
     @Column(name = "activated_at")
     private LocalDateTime activatedAt;
 
