@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Login } from './login';
 import { AuthService } from '../../core/services/auth.service';
 import { CurrentUser, Role } from '../../shared/models/user.model';
@@ -21,6 +21,11 @@ describe('Login Component', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
   let authService: { login: ReturnType<typeof vi.fn> };
+  const translateService = {
+    instant: vi.fn((key: string) => ({
+      'login.defaultError': 'Email or Password Wrong'
+    }[key] ?? key))
+  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -32,7 +37,8 @@ describe('Login Component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([{ path: 'dashboard', component: Login }]),
-        { provide: AuthService, useValue: authService }
+        { provide: AuthService, useValue: authService },
+        { provide: TranslateService, useValue: translateService }
       ]
     }).compileComponents();
 
