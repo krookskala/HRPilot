@@ -5,18 +5,20 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { AuthService } from "../../core/services/auth.service";
 
 @Component({
     selector: 'app-request-password-reset',
     standalone: true,
-    imports: [ReactiveFormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+    imports: [ReactiveFormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, TranslateModule],
     templateUrl: './request-password-reset.html',
     styleUrl: './request-password-reset.scss'
 })
 export class RequestPasswordReset {
     private fb = inject(FormBuilder);
     private authService = inject(AuthService);
+    private translate = inject(TranslateService);
 
     message = '';
     error = '';
@@ -33,11 +35,11 @@ export class RequestPasswordReset {
 
         this.authService.requestPasswordReset(this.form.value.email!).subscribe({
             next: () => {
-                this.message = 'If an account with this email exists, a password reset link has been sent.';
+                this.message = this.translate.instant('auth.resetLinkSent');
                 this.error = '';
             },
             error: () => {
-                this.message = 'If an account with this email exists, a password reset link has been sent.';
+                this.message = this.translate.instant('auth.resetLinkSent');
                 this.error = '';
             }
         });
