@@ -5,31 +5,32 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-change-email-dialog',
     standalone: true,
-    imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule],
+    imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, TranslateModule],
     template: `
-        <h2 mat-dialog-title>Change Email</h2>
+        <h2 mat-dialog-title>{{ 'profile.changeEmailTitle' | translate }}</h2>
         <mat-dialog-content>
             <form [formGroup]="form" class="email-form">
                 <mat-form-field appearance="outline">
-                    <mat-label>New Email</mat-label>
+                    <mat-label>{{ 'profile.newEmail' | translate }}</mat-label>
                     <input matInput type="email" formControlName="newEmail" autocomplete="email">
-                    <mat-error>Enter a valid email</mat-error>
+                    <mat-error>{{ 'profile.enterValidEmail' | translate }}</mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                    <mat-label>Current Password</mat-label>
+                    <mat-label>{{ 'profile.currentPassword' | translate }}</mat-label>
                     <input matInput type="password" formControlName="password" autocomplete="current-password">
-                    <mat-error>Password is required</mat-error>
+                    <mat-error>{{ 'profile.passwordRequired' | translate }}</mat-error>
                 </mat-form-field>
             </form>
         </mat-dialog-content>
         <mat-dialog-actions align="end">
-            <button mat-button mat-dialog-close>Cancel</button>
+            <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
             <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
-                <mat-icon>save</mat-icon> Save
+                <mat-icon>save</mat-icon> {{ 'common.save' | translate }}
             </button>
         </mat-dialog-actions>
     `,
