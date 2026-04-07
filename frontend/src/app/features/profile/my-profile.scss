@@ -434,12 +434,15 @@
 
 .employee-photo-section {
   flex-shrink: 0;
+  width: 140px;
 }
 
 .photo-container {
+  display: block;
   position: relative;
   width: 140px;
   height: 140px;
+  aspect-ratio: 1;
   border-radius: 50%;
   overflow: hidden;
   background: var(--hr-table-border);
@@ -451,6 +454,7 @@
 }
 
 .photo-img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -545,6 +549,41 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  button {
+    align-self: flex-start;
+    margin-top: 8px;
+  }
+}
+
+// ─── Personal Info Section ───────────────────────────────────
+.personal-info-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hr-border);
+}
+
+.contact-info-display {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hr-border);
+}
+
+.personal-info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
 
   button {
     align-self: flex-start;
