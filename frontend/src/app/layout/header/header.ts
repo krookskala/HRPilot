@@ -35,16 +35,24 @@ export class Header implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
 
     ngOnInit(): void {
-        this.darkMode = localStorage.getItem('darkMode') === 'true';
-        this.applyTheme();
-
         this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
+            if (user) {
+                this.darkMode = user.darkMode;
+                localStorage.setItem('darkMode', String(this.darkMode));
+                this.applyTheme();
+            }
             if (user?.employeeId) {
                 this.loadAvatar(user.employeeId);
             } else {
                 this.revokeAvatar();
             }
         });
+
+        const stored = localStorage.getItem('darkMode');
+        if (stored !== null) {
+            this.darkMode = stored === 'true';
+            this.applyTheme();
+        }
 
         this.notificationService.unreadCount$.pipe(takeUntil(this.destroy$)).subscribe(count => {
             this.unreadCount = count;
@@ -79,6 +87,7 @@ export class Header implements OnInit, OnDestroy {
         this.darkMode = !this.darkMode;
         localStorage.setItem('darkMode', String(this.darkMode));
         this.applyTheme();
+        this.authService.changeDarkMode(this.darkMode).pipe(takeUntil(this.destroy$)).subscribe();
     }
 
     logout() {
@@ -88,20 +97,41 @@ export class Header implements OnInit, OnDestroy {
     }
 
     private loadAvatar(employeeId: number): void {
-        this.employeeService.downloadPhoto(employeeId).pipe(takeUntil(this.destroy$)).subscribe({
-            next: blob => {
-                this.revokeAvatar();
-                this.avatarUrl = URL.createObjectURL(blob);
+        this.authService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
+            next: profile => {
+                const photoUrl = profile.employee?.photoUrl;
+                if (!photoUrl) {
+                    this.revokeAvatar();
+                    return;
+                }
+
+                if (this.employeeService.isFrontendAssetPhoto(photoUrl)) {
+                    this.revokeAvatar();
+                    this.avatarUrl = this.employeeService.resolvePhotoUrl(photoUrl);
+                    return;
+                }
+
+                this.employeeService.downloadPhoto(employeeId).pipe(takeUntil(this.destroy$)).subscribe({
+                    next: blob => {
+                        this.revokeAvatar();
+                        this.avatarUrl = URL.createObjectURL(blob);
+                    },
+                    error: () => {
+                        this.revokeAvatar();
+                    }
+                });
             },
-            error: () => {}
+            error: () => {
+                this.revokeAvatar();
+            }
         });
     }
 
     private revokeAvatar(): void {
-        if (this.avatarUrl) {
+        if (this.avatarUrl?.startsWith('blob:')) {
             URL.revokeObjectURL(this.avatarUrl);
-            this.avatarUrl = null;
         }
+        this.avatarUrl = null;
     }
 
     private applyTheme(): void {
