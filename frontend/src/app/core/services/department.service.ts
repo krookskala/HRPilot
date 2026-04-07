@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { Department, CreateDepartmentRequest, UpdateDepartmentRequest } from "../../shared/models/department.model";
-import { Page } from "../../shared/models/page.model";
+import { normalizePage, Page, RawPageResponse } from "../../shared/models/page.model";
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentService {
@@ -11,7 +11,9 @@ export class DepartmentService {
     constructor(private http: HttpClient) {}
 
     getAll(page = 0, size = 20): Observable<Page<Department>> {
-        return this.http.get<Page<Department>>(`${this.apiUrl}/departments?page=${page}&size=${size}`);
+        return this.http
+            .get<RawPageResponse<Department>>(`${this.apiUrl}/departments?page=${page}&size=${size}`)
+            .pipe(map(normalizePage));
     }
 
     deleteDepartment(id: number): Observable<void> {
