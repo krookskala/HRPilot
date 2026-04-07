@@ -2,9 +2,9 @@
     <!-- Hero Banner -->
     <div class="notif-hero">
         <div class="hero-content">
-            <div class="hero-eyebrow">NOTIFICATION CENTER</div>
-            <h1 class="hero-title">Notifications</h1>
-            <p class="hero-text">Stay up to date with your activity and system alerts</p>
+            <div class="hero-eyebrow">{{ 'notifications.eyebrow' | translate }}</div>
+            <h1 class="hero-title">{{ 'notifications.title' | translate }}</h1>
+            <p class="hero-text">{{ 'notifications.subtitle' | translate }}</p>
         </div>
         <mat-icon class="hero-icon">notifications_active</mat-icon>
     </div>
@@ -22,7 +22,7 @@
         @if (hasUnread) {
             <button mat-stroked-button class="mark-all-btn" (click)="markAllAsRead()">
                 <mat-icon>done_all</mat-icon>
-                Mark all read
+                {{ 'common.markAllRead' | translate }}
             </button>
         }
     </div>
@@ -58,12 +58,12 @@
                         </div>
                         <div class="notif-actions">
                             @if (n.actionUrl) {
-                                <a [routerLink]="n.actionUrl" mat-icon-button matTooltip="Go to">
+                                <a [routerLink]="n.actionUrl" mat-icon-button [matTooltip]="'notifications.goTo' | translate">
                                     <mat-icon>open_in_new</mat-icon>
                                 </a>
                             }
                             @if (!n.read) {
-                                <button mat-icon-button matTooltip="Mark as read" (click)="markAsRead(n.id)">
+                                <button mat-icon-button [matTooltip]="'common.markAsRead' | translate" (click)="markAsRead(n.id)">
                                     <mat-icon>check_circle_outline</mat-icon>
                                 </button>
                             } @else {
@@ -79,11 +79,11 @@
                     <mat-icon>notifications_off</mat-icon>
                 </div>
                 @if (activeFilter === 'ALL') {
-                    <h3>No notifications yet</h3>
-                    <p>When something happens, you'll see it here</p>
+                    <h3>{{ 'notifications.emptyTitle' | translate }}</h3>
+                    <p>{{ 'notifications.emptyText' | translate }}</p>
                 } @else {
-                    <h3>No {{ activeFilter | lowercase }} notifications</h3>
-                    <p>Try selecting a different filter</p>
+                    <h3>{{ 'notifications.emptyFilterTitle' | translate:{ type: activeFilter | lowercase } }}</h3>
+                    <p>{{ 'notifications.emptyFilterText' | translate }}</p>
                 }
             </div>
         }
