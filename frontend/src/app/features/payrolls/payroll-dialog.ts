@@ -7,12 +7,13 @@ import { MatInputModule } from "@angular/material/input";
 import { MatIconModule } from "@angular/material/icon";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatSelectModule } from "@angular/material/select";
+import { TranslateModule } from "@ngx-translate/core";
 
 @Component({
     selector: 'app-payroll-dialog',
     standalone: true,
     imports: [MatDialogModule, ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule, MatSlideToggleModule, MatSelectModule],
+    MatInputModule, MatButtonModule, MatIconModule, MatSlideToggleModule, MatSelectModule, TranslateModule],
     templateUrl: './payroll-dialog.html',
     styleUrl: './payroll-dialog.scss'
 })
