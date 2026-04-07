@@ -17,6 +17,8 @@ import com.hrpilot.backend.notification.NotificationService;
 import com.hrpilot.backend.notification.NotificationType;
 import com.hrpilot.backend.security.AuthenticatedUser;
 import com.hrpilot.backend.security.JwtService;
+import com.hrpilot.backend.employee.dto.UpdatePersonalInfoRequest;
+import com.hrpilot.backend.user.dto.ChangeDarkModeRequest;
 import com.hrpilot.backend.user.dto.ChangeEmailRequest;
 import com.hrpilot.backend.user.dto.ChangeLanguageRequest;
 import com.hrpilot.backend.user.dto.ChangePasswordRequest;
@@ -69,6 +71,7 @@ public class CurrentUserService {
             user.getRole(),
             user.isActive(),
             user.getPreferredLang(),
+            user.isDarkMode(),
             employee != null ? employee.getId() : null,
             employee != null ? employee.getFirstName() : null,
             employee != null ? employee.getLastName() : null,
@@ -78,6 +81,31 @@ public class CurrentUserService {
             user.getActivatedAt(),
             user.getLastLoginAt()
         );
+    }
+
+    @Transactional
+    public void updatePersonalInfo(UpdatePersonalInfoRequest request) {
+        User user = getCurrentUserEntity();
+        Employee employee = employeeRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Employee", "userId", user.getId()));
+
+        if (request.firstName() != null) employee.setFirstName(request.firstName());
+        if (request.lastName() != null) employee.setLastName(request.lastName());
+        if (request.phone() != null) employee.setPhone(request.phone());
+        if (request.address() != null) employee.setAddress(request.address());
+        if (request.emergencyContactName() != null) employee.setEmergencyContactName(request.emergencyContactName());
+        if (request.emergencyContactPhone() != null) employee.setEmergencyContactPhone(request.emergencyContactPhone());
+
+        employeeRepository.save(employee);
+        auditLogService.log(user, "PERSONAL_INFO_UPDATED", "Employee", employee.getId().toString(),
+            "Personal info updated by employee", null);
+    }
+
+    @Transactional
+    public void changeDarkMode(ChangeDarkModeRequest request) {
+        User user = getCurrentUserEntity();
+        user.setDarkMode(request.darkMode());
+        userRepository.save(user);
     }
 
     @Transactional
@@ -150,6 +178,7 @@ public class CurrentUserService {
             user.getRole(),
             user.isActive(),
             user.getPreferredLang(),
+            user.isDarkMode(),
             employee != null ? employee.getId() : null,
             employee != null ? employee.getFirstName() : null,
             employee != null ? employee.getLastName() : null,
@@ -188,6 +217,10 @@ public class CurrentUserService {
                 employee.getPhotoUrl(),
                 employee.getDepartment() != null ? employee.getDepartment().getId() : null,
                 employee.getDepartment() != null ? employee.getDepartment().getName() : null,
+                employee.getPhone(),
+                employee.getAddress(),
+                employee.getEmergencyContactName(),
+                employee.getEmergencyContactPhone(),
                 history,
                 employeeDocumentRepository.findByEmployeeIdOrderByCreatedAtDesc(employee.getId()).stream()
                     .map(document -> new EmployeeDocumentResponse(
@@ -211,6 +244,7 @@ public class CurrentUserService {
             user.getRole(),
             user.isActive(),
             user.getPreferredLang(),
+            user.isDarkMode(),
             user.getActivatedAt(),
             user.getLastLoginAt(),
             employeeProfile,
