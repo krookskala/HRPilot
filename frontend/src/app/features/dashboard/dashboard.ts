@@ -8,7 +8,7 @@ import { finalize } from "rxjs";
 import { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController, DoughnutController } from "chart.js";
 import { BaseChartDirective } from "ng2-charts";
 import { ChartConfiguration } from "chart.js";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { DashboardData, DashboardMetric, DashboardService } from "../../core/services/dashboard.service";
 
 Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController, DoughnutController);
@@ -30,6 +30,7 @@ type QuickAction = {
 export class Dashboard implements OnInit {
     private dashboardService = inject(DashboardService);
     private cdr = inject(ChangeDetectorRef);
+    private translate = inject(TranslateService);
 
     data: DashboardData | null = null;
     loading = true;
@@ -52,7 +53,7 @@ export class Dashboard implements OnInit {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load dashboard data';
+                this.error = this.translate.instant('dashboard.failedToLoad');
                 this.cdr.detectChanges();
             }
         });
@@ -72,7 +73,12 @@ export class Dashboard implements OnInit {
         this.leaveChartConfig = {
             type: 'pie',
             data: {
-                labels: ['Pending', 'Approved', 'Rejected', 'Cancelled'],
+                labels: [
+                    this.translate.instant('dashboard.chartPending'),
+                    this.translate.instant('dashboard.chartApproved'),
+                    this.translate.instant('dashboard.chartRejected'),
+                    this.translate.instant('dashboard.chartCancelled')
+                ],
                 datasets: [{
                     data: values,
                     backgroundColor: ['#d97706', '#15803d', '#dc2626', '#475569'],
@@ -97,9 +103,13 @@ export class Dashboard implements OnInit {
         this.payrollChartConfig = {
             type: 'bar',
             data: {
-                labels: ['Draft', 'Published', 'Paid'],
+                labels: [
+                    this.translate.instant('dashboard.chartDraft'),
+                    this.translate.instant('dashboard.chartPublished'),
+                    this.translate.instant('dashboard.chartPaid')
+                ],
                 datasets: [{
-                    label: 'Payroll Records',
+                    label: this.translate.instant('dashboard.payrollRecords'),
                     data: values,
                     backgroundColor: ['#4338ca', '#2563eb', '#15803d'],
                     borderRadius: 6,
@@ -158,31 +168,31 @@ export class Dashboard implements OnInit {
         switch (this.data?.role) {
             case 'ADMIN':
                 return [
-                    { label: 'Manage Employees', route: '/employees', icon: 'people', accent: 'cyan' },
-                    { label: 'Manage Departments', route: '/departments', icon: 'apartment', accent: 'orange' },
-                    { label: 'Review Leave', route: '/leaves', icon: 'event_available', accent: 'green' },
-                    { label: 'Manage Users', route: '/users', icon: 'manage_accounts', accent: 'slate' }
+                    { label: this.translate.instant('actions.manageEmployees'), route: '/employees', icon: 'people', accent: 'cyan' },
+                    { label: this.translate.instant('actions.manageDepartments'), route: '/departments', icon: 'apartment', accent: 'orange' },
+                    { label: this.translate.instant('actions.reviewLeave'), route: '/leaves', icon: 'event_available', accent: 'green' },
+                    { label: this.translate.instant('actions.manageUsers'), route: '/users', icon: 'manage_accounts', accent: 'slate' }
                 ];
             case 'HR_MANAGER':
                 return [
-                    { label: 'Review Leave', route: '/leaves', icon: 'pending_actions', accent: 'green' },
-                    { label: 'Process Payroll', route: '/payrolls', icon: 'payments', accent: 'indigo' },
-                    { label: 'Employee Directory', route: '/employees', icon: 'badge', accent: 'cyan' },
-                    { label: 'Notifications', route: '/notifications', icon: 'notifications', accent: 'slate' }
+                    { label: this.translate.instant('actions.reviewLeave'), route: '/leaves', icon: 'pending_actions', accent: 'green' },
+                    { label: this.translate.instant('actions.processPayroll'), route: '/payrolls', icon: 'payments', accent: 'indigo' },
+                    { label: this.translate.instant('actions.employeeDirectory'), route: '/employees', icon: 'badge', accent: 'cyan' },
+                    { label: this.translate.instant('actions.notifications'), route: '/notifications', icon: 'notifications', accent: 'slate' }
                 ];
             case 'DEPARTMENT_MANAGER':
                 return [
-                    { label: 'Team Leave Queue', route: '/leaves', icon: 'groups', accent: 'green' },
-                    { label: 'Team Payroll', route: '/payrolls', icon: 'receipt_long', accent: 'indigo' },
-                    { label: 'Employee Profiles', route: '/employees', icon: 'person_search', accent: 'cyan' },
-                    { label: 'Notifications', route: '/notifications', icon: 'notifications', accent: 'slate' }
+                    { label: this.translate.instant('actions.teamLeaveQueue'), route: '/leaves', icon: 'groups', accent: 'green' },
+                    { label: this.translate.instant('actions.teamPayroll'), route: '/payrolls', icon: 'receipt_long', accent: 'indigo' },
+                    { label: this.translate.instant('actions.employeeProfiles'), route: '/employees', icon: 'person_search', accent: 'cyan' },
+                    { label: this.translate.instant('actions.notifications'), route: '/notifications', icon: 'notifications', accent: 'slate' }
                 ];
             default:
                 return [
-                    { label: 'My Profile', route: '/profile', icon: 'badge', accent: 'cyan' },
-                    { label: 'My Leave', route: '/leaves', icon: 'beach_access', accent: 'green' },
-                    { label: 'My Payroll', route: '/payrolls', icon: 'payments', accent: 'indigo' },
-                    { label: 'Notifications', route: '/notifications', icon: 'notifications', accent: 'slate' }
+                    { label: this.translate.instant('actions.myProfile'), route: '/profile', icon: 'badge', accent: 'cyan' },
+                    { label: this.translate.instant('actions.myLeave'), route: '/leaves', icon: 'beach_access', accent: 'green' },
+                    { label: this.translate.instant('actions.myPayroll'), route: '/payrolls', icon: 'payments', accent: 'indigo' },
+                    { label: this.translate.instant('actions.notifications'), route: '/notifications', icon: 'notifications', accent: 'slate' }
                 ];
         }
     }
