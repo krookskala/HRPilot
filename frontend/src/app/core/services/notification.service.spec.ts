@@ -24,7 +24,15 @@ describe('NotificationService', () => {
   it('should fetch notifications', () => {
     const mockPage = { content: [], totalElements: 0 };
     service.getNotifications(0, 20).subscribe(result => {
-      expect(result).toEqual(mockPage);
+      expect(result).toEqual({
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size: 0,
+        number: 0,
+        first: true,
+        last: true
+      });
     });
 
     const req = httpTesting.expectOne(r => r.url.includes('/notifications'));
