@@ -45,4 +45,16 @@ public class Employee extends BaseEntity {
 
     @Column(name = "photo_url")
     private String photoUrl;
+
+    @Column(length = 30)
+    private String phone;
+
+    @Column(length = 500)
+    private String address;
+
+    @Column(name = "emergency_contact_name", length = 100)
+    private String emergencyContactName;
+
+    @Column(name = "emergency_contact_phone", length = 30)
+    private String emergencyContactPhone;
 }
