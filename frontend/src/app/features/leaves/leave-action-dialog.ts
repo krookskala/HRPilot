@@ -5,6 +5,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
+import { TranslateModule } from "@ngx-translate/core";
 
 export interface LeaveActionDialogData {
     title: string;
@@ -22,7 +23,8 @@ export interface LeaveActionDialogData {
         MatButtonModule,
         MatFormFieldModule,
         MatIconModule,
-        MatInputModule
+        MatInputModule,
+        TranslateModule
     ],
     templateUrl: './leave-action-dialog.html',
     styleUrl: './leave-action-dialog.scss'
