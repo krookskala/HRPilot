@@ -90,8 +90,26 @@
                             <textarea matInput rows="3" formControlName="description"></textarea>
                         </mat-form-field>
 
-                        <input type="file" (change)="onDocumentSelected($event)">
-                        <button mat-flat-button color="primary" type="button" (click)="uploadDocument()" [disabled]="uploadingDocument">
+                        <div class="drop-zone"
+                             [class.dragging]="dragging"
+                             (dragover)="onDragOver($event)"
+                             (dragleave)="onDragLeave($event)"
+                             (drop)="onDrop($event)">
+                            <mat-icon>cloud_upload</mat-icon>
+                            <span>{{ 'fileUpload.dragDrop' | translate }}</span>
+                            <span class="drop-hint">{{ 'fileUpload.maxSize' | translate }}</span>
+                            <input type="file" (change)="onDocumentSelected($event)">
+                        </div>
+                        @if (selectedDocumentFile) {
+                            <div class="selected-file">
+                                <mat-icon>attach_file</mat-icon>
+                                <span>{{ selectedDocumentFile.name }}</span>
+                            </div>
+                        }
+                        @if (fileError) {
+                            <div class="file-error">{{ fileError }}</div>
+                        }
+                        <button mat-flat-button color="primary" type="button" (click)="uploadDocument()" [disabled]="uploadingDocument || !selectedDocumentFile">
                             <mat-icon>upload_file</mat-icon>
                             {{ 'employees.uploadDocument' | translate }}
                         </button>
@@ -114,10 +132,16 @@
                                     <div class="document-meta">{{ document.description }}</div>
                                 }
                             </div>
-                            <button mat-stroked-button type="button" (click)="downloadDocument(document.id, document.originalFilename)">
-                                <mat-icon>download</mat-icon>
-                                {{ 'employees.download' | translate }}
-                            </button>
+                            <div class="doc-actions">
+                                <button mat-stroked-button type="button" (click)="previewDocument(document.id, document.originalFilename, document.contentType)"
+                                        [matTooltip]="'filePreview.preview' | translate">
+                                    <mat-icon>visibility</mat-icon>
+                                </button>
+                                <button mat-stroked-button type="button" (click)="downloadDocument(document.id, document.originalFilename)">
+                                    <mat-icon>download</mat-icon>
+                                    {{ 'employees.download' | translate }}
+                                </button>
+                            </div>
                         </div>
                     }
                 </div>
