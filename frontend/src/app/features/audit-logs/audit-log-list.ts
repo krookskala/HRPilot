@@ -6,19 +6,21 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { Subject, takeUntil } from "rxjs";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { AuditLogService } from "../../core/services/audit-log.service";
 import { AuditLogResponse } from "../../shared/models/audit-log.model";
 
 @Component({
     selector: 'app-audit-log-list',
     standalone: true,
-    imports: [DatePipe, MatTableModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule],
+    imports: [DatePipe, MatTableModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, TranslateModule],
     templateUrl: './audit-log-list.html',
     styleUrl: './audit-log-list.scss'
 })
 export class AuditLogList implements OnInit, OnDestroy {
     private auditLogService = inject(AuditLogService);
     private cdr = inject(ChangeDetectorRef);
+    private translateService = inject(TranslateService);
     private destroy$ = new Subject<void>();
 
     logs: AuditLogResponse[] = [];
@@ -44,7 +46,7 @@ export class AuditLogList implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load audit logs';
+                this.error = this.translateService.instant('auditLogs.failedLoad');
                 this.loading = false;
                 this.cdr.detectChanges();
             }
