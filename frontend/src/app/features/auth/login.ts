@@ -8,7 +8,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { Router, RouterLink } from "@angular/router";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
 @Component({
     selector: 'app-login',
@@ -23,6 +23,7 @@ export class Login {
     private authService = inject(AuthService);
     private router = inject(Router);
     private fb = inject(FormBuilder);
+    private translate = inject(TranslateService);
 
     error = '';
     loading = false;
@@ -47,7 +48,7 @@ export class Login {
                 this.router.navigate(['/dashboard']);
             },
             error: (err) => {
-                this.error = err.error?.message || 'Email or Password Wrong';
+                this.error = err.error?.message || this.translate.instant('login.defaultError');
                 this.loading = false;
             }
         });
