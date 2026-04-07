@@ -19,6 +19,7 @@ import { Page } from "../../shared/models/page.model";
 import { Subject, takeUntil } from "rxjs";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { LeaveActionDialog } from "./leave-action-dialog";
+import { LeaveCalendar } from "./leave-calendar";
 import { LeaveDialog } from "./leave-dialog";
 
 @Component({
@@ -38,6 +39,7 @@ import { LeaveDialog } from "./leave-dialog";
         MatTableModule,
         MatTooltipModule,
         TranslateModule,
+        LeaveCalendar,
     ],
     templateUrl: './leave-list.html',
     styleUrl: './leave-list.scss'
@@ -56,6 +58,8 @@ export class LeaveList implements OnInit, OnDestroy {
     readonly canApprove = this.authService.hasRole(Role.ADMIN, Role.HR_MANAGER, Role.DEPARTMENT_MANAGER);
     readonly isSelfService = this.currentUser?.role === Role.EMPLOYEE;
 
+    viewMode: 'table' | 'calendar' = 'table';
+    allLeaves: LeaveRequest[] = [];
     leaves: LeaveRequest[] = [];
     balances: LeaveBalance[] = [];
     historyItems: LeaveRequestHistory[] = [];
@@ -103,6 +107,7 @@ export class LeaveList implements OnInit, OnDestroy {
             this.leaveService.getMine(this.pageIndex, this.pageSize).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (result: Page<LeaveRequest>) => {
                     this.leaves = result.content;
+                    this.allLeaves = result.content;
                     this.totalElements = result.totalElements;
                     this.loading = false;
                     this.cdr.detectChanges();
@@ -122,6 +127,7 @@ export class LeaveList implements OnInit, OnDestroy {
             }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (result: { content: LeaveRequest[]; totalElements: number }) => {
                 this.leaves = result.content;
+                this.allLeaves = result.content;
                 this.totalElements = result.totalElements;
                 this.loading = false;
                 this.cdr.detectChanges();
@@ -158,9 +164,9 @@ export class LeaveList implements OnInit, OnDestroy {
         const ref = this.dialog.open(LeaveActionDialog, {
             width: '420px',
             data: {
-                title: 'Reject leave request',
-                actionLabel: 'Reject',
-                reasonLabel: 'Rejection reason'
+                title: this.translateService.instant('leaves.rejectRequest'),
+                actionLabel: this.translateService.instant('leaves.reject'),
+                reasonLabel: this.translateService.instant('leaves.rejectionReason')
             }
         });
 
@@ -178,9 +184,9 @@ export class LeaveList implements OnInit, OnDestroy {
         const ref = this.dialog.open(LeaveActionDialog, {
             width: '420px',
             data: {
-                title: 'Cancel leave request',
-                actionLabel: 'Cancel request',
-                reasonLabel: 'Cancellation reason',
+                title: this.translateService.instant('leaves.cancelTitle'),
+                actionLabel: this.translateService.instant('leaves.cancelRequest'),
+                reasonLabel: this.translateService.instant('leaves.cancellationReason'),
                 presetReason: leave.cancellationReason
             }
         });
