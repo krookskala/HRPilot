@@ -46,7 +46,9 @@ describe('EmployeeList Component', () => {
     employeeService = {
       search: vi.fn().mockReturnValue(of(mockPage)),
       exportCsv: vi.fn().mockReturnValue(of(new Blob(['csv']))),
-      downloadPhoto: vi.fn().mockReturnValue(throwError(() => new Error('no photo')))
+      downloadPhoto: vi.fn().mockReturnValue(throwError(() => new Error('no photo'))),
+      isFrontendAssetPhoto: vi.fn().mockReturnValue(false),
+      resolvePhotoUrl: vi.fn().mockReturnValue(null)
     } as any;
     const departmentService = { getAll: vi.fn().mockReturnValue(of(mockDeptPage)) };
     const authService = { hasRole: vi.fn().mockReturnValue(true) };
