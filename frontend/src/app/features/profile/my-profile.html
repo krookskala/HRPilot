@@ -206,6 +206,95 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Contact Info Display -->
+                        <div class="employee-info-list contact-info-display">
+                            <div class="detail-row">
+                                <mat-icon class="detail-icon">phone</mat-icon>
+                                <div>
+                                    <span class="detail-label">{{ 'profile.phone' | translate }}</span>
+                                    <span class="detail-value">{{ profile.employee.phone || '—' }}</span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <mat-icon class="detail-icon">home</mat-icon>
+                                <div>
+                                    <span class="detail-label">{{ 'profile.address' | translate }}</span>
+                                    <span class="detail-value">{{ profile.employee.address || '—' }}</span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <mat-icon class="detail-icon">contact_emergency</mat-icon>
+                                <div>
+                                    <span class="detail-label">{{ 'profile.emergencyContactName' | translate }}</span>
+                                    <span class="detail-value">{{ profile.employee.emergencyContactName || '—' }}</span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <mat-icon class="detail-icon">phone</mat-icon>
+                                <div>
+                                    <span class="detail-label">{{ 'profile.emergencyContactPhone' | translate }}</span>
+                                    <span class="detail-value">{{ profile.employee.emergencyContactPhone || '—' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Info Edit Section -->
+                        <div class="personal-info-section">
+                            <div class="section-header clickable" (click)="togglePersonalInfo()">
+                                <div class="section-icon green">
+                                    <mat-icon>edit</mat-icon>
+                                </div>
+                                <h3 class="section-title">{{ 'profile.editPersonalInfo' | translate }}</h3>
+                                <mat-icon class="expand-icon" [class.expanded]="personalInfoExpanded">expand_more</mat-icon>
+                            </div>
+
+                            @if (personalInfoExpanded) {
+                                <form [formGroup]="personalInfoForm" (ngSubmit)="onSavePersonalInfo()" class="personal-info-form">
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>{{ 'common.firstName' | translate }}</mat-label>
+                                            <input matInput formControlName="firstName">
+                                            <mat-error>{{ 'employees.firstNameRequired' | translate }}</mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>{{ 'common.lastName' | translate }}</mat-label>
+                                            <input matInput formControlName="lastName">
+                                            <mat-error>{{ 'employees.lastNameRequired' | translate }}</mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>{{ 'profile.phone' | translate }}</mat-label>
+                                            <input matInput formControlName="phone" type="tel">
+                                            <mat-icon matPrefix>phone</mat-icon>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>{{ 'profile.address' | translate }}</mat-label>
+                                            <input matInput formControlName="address">
+                                            <mat-icon matPrefix>home</mat-icon>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>{{ 'profile.emergencyContactName' | translate }}</mat-label>
+                                            <input matInput formControlName="emergencyContactName">
+                                            <mat-icon matPrefix>contact_emergency</mat-icon>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>{{ 'profile.emergencyContactPhone' | translate }}</mat-label>
+                                            <input matInput formControlName="emergencyContactPhone" type="tel">
+                                            <mat-icon matPrefix>phone</mat-icon>
+                                        </mat-form-field>
+                                    </div>
+                                    <button mat-flat-button color="primary" type="submit"
+                                            [disabled]="personalInfoForm.invalid || savingPersonalInfo">
+                                        <mat-icon>save</mat-icon>
+                                        {{ 'common.save' | translate }}
+                                    </button>
+                                </form>
+                            }
+                        </div>
                     </mat-card-content>
                 </mat-card>
             }
