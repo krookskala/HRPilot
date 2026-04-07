@@ -13,6 +13,7 @@ import { AuthService } from "../../core/services/auth.service";
 import { PayrollService } from "../../core/services/payroll.service";
 import { PayrollRecord, PayrollRun } from "../../shared/models/payroll.model";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { PayrollChart } from "./payroll-chart";
 import { PayrollDialog } from "./payroll-dialog";
 
 @Component({
@@ -29,6 +30,7 @@ import { PayrollDialog } from "./payroll-dialog";
         MatTableModule,
         MatTooltipModule,
         TranslateModule,
+        PayrollChart,
     ],
     templateUrl: './payroll-list.html',
     styleUrl: './payroll-list.scss'
