@@ -1,0 +1,32 @@
+.chart-container {
+  margin-bottom: 24px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card {
+  background: var(--hr-bg-card);
+  border: 1px solid var(--hr-border);
+  border-radius: var(--hr-radius);
+  padding: 20px;
+}
+
+.chart-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--hr-text-primary);
+  margin: 0 0 16px;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 260px;
+}
