@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of, Subject, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Login } from './login';
 import { AuthService } from '../../core/services/auth.service';
@@ -21,21 +21,6 @@ describe('Login Component', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
   let authService: { login: ReturnType<typeof vi.fn> };
-  const translateEvents$ = new Subject<any>();
-  const translateService = {
-    instant: vi.fn((key: string) => ({
-      'login.defaultError': 'Email or Password Wrong'
-    }[key] ?? key)),
-    get: vi.fn((key: string) => of(({
-      'login.defaultError': 'Email or Password Wrong'
-    } as Record<string, string>)[key] ?? key)),
-    stream: vi.fn((key: string) => of(({
-      'login.defaultError': 'Email or Password Wrong'
-    } as Record<string, string>)[key] ?? key)),
-    onTranslationChange: translateEvents$,
-    onLangChange: translateEvents$,
-    onDefaultLangChange: translateEvents$
-  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -47,10 +32,14 @@ describe('Login Component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([{ path: 'dashboard', component: Login }]),
-        { provide: AuthService, useValue: authService },
-        { provide: TranslateService, useValue: translateService }
+        { provide: AuthService, useValue: authService }
       ]
     }).compileComponents();
+
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('en', { login: { defaultError: 'Email or Password Wrong' } });
+    translate.setDefaultLang('en');
+    translate.use('en');
 
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;

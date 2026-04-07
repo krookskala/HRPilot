@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of, Subject, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotificationCenter } from './notification-center';
 import { NotificationService } from '../../core/services/notification.service';
@@ -34,21 +34,6 @@ describe('NotificationCenter Component', () => {
     markAsRead: ReturnType<typeof vi.fn>;
     markAllAsRead: ReturnType<typeof vi.fn>;
   };
-  const translateEvents$ = new Subject<any>();
-  const translateService = {
-    instant: vi.fn((key: string) => ({
-      'notifications.failedLoad': 'Failed to load notifications'
-    }[key] ?? key)),
-    get: vi.fn((key: string) => of(({
-      'notifications.failedLoad': 'Failed to load notifications'
-    } as Record<string, string>)[key] ?? key)),
-    stream: vi.fn((key: string) => of(({
-      'notifications.failedLoad': 'Failed to load notifications'
-    } as Record<string, string>)[key] ?? key)),
-    onTranslationChange: translateEvents$,
-    onLangChange: translateEvents$,
-    onDefaultLangChange: translateEvents$
-  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -64,10 +49,14 @@ describe('NotificationCenter Component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        { provide: NotificationService, useValue: notificationService },
-        { provide: TranslateService, useValue: translateService }
+        { provide: NotificationService, useValue: notificationService }
       ]
     }).compileComponents();
+
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('en', { notifications: { failedLoad: 'Failed to load notifications' } });
+    translate.setDefaultLang('en');
+    translate.use('en');
 
     fixture = TestBed.createComponent(NotificationCenter);
     component = fixture.componentInstance;

@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of, Subject, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Dashboard } from './dashboard';
 import { DashboardData, DashboardService } from '../../core/services/dashboard.service';
@@ -39,20 +39,6 @@ describe('Dashboard Component', () => {
   let component: Dashboard;
   let fixture: ComponentFixture<Dashboard>;
   let dashboardService: { getDashboardData: ReturnType<typeof vi.fn> };
-  const translateEvents$ = new Subject<any>();
-  const translations: Record<string, string> = {
-    'dashboard.failedToLoad': 'Failed to load dashboard data',
-    'actions.manageEmployees': 'Manage Employees',
-    'actions.myProfile': 'My Profile'
-  };
-  const translateService = {
-    instant: vi.fn((key: string) => translations[key] ?? key),
-    get: vi.fn((key: string) => of(translations[key] ?? key)),
-    stream: vi.fn((key: string) => of(translations[key] ?? key)),
-    onTranslationChange: translateEvents$,
-    onLangChange: translateEvents$,
-    onDefaultLangChange: translateEvents$
-  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -64,10 +50,22 @@ describe('Dashboard Component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        { provide: DashboardService, useValue: dashboardService },
-        { provide: TranslateService, useValue: translateService }
+        { provide: DashboardService, useValue: dashboardService }
       ]
     }).compileComponents();
+
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('en', {
+      dashboard: {
+        failedToLoad: 'Failed to load dashboard data'
+      },
+      actions: {
+        manageEmployees: 'Manage Employees',
+        myProfile: 'My Profile'
+      }
+    });
+    translate.setDefaultLang('en');
+    translate.use('en');
 
     fixture = TestBed.createComponent(Dashboard);
     component = fixture.componentInstance;

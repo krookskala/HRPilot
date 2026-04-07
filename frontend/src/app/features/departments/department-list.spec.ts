@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of, Subject, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DepartmentList } from './department-list';
 import { DepartmentService } from '../../core/services/department.service';
@@ -36,21 +36,6 @@ describe('DepartmentList Component', () => {
     updateDepartment: ReturnType<typeof vi.fn>;
     deleteDepartment: ReturnType<typeof vi.fn>;
   };
-  const translateEvents$ = new Subject<any>();
-  const translateService = {
-    instant: vi.fn((key: string) => ({
-      'departments.failedLoad': 'Failed to load departments'
-    }[key] ?? key)),
-    get: vi.fn((key: string) => of(({
-      'departments.failedLoad': 'Failed to load departments'
-    } as Record<string, string>)[key] ?? key)),
-    stream: vi.fn((key: string) => of(({
-      'departments.failedLoad': 'Failed to load departments'
-    } as Record<string, string>)[key] ?? key)),
-    onTranslationChange: translateEvents$,
-    onLangChange: translateEvents$,
-    onDefaultLangChange: translateEvents$
-  };
 
   beforeEach(async () => {
     ensureTestBed();
@@ -70,10 +55,14 @@ describe('DepartmentList Component', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: DepartmentService, useValue: departmentService },
-        { provide: AuthService, useValue: authService },
-        { provide: TranslateService, useValue: translateService }
+        { provide: AuthService, useValue: authService }
       ]
     }).compileComponents();
+
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('en', { departments: { failedLoad: 'Failed to load departments' } });
+    translate.setDefaultLang('en');
+    translate.use('en');
 
     fixture = TestBed.createComponent(DepartmentList);
     component = fixture.componentInstance;
