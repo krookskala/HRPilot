@@ -6,12 +6,13 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { AuthService } from "../../core/services/auth.service";
 
 @Component({
     selector: 'app-accept-invite',
     standalone: true,
-    imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+    imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, TranslateModule],
     templateUrl: './accept-invite.html',
     styleUrl: './accept-invite.scss'
 })
@@ -20,6 +21,7 @@ export class AcceptInvite implements OnInit {
     private router = inject(Router);
     private authService = inject(AuthService);
     private fb = inject(FormBuilder);
+    private translate = inject(TranslateService);
 
     token = '';
     email = '';
@@ -40,7 +42,7 @@ export class AcceptInvite implements OnInit {
                 this.loading = false;
             },
             error: err => {
-                this.error = err.error?.message || 'Invitation could not be loaded';
+                this.error = err.error?.message || this.translate.instant('auth.failedLoadInvitation');
                 this.loading = false;
             }
         });
@@ -53,7 +55,7 @@ export class AcceptInvite implements OnInit {
         }
 
         if (this.form.value.password !== this.form.value.confirmPassword) {
-            this.error = 'Passwords do not match';
+            this.error = this.translate.instant('auth.passwordsDoNotMatch');
             return;
         }
 
@@ -63,7 +65,7 @@ export class AcceptInvite implements OnInit {
         this.authService.acceptInvitation(this.token, this.form.value.password!).subscribe({
             next: () => this.router.navigate(['/dashboard']),
             error: err => {
-                this.error = err.error?.message || 'Invitation could not be accepted';
+                this.error = err.error?.message || this.translate.instant('auth.failedAcceptInvitation');
                 this.submitting = false;
             }
         });
