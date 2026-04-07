@@ -11,6 +11,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from "rxjs";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { UserService } from "../../core/services/user.service";
 import { Role, User } from "../../shared/models/user.model";
 import { InviteUserDialog } from "./invite-user-dialog";
@@ -19,7 +20,7 @@ import { ConfirmDialog } from "../../shared/components/confirm-dialog/confirm-di
 @Component({
     selector: 'app-user-list',
     standalone: true,
-    imports: [ReactiveFormsModule, MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, MatFormFieldModule, MatInputModule, MatSelectModule],
+    imports: [ReactiveFormsModule, MatTableModule, MatButtonModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule, MatIconModule, MatTooltipModule, MatFormFieldModule, MatInputModule, MatSelectModule, TranslateModule],
     templateUrl: './user-list.html',
     styleUrl: './user-list.scss'
 })
@@ -27,6 +28,7 @@ export class UserList implements OnInit, OnDestroy {
     private userService = inject(UserService);
     private dialog = inject(MatDialog);
     private cdr = inject(ChangeDetectorRef);
+    private translateService = inject(TranslateService);
 
     users: User[] = [];
     roles = Object.values(Role);
@@ -76,7 +78,7 @@ export class UserList implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to load users';
+                this.error = this.translateService.instant('users.failedLoad');
                 this.loading = false;
                 this.cdr.detectChanges();
             }
@@ -100,7 +102,7 @@ export class UserList implements OnInit, OnDestroy {
                         this.cdr.detectChanges();
                     },
                     error: () => {
-                        this.error = 'Failed to invite user';
+                        this.error = this.translateService.instant('users.failedInvite');
                         this.cdr.detectChanges();
                     }
                 });
@@ -116,7 +118,7 @@ export class UserList implements OnInit, OnDestroy {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.error = 'Failed to resend invite';
+                this.error = this.translateService.instant('users.failedResend');
                 this.cdr.detectChanges();
             }
         });
@@ -126,7 +128,7 @@ export class UserList implements OnInit, OnDestroy {
         this.userService.updateUser(user.id, { isActive: !user.isActive }).pipe(takeUntil(this.destroy$)).subscribe({
             next: () => this.loadUsers(),
             error: () => {
-                this.error = 'Failed to update user';
+                this.error = this.translateService.instant('users.failedUpdate');
                 this.cdr.detectChanges();
             }
         });
@@ -143,7 +145,7 @@ export class UserList implements OnInit, OnDestroy {
                 this.userService.deleteUser(user.id).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => this.loadUsers(),
                     error: () => {
-                        this.error = 'Failed to delete user';
+                        this.error = this.translateService.instant('users.failedDelete');
                         this.cdr.detectChanges();
                     }
                 });
